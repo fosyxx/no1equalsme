@@ -172,6 +172,27 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .return-note{flex:none;color:var(--violet);font-size:13px;text-align:center;padding:6px 4px 10px}
 .btn-back{flex:none;min-height:52px;width:100%;border-radius:15px;background:var(--violet-soft);border:1px solid var(--violet-line);color:var(--violet);font-weight:700;font-size:15.5px;transition:background .15s}
 .btn-back:active{background:rgba(165,139,255,.22)}
+.btn-more{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 18px;margin:2px 0 6px;border-radius:14px;border:1px solid var(--violet-line);background:var(--violet-soft);color:var(--violet);font-weight:650;font-size:14px;transition:background .15s}
+.btn-more:active{background:rgba(165,139,255,.22)}
+.details-overlay{z-index:60}
+.details-sheet{max-height:88%;display:flex;flex-direction:column;touch-action:pan-y}
+.details-sheet .sheet-head h2{font-size:20px;font-weight:750;overflow-wrap:anywhere;padding-right:8px}
+.details-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-bottom:6px}
+.dt-pos{display:flex;flex-wrap:wrap;gap:8px;align-items:center;color:var(--muted);font-size:13px;font-style:italic;margin-bottom:10px}
+.dt-reg{font-style:normal;font-size:11.5px;font-weight:650;color:var(--violet);background:var(--violet-soft);border:1px solid rgba(165,139,255,.3);border-radius:999px;padding:3px 9px}
+.dt-reg:empty{display:none}
+.dt-def{font-size:15.5px;line-height:1.5;margin-bottom:14px}
+.dt-block{margin-bottom:14px}
+.dt-block h3{font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--muted);margin-bottom:8px}
+.dt-chips{list-style:none;display:flex;flex-wrap:wrap;gap:8px}
+.dt-chips li{font-size:13px;color:var(--text);background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+.boot{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--bg);transition:opacity .2s ease,visibility 0s linear .2s;opacity:1;visibility:visible}
+.boot.hide{opacity:0;visibility:hidden;pointer-events:none}
+.boot-box{width:100%;max-width:320px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+.boot-mono{width:52px;height:52px;border-radius:16px;font-size:18px;margin-bottom:6px}
+.boot-title{font-size:18px;font-weight:700}
+.boot-text{font-size:13.5px;color:var(--muted);line-height:1.5}
+#btnBootRetry{width:100%;margin-top:8px}
 .actions{display:flex;gap:12px;padding-top:14px;transition:opacity .18s ease,visibility .18s}
 .actions.hidden{opacity:0;visibility:hidden;pointer-events:none}
 .act{flex:1;min-height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;gap:9px;font-weight:700;font-size:15.5px;border:1px solid;transition:transform .14s ease}
@@ -386,10 +407,8 @@ html.rm .card-drag.flipped .card-front{opacity:0}
               <span class="badge" id="badgePeek" hidden>Проверка себя</span>
               <div class="back-scroll" id="backScroll">
                 <h2 class="back-word" id="wordBack"></h2>
-                <div class="pos" id="posBack"></div>
                 <p class="def" id="defBack"></p>
-                <p class="syn"><span class="syn-label">Синонимы: </span><span id="synBack"></span></p>
-                <p class="ex" id="exBack"></p>
+                <button class="btn-more" id="btnMore">Подробнее</button>
                 <p class="peek-note" id="peekNote" hidden>Это проверка себя — ответ ещё не засчитан. Вернись к слову и ответь честно.</p>
               </div>
               <p class="return-note" id="returnNote"></p>
@@ -497,6 +516,19 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
       </span>
     </button>
+    <div class="set-row set-row-col">
+      <div class="set-text">
+        <span class="set-name">Словарь</span>
+        <span class="set-sub" id="dictSourceText">Проверяем…</span>
+      </div>
+      <div class="sync-info">
+        <div><span>Версия словаря</span><b id="dictVersion">—</b></div>
+        <div><span>Слов в библиотеке</span><b id="dictCount">—</b></div>
+        <div><span>Обновлён</span><b id="dictUpdated">—</b></div>
+        <div><span>Исключено карточек</span><b id="dictSkipped">0</b></div>
+      </div>
+      <button class="tb" id="btnDictCheck" style="min-height:48px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--text);font-weight:650;font-size:13.5px">Проверить обновление словаря</button>
+    </div>
     <div class="set-row set-row-col">
       <div class="set-text">
         <span class="set-name">Синхронизация</span>
@@ -621,6 +653,44 @@ html.rm .card-drag.flipped .card-front{opacity:0}
   </div>
 </div>
 
+<!-- Панель «Подробнее» -->
+<div class="overlay details-overlay" id="detailsOverlay" hidden>
+  <div class="sheet details-sheet" id="detailsSheet" role="dialog" aria-modal="true" aria-labelledby="dtWord">
+    <div class="sheet-head">
+      <h2 id="dtWord"></h2>
+      <button class="icon-btn" id="btnDetailsClose" aria-label="Закрыть подробности">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="details-scroll" id="detailsScroll">
+      <p class="dt-pos"><span id="dtPos"></span><span class="dt-reg" id="dtRegister"></span></p>
+      <p class="dt-def" id="dtDefFull"></p>
+      <div class="dt-block" id="dtSynBlock">
+        <h3>Синонимы</h3>
+        <ul class="dt-chips" id="dtSyn"></ul>
+      </div>
+      <div class="dt-block">
+        <h3>Пример</h3>
+        <p class="ex" id="dtExample"></p>
+      </div>
+      <div class="dt-block" id="dtRelBlock">
+        <h3>Однокоренные слова</h3>
+        <ul class="dt-chips" id="dtRelated"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Экран состояния словаря -->
+<div class="boot" id="bootScreen">
+  <div class="boot-box">
+    <div class="mono boot-mono" aria-hidden="true">N1</div>
+    <p class="boot-title" id="bootTitle">Загружаем словарь…</p>
+    <p class="boot-text" id="bootText">Это займёт пару секунд.</p>
+    <button class="btn-primary" id="btnBootRetry" hidden>Повторить загрузку</button>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 <noscript><div style="position:fixed;inset:0;display:grid;place-items:center;background:#131117;color:#ece8f4;padding:24px;text-align:center;font-family:sans-serif">Для работы приложения нужен включённый JavaScript.</div></noscript>
 
@@ -657,30 +727,20 @@ var MAX_SESSION = 15;
 var MAX_NEW = 5;
 var MAX_LAPSES_EVENING = 5;
 
-var CARDS = [
-  {id:'ambivalentnost', word:'амбивалентность', stress:'амбивале́нтность', pos:'существительное',
-   def:'Одновременное присутствие противоположных чувств или отношений к одному и тому же объекту.',
-   syn:['двойственность','противоречивость'],
-   ex:'Он испытывал амбивалентность: хотел уехать, но боялся покидать привычный дом.'},
-  {id:'aplomb', word:'апломб', stress:'апло́мб', pos:'существительное',
-   def:'Подчёркнутая самоуверенность в поведении, речи или манерах.',
-   syn:['самоуверенность','важность'],
-   ex:'Он с апломбом рассуждал о предмете, который едва успел изучить.'},
-  {id:'implicitny', word:'имплицитный', stress:'имплици́тный', pos:'прилагательное',
-   def:'Не выраженный прямо, но подразумеваемый или содержащийся в чём-либо скрыто.',
-   syn:['неявный','подразумеваемый'],
-   ex:'В его ответе содержалось имплицитное согласие с предложением.'},
-  {id:'indifferentny', word:'индифферентный', stress:'индиффере́нтный', pos:'прилагательное',
-   def:'Не проявляющий интереса, участия или эмоционального отношения; безразличный.',
-   syn:['равнодушный','безразличный'],
-   ex:'Он оставался индифферентным к спору и не поддержал ни одну сторону.'},
-  {id:'eklektichny', word:'эклектичный', stress:'эклекти́чный', pos:'прилагательное',
-   def:'Соединяющий разнородные элементы, идеи или стили, взятые из разных источников.',
-   syn:['смешанный','разностильный'],
-   ex:'Интерьер получился эклектичным: антикварная мебель соседствовала с современным светом.'}
-];
+/* Словарь загружается только из ./data/words.json, в HTML он не встроен */
+var CONTENT_URL = './data/words.json';
+var CONTENT_CACHE_KEY = 'nem_content_cache_v1';
+var SUPPORTED_SCHEMAS = [1,2];
+var LIMITS = {id:64, word:80, stress:120, pos:40, defShort:400, defFull:2000, example:600, register:60, list:40, item:80, cards:5000};
+var CARDS = [];
 var CARD_MAP = {};
-CARDS.forEach(function(c){ CARD_MAP[c.id]=c; });
+var content = {ready:false, source:null, contentVersion:null, schemaVersion:null, updatedAt:null, count:0, skipped:0, checking:false};
+
+function setCards(list){
+  CARDS = list;
+  CARD_MAP = {};
+  CARDS.forEach(function(c){ CARD_MAP[c.id]=c; });
+}
 
 var REDUCED = false;
 try{ REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
@@ -699,8 +759,8 @@ var elBtnBack=$('btnBack'), elSessProgress=$('sessProgress'), elTestPillSession=
     elCardArea=$('cardArea'), elCardDrag=$('cardDrag'), elCardInner=$('cardInner'),
     elCardFront=$('cardFront'), elCardBack=$('cardBack'),
     elWordFront=$('wordFront'), elBadgeRepeat=$('badgeRepeat'), elBtnPeek=$('btnPeek'), elTintFront=$('tintFront'),
-    elBackScroll=$('backScroll'), elWordBack=$('wordBack'), elPosBack=$('posBack'), elDefBack=$('defBack'),
-    elSynBack=$('synBack'), elExBack=$('exBack'), elPeekNote=$('peekNote'), elReturnNote=$('returnNote'),
+    elBackScroll=$('backScroll'), elWordBack=$('wordBack'), elDefBack=$('defBack'), elBtnMore=$('btnMore'),
+    elPeekNote=$('peekNote'), elReturnNote=$('returnNote'),
     elBtnBackAction=$('btnBackAction'), elBadgePeek=$('badgePeek'), elTintBack=$('tintBack'),
     elActions=$('actionsBar'), elBtnNo=$('btnNo'), elBtnYes=$('btnYes');
 var elStatFirst=$('statFirst'), elStatRepeated=$('statRepeated'), elStatTomorrow=$('statTomorrow'),
@@ -801,12 +861,14 @@ function isValidState(s){
     if(!(s.sessionDate===null || /^\d{4}-\d{2}-\d{2}$/.test(s.sessionDate))) return false;
     if(!(s.lastStudyDate===null || /^\d{4}-\d{2}-\d{2}$/.test(s.lastStudyDate))) return false;
     if(!Array.isArray(s.queue)) return false;
-    for(var i=0;i<s.queue.length;i++){ if(!CARD_MAP[s.queue[i]]) return false; }
+    // неизвестные id не делают состояние повреждённым: слово могло временно исчезнуть из словаря
+    for(var i=0;i<s.queue.length;i++){ if(typeof s.queue[i]!=='string') return false; }
     if(typeof s.sessionTotal!=='number' || s.sessionTotal<0) return false;
     if(!s.sessionResults || typeof s.sessionResults!=='object') return false;
     for(var j=0;j<s.queue.length;j++){
       var r=s.sessionResults[s.queue[j]];
-      if(!r || typeof r.errors!=='number' || r.errors<0) return false;
+      if(!r) continue;
+      if(typeof r.errors!=='number' || r.errors<0) return false;
       if(typeof r.done!=='boolean' || typeof r.firstTry!=='boolean' || typeof r.tomorrow!=='boolean') return false;
     }
     if(!s.cards || typeof s.cards!=='object') return false;
@@ -1098,12 +1160,9 @@ function renderSession(opts){
   elTestPillSession.hidden=!testState.enabled;
   var c=currentCard();
   if(!c) return;
-  elWordFront.textContent=c.word;
+  elWordFront.textContent=c.word;              // лицевая сторона — слово без ударения
   elWordBack.textContent=c.stress;
-  elPosBack.textContent=c.pos;
-  elDefBack.textContent=c.def;
-  elSynBack.textContent=c.syn.join(', ');
-  elExBack.textContent=c.ex;
+  elDefBack.textContent=c.definitionShort;     // оборот — только краткое определение
   var r=state.sessionResults[c.id];
   elBadgeRepeat.hidden=!(r && r.errors>0 && !r.done);
   var back = state.cardScreen!=='question';
@@ -1193,6 +1252,7 @@ function showView(v){
 }
 function goHome(){ showView('home'); }
 function onTgBack(){
+  if(detailsOpen){ closeDetails(); return; }
   if(settingsOpen){ closeSettings(); return; }
   if(state.view==='session' || state.view==='result' || state.view==='archive') goHome();
 }
@@ -1205,6 +1265,7 @@ var flipAt=0;
 
 function startNewSession(){
   if(state.status==='active') return;
+  if(!content.ready || !CARDS.length) return; // пустую сессию из незагруженного словаря не создаём
   var eff=effDate();
   var queue=buildDayQueue(eff);
   if(!queue.length) return; // пустую сессию не создаём
@@ -1234,7 +1295,7 @@ function finishSession(){
 
 /* Единая функция обработки ответа — вызывается кнопками и свайпом */
 function answer(remembered){
-  if(lock || drag) return;
+  if(lock || drag || detailsOpen) return;
   if(state.view!=='session' || state.cardScreen!=='question' || state.status!=='active') return;
   var c=currentCard(); if(!c) return;
   var r=state.sessionResults[c.id]; if(!r) return;
@@ -1316,7 +1377,7 @@ function exitPeek(){
   setTimeout(function(){ lock=false; }, D.flip);
 }
 function backProceed(){
-  if(lock) return;
+  if(lock || detailsOpen) return;
   if(Date.now()-flipAt<300) return;
   if(state.cardScreen==='peek') exitPeek();
   else if(state.cardScreen==='definition') continueFromDefinition(1);
@@ -1389,7 +1450,7 @@ function flyCard(dir, cb){
 
 /* ================= Жесты (pointer events) ================= */
 function onDown(e){
-  if(state.view!=='session') return;
+  if(state.view!=='session' || detailsOpen) return;
   if(e.isPrimary===false) return;
   if(e.pointerType==='mouse' && e.button!==0) return;
   if(e.target && e.target.closest && e.target.closest('button')) return;
@@ -1472,6 +1533,7 @@ elBtnArchBack.addEventListener('click', function(){ goHome(); });
 elBtnNearest.addEventListener('click', function(){ jumpToNearest(); });
 
 document.addEventListener('keydown', function(e){
+  if(detailsOpen){ if(e.key==='Escape') closeDetails(); return; }
   if(settingsOpen){ if(e.key==='Escape') closeSettings(); return; }
   if(state.view!=='session' || lock || drag) return;
   if(state.cardScreen==='question'){
@@ -1493,7 +1555,7 @@ function syncThemeSeg(){
   });
 }
 function applyTheme(){
-  var t=(state.settings && THEME_BG[state.settings.theme]) ? state.settings.theme : 'evening';
+  var t=(state && state.settings && THEME_BG[state.settings.theme]) ? state.settings.theme : 'evening';
   document.documentElement.setAttribute('data-theme', t);
   var mc=document.querySelector('meta[name="theme-color"]');
   if(mc) mc.setAttribute('content', THEME_BG[t]);
@@ -1898,9 +1960,8 @@ function buildPayloads(){
   // прогресс по блокам
   var blocks={};
   Object.keys(state.cards).forEach(function(id){
-    if(!CARD_MAP[id]) return;
     var p=state.cards[id];
-    if(!p || p.status==='new') return;
+    if(!p || p.status==='new') return;   // прогресс слов, временно исчезнувших из словаря, сохраняется
     var bk=blockKeyFor(id);
     if(!blocks[bk]) blocks[bk]={};
     blocks[bk][id]=progToCompact(p);
@@ -1944,8 +2005,8 @@ function mergeCloudProgress(obj){
   if(!obj || !obj.c || typeof obj.c!=='object') return 0;
   var applied=0;
   Object.keys(obj.c).forEach(function(id){
-    if(!CARD_MAP[id]) return; // неизвестные карточки безопасно пропускаем
-    var remote=compactToProg(obj.c[id], state.cards[id]);
+    if(typeof id!=='string' || id.length>LIMITS.id) return;
+    var remote=compactToProg(obj.c[id], state.cards[id]); // прогресс хранится по id, даже если слова сейчас нет
     if(!remote) return;
     var local=state.cards[id];
     if(!local){ state.cards[id]=remote; applied++; return; }
@@ -2248,7 +2309,10 @@ save = function(){
 var __renderHome = renderHome;
 renderHome = function(){
   __renderHome();
-  if(cloud.gate && !elBtnStart.hidden){
+  if(!content.ready && !elBtnStart.hidden){
+    elBtnStart.disabled=true;
+    elBtnStart.textContent='Загружаем словарь…';
+  } else if(cloud.gate && !elBtnStart.hidden){
     elBtnStart.disabled=true;
     elBtnStart.textContent='Проверяем прогресс…';
   } else {
@@ -2266,6 +2330,7 @@ openSettings = function(){
   $('importConfirm').hidden=true;
   $('cloudWipe1').hidden=true; $('cloudWipe2').hidden=true; $('cloudAfter').hidden=true;
   $('btnCloudWipe').hidden=false;
+  renderDictInfo();
   updateSyncUI();
 };
 
@@ -2676,36 +2741,327 @@ document.addEventListener('visibilitychange', function(){ if(document.hidden){ s
 window.addEventListener('pagehide', function(){ save(); saveTest(); if(cloud.available && cloud.ready) pushDirty(); });
 window.addEventListener('beforeunload', function(){ save(); saveTest(); });
 
+/* ================= Панель «Подробнее» ================= */
+var elDetailsOverlay=$('detailsOverlay'), elDetailsSheet=$('detailsSheet'), elDetailsScroll=$('detailsScroll'),
+    elDtWord=$('dtWord'), elDtPos=$('dtPos'), elDtRegister=$('dtRegister'), elDtDefFull=$('dtDefFull'),
+    elDtSynBlock=$('dtSynBlock'), elDtSyn=$('dtSyn'), elDtExample=$('dtExample'),
+    elDtRelBlock=$('dtRelBlock'), elDtRelated=$('dtRelated');
+var detailsOpen=false, detailsTimer=null;
+
+function fillChips(ul, items){
+  ul.innerHTML='';
+  items.forEach(function(t){
+    var li=document.createElement('li');
+    li.textContent=t;            // только textContent, без innerHTML
+    ul.appendChild(li);
+  });
+}
+function openDetails(){
+  var c=currentCard();
+  if(!c || detailsOpen) return;
+  detailsOpen=true;
+  elDtWord.textContent=c.stress;
+  elDtPos.textContent=c.partOfSpeech;
+  elDtRegister.textContent=c.register||'';
+  elDtDefFull.textContent=c.definitionFull;
+  elDtExample.textContent=c.example;
+  var syn=Array.isArray(c.synonyms)?c.synonyms:[];
+  elDtSynBlock.hidden=syn.length===0;            // пустой раздел полностью скрыт
+  if(syn.length) fillChips(elDtSyn, syn);
+  var rel=Array.isArray(c.relatedWords)?c.relatedWords:[];
+  elDtRelBlock.hidden=rel.length===0;
+  if(rel.length) fillChips(elDtRelated, rel);
+  elDetailsScroll.scrollTop=0;
+  elDetailsOverlay.hidden=false;
+  clearTimeout(detailsTimer);
+  requestAnimationFrame(function(){ elDetailsOverlay.classList.add('show'); });
+  updateTgBack();
+}
+function closeDetails(){
+  if(!detailsOpen) return;
+  detailsOpen=false;
+  elDetailsOverlay.classList.remove('show');
+  clearTimeout(detailsTimer);
+  detailsTimer=setTimeout(function(){ elDetailsOverlay.hidden=true; }, 260);
+  updateTgBack();
+}
+elBtnMore.addEventListener('click', function(e){ e.stopPropagation(); openDetails(); });
+elBtnMore.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
+$('btnDetailsClose').addEventListener('click', closeDetails);
+elDetailsOverlay.addEventListener('click', function(e){ if(e.target===elDetailsOverlay) closeDetails(); });
+/* свайп вниз по панели */
+(function(){
+  var sy=0, dy=0, dragging=false;
+  elDetailsSheet.addEventListener('pointerdown', function(e){
+    if(e.target && e.target.closest && e.target.closest('button')) return;
+    if(elDetailsScroll.scrollTop>0) return;
+    sy=e.clientY; dy=0; dragging=true;
+  });
+  elDetailsSheet.addEventListener('pointermove', function(e){
+    if(!dragging) return;
+    dy=e.clientY-sy;
+    if(dy>0) elDetailsSheet.style.transform='translateY('+dy+'px)';
+  });
+  var end=function(){
+    if(!dragging) return;
+    dragging=false;
+    elDetailsSheet.style.transform='';
+    if(dy>90) closeDetails();
+  };
+  elDetailsSheet.addEventListener('pointerup', end);
+  elDetailsSheet.addEventListener('pointercancel', end);
+})();
+
+/* ================= Загрузка словаря ================= */
+var elBootScreen=$('bootScreen'), elBootTitle=$('bootTitle'), elBootText=$('bootText'), elBtnBootRetry=$('btnBootRetry');
+var elDictSourceText=$('dictSourceText'), elDictVersion=$('dictVersion'), elDictCount=$('dictCount'),
+    elDictUpdated=$('dictUpdated'), elDictSkipped=$('dictSkipped'), elBtnDictCheck=$('btnDictCheck');
+
+function str(v, max){
+  return (typeof v==='string' && v.trim().length>0 && v.length<=max) ? v.trim() : null;
+}
+function strList(v, maxItems, maxLen){
+  if(!Array.isArray(v)) return null;
+  var out=[];
+  for(var i=0;i<v.length && out.length<maxItems;i++){
+    var s=str(v[i], maxLen);
+    if(s) out.push(s);
+  }
+  return out;
+}
+function validateCard(raw, seen){
+  if(!raw || typeof raw!=='object') return null;
+  var id=str(raw.id, LIMITS.id);
+  if(!id || seen[id]) return null;                        // id уникальный и непустой
+  var word=str(raw.word, LIMITS.word);
+  var stress=str(raw.stress, LIMITS.stress);
+  var pos=str(raw.partOfSpeech, LIMITS.pos);
+  var dShort=str(raw.definitionShort, LIMITS.defShort);
+  var dFull=str(raw.definitionFull, LIMITS.defFull);
+  var ex=str(raw.example, LIMITS.example);
+  var reg=str(raw.register, LIMITS.register);
+  if(!word || !stress || !pos || !dShort || !dFull || !ex || !reg) return null;
+  var syn=strList(raw.synonyms, LIMITS.list, LIMITS.item);
+  var rel=strList(raw.relatedWords, LIMITS.list, LIMITS.item);
+  if(syn===null || rel===null) return null;               // поля обязаны быть массивами строк
+  return {id:id, word:word, stress:stress, partOfSpeech:pos, definitionShort:dShort, definitionFull:dFull,
+          synonyms:syn, example:ex, relatedWords:rel, register:reg,
+          contentVersion:(typeof raw.contentVersion==='number' && raw.contentVersion>0)?raw.contentVersion:1};
+}
+function validatePackage(root){
+  if(!root || typeof root!=='object') return null;
+  var rawCards, schemaVersion, contentVersion, language, updatedAt;
+  if(Array.isArray(root)){                                 // допускаем «голый» массив карточек
+    rawCards=root; schemaVersion=1; language='ru'; updatedAt=null; contentVersion=null;
+  } else {
+    rawCards=root.cards;
+    schemaVersion=root.schemaVersion;
+    contentVersion=root.contentVersion;
+    language=root.language;
+    updatedAt=(typeof root.updatedAt==='string')?root.updatedAt.slice(0,40):null;
+    if(SUPPORTED_SCHEMAS.indexOf(schemaVersion)<0) return {error:'schema'};
+    if(typeof contentVersion!=='number' || !(contentVersion>0)) return {error:'version'};
+    if(language!=='ru') return {error:'language'};
+  }
+  if(!Array.isArray(rawCards) || rawCards.length===0) return {error:'cards'};
+  var seen={}, cards=[], skipped=[];
+  var limit=Math.min(rawCards.length, LIMITS.cards);
+  for(var i=0;i<limit;i++){
+    var card=validateCard(rawCards[i], seen);
+    if(card){ seen[card.id]=1; cards.push(card); }
+    else {
+      var badId=(rawCards[i] && typeof rawCards[i].id==='string')?rawCards[i].id:('#'+i);
+      skipped.push(badId);
+    }
+  }
+  if(cards.length<1) return {error:'empty'};
+  if(skipped.length){
+    try{ console.warn('No1EqualsMe: исключены повреждённые карточки словаря:', skipped); }catch(e){}
+  }
+  if(contentVersion===null){
+    contentVersion=cards.reduce(function(m,c){ return Math.max(m, c.contentVersion||1); }, 1);
+  }
+  return {cards:cards, skipped:skipped.length, schemaVersion:schemaVersion||1,
+          contentVersion:contentVersion, language:'ru', updatedAt:updatedAt};
+}
+function readContentCache(){
+  try{
+    var raw=localStorage.getItem(CONTENT_CACHE_KEY);
+    if(!raw) return null;
+    var parsed=JSON.parse(raw);
+    var pkg=validatePackage(parsed);
+    return (pkg && !pkg.error) ? pkg : null;
+  }catch(e){ return null; }
+}
+function writeContentCache(pkg){
+  try{
+    localStorage.setItem(CONTENT_CACHE_KEY, JSON.stringify({
+      schemaVersion:pkg.schemaVersion, contentVersion:pkg.contentVersion, language:'ru',
+      updatedAt:pkg.updatedAt, cards:pkg.cards
+    }));
+  }catch(e){}
+}
+function applyPackage(pkg, source){
+  setCards(pkg.cards);
+  content.ready=true;
+  content.source=source;
+  content.contentVersion=pkg.contentVersion;
+  content.schemaVersion=pkg.schemaVersion;
+  content.updatedAt=pkg.updatedAt;
+  content.count=pkg.cards.length;
+  content.skipped=pkg.skipped||0;
+}
+/* Сеть: fetch с проверкой ok, разбором и валидацией. MIME-тип сам по себе не повод отказать */
+function fetchPackage(){
+  return new Promise(function(resolve, reject){
+    if(typeof fetch!=='function'){ reject(new Error('nofetch')); return; }
+    var ctrl=null, timer=null;
+    try{ if(typeof AbortController==='function') ctrl=new AbortController(); }catch(e){ ctrl=null; }
+    var opts={cache:'no-cache', credentials:'same-origin'};   // позволяем браузеру проверить обновление
+    if(ctrl){ opts.signal=ctrl.signal; timer=setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, 12000); }
+    fetch(CONTENT_URL, opts).then(function(res){
+      if(!res.ok) throw new Error('http '+res.status);       // 404 и прочее — неуспех
+      return res.text();
+    }).then(function(text){
+      if(timer) clearTimeout(timer);
+      var parsed;
+      try{ parsed=JSON.parse(text); }                        // HTML вместо JSON упадёт здесь
+      catch(e){ throw new Error('parse'); }
+      var pkg=validatePackage(parsed);
+      if(!pkg || pkg.error) throw new Error(pkg?pkg.error:'invalid');
+      resolve(pkg);
+    }).catch(function(err){
+      if(timer) clearTimeout(timer);
+      reject(err);
+    });
+  });
+}
+function renderDictInfo(){
+  if(!elDictSourceText) return;
+  elDictSourceText.textContent = !content.ready ? 'Проверяем…'
+    : (content.source==='network' ? 'Актуальный словарь' : 'Локальная копия');
+  elDictVersion.textContent = content.contentVersion!=null ? String(content.contentVersion) : '—';
+  elDictCount.textContent = content.ready ? String(content.count) : '—';
+  elDictUpdated.textContent = content.updatedAt ? fmtHuman(String(content.updatedAt).slice(0,10)) : '—';
+  elDictSkipped.textContent = String(content.skipped||0);
+  elBtnDictCheck.disabled = content.checking;
+}
+function hideBoot(){
+  elBootScreen.classList.add('hide');
+}
+function showBootError(){
+  elBootScreen.classList.remove('hide');
+  elBootTitle.textContent='Словарь не загрузился';
+  elBootText.textContent='Не удалось получить ./data/words.json и нет сохранённой копии. Проверьте соединение и повторите попытку — учебный прогресс не пострадал.';
+  elBtnBootRetry.hidden=false;
+}
+/* Повторная проверка обновления: прогресс и сессия не трогаются */
+function checkDictionaryUpdate(manual){
+  if(content.checking) return Promise.resolve(false);
+  content.checking=true;
+  renderDictInfo();
+  return fetchPackage().then(function(pkg){
+    var older = content.ready && content.contentVersion!=null && pkg.contentVersion < content.contentVersion;
+    if(older){
+      content.checking=false;
+      renderDictInfo();
+      if(manual) toast('В сети более старая версия словаря — оставили текущую.');
+      return false;
+    }
+    applyPackage(pkg, 'network');
+    writeContentCache(pkg);
+    content.checking=false;
+    renderDictInfo();
+    renderHome();                      // активная сессия не перестраивается
+    if(state.view==='session') renderSession();
+    renderArchive();
+    if(manual) toast('Словарь актуален: версия '+pkg.contentVersion+', слов: '+pkg.cards.length+'.');
+    return true;
+  }, function(){
+    content.checking=false;
+    renderDictInfo();
+    if(manual) toast('Не удалось проверить обновление словаря. Используется последняя сохранённая версия.');
+    return false;
+  });
+}
+elBtnDictCheck.addEventListener('click', function(){ checkDictionaryUpdate(true); });
+elBtnBootRetry.addEventListener('click', function(){
+  elBtnBootRetry.hidden=true;
+  elBootTitle.textContent='Загружаем словарь…';
+  elBootText.textContent='Это займёт пару секунд.';
+  loadContentThenStart();
+});
+
 /* ================= Инициализация ================= */
-loadState();
-loadTest();
-if(!state.settings || !THEME_BG[state.settings.theme]) state.settings.theme='evening';
-ensureDay();
-if(state.status==='active' && state.queue.length===0){
-  state.status='completed';
-  if(!state.completedAt) state.completedAt=Date.now();
-  save();
+var appStarted=false;
+function startApp(){
+  if(appStarted) return;
+  appStarted=true;
+  loadState();
+  loadTest();
+  if(!state.settings || !THEME_BG[state.settings.theme]) state.settings.theme='evening';
+  // слова, отсутствующие в текущем словаре, не показываем, но их прогресс сохраняем
+  state.queue=state.queue.filter(function(id){ return !!CARD_MAP[id]; });
+  ensureDay();
+  if(state.status==='active' && state.queue.length===0){
+    state.status='completed';
+    if(!state.completedAt) state.completedAt=Date.now();
+    save();
+  }
+  if(state.status!=='active' && state.view==='session'){ state.view='home'; save(); }
+  if(state.view==='result' && !(state.status==='completed' && state.sessionDate===effDate())){ state.view='home'; save(); }
+  save(); // фиксируем созданное состояние, чтобы уведомление об обновлении показалось один раз
+  flipAt=Date.now();
+  applyTheme();
+  syncSwitch();
+  syncTestSwitch();
+  renderDictInfo();
+  renderHome();
+  renderSession({instantFlip:true});
+  renderResult();
+  renderArchive();
+  var initialView='home';
+  if(state.status==='active' && state.view==='session') initialView='session';
+  else if(state.status==='completed' && state.view==='result' && state.sessionDate===effDate()) initialView='result';
+  showView(initialView);
+  hideBoot();
+  bootSync();
+  if(hadCorruption){
+    setTimeout(function(){ toast('Локальные данные пришлось восстановить — повреждённая копия сохранена отдельно, начинаем с чистого листа.'); },400);
+  } else if(freshInstall){
+    setTimeout(function(){ toast('Планировщик обновлён. Начинаем новый тестовый цикл.'); },400);
+  }
 }
-if(state.status!=='active' && state.view==='session'){ state.view='home'; save(); }
-if(state.view==='result' && !(state.status==='completed' && state.sessionDate===effDate())){ state.view='home'; save(); }
-save(); // фиксируем созданное состояние, чтобы уведомление об обновлении показалось один раз
-flipAt=Date.now();
+function loadContentThenStart(){
+  var cached=readContentCache();
+  if(cached) applyPackage(cached, 'cache');   // мгновенно показываем последнюю исправную копию
+  fetchPackage().then(function(pkg){
+    var older = cached && pkg.contentVersion < cached.contentVersion;
+    if(older){
+      applyPackage(cached, 'cache');
+      renderDictInfo();
+      startApp();
+      toast('В сети более старая версия словаря — используется сохранённая.');
+      return;
+    }
+    applyPackage(pkg, 'network');
+    writeContentCache(pkg);
+    renderDictInfo();
+    if(appStarted){ renderHome(); renderArchive(); if(state.view==='session') renderSession(); }
+    else startApp();
+  }, function(){
+    if(content.ready){                         // сеть недоступна — работаем на локальной копии
+      renderDictInfo();
+      startApp();
+      setTimeout(function(){ toast('Не удалось проверить обновление словаря. Используется последняя сохранённая версия.'); },500);
+    } else {
+      showBootError();                         // первый запуск без сети и без копии
+    }
+  });
+  if(cached && !appStarted) startApp();        // не ждём сеть, если копия уже есть
+}
 applyTheme();
-syncSwitch();
-syncTestSwitch();
-renderHome();
-renderSession({instantFlip:true});
-renderResult();
-var initialView='home';
-if(state.status==='active' && state.view==='session') initialView='session';
-else if(state.status==='completed' && state.view==='result' && state.sessionDate===effDate()) initialView='result';
-showView(initialView);
-bootSync();
-if(hadCorruption){
-  setTimeout(function(){ toast('Локальные данные пришлось восстановить — повреждённая копия сохранена отдельно, начинаем с чистого листа.'); },400);
-} else if(freshInstall){
-  setTimeout(function(){ toast('Планировщик обновлён. Начинаем новый тестовый цикл.'); },400);
-}
+loadContentThenStart();
 })();
 </script>
 </body>

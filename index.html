@@ -172,11 +172,10 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .syn{font-size:13.5px;margin-bottom:10px}
 .syn-label{color:var(--muted)}
 .ex{color:var(--muted);font-size:13.5px;line-height:1.5;border-left:2px solid rgba(165,139,255,.4);padding-left:10px;margin-bottom:12px}
-.peek-note{font-size:13.5px;color:var(--violet);background:var(--violet-soft);border:1px solid rgba(165,139,255,.3);border-radius:12px;padding:10px 12px;margin-bottom:10px}
 .return-note{flex:none;color:var(--violet);font-size:13px;text-align:center;padding:6px 4px 10px}
 .btn-back{flex:none;min-height:52px;width:100%;border-radius:15px;background:var(--violet-soft);border:1px solid var(--violet-line);color:var(--violet);font-weight:700;font-size:15.5px;transition:background .15s}
 .btn-back:active{background:rgba(165,139,255,.22)}
-.btn-more{display:inline-flex;align-items:center;justify-content:center;align-self:center;min-height:48px;padding:0 26px;margin:0 auto 6px;border-radius:14px;border:1px solid var(--violet-line);background:var(--violet-soft);color:var(--violet);font-weight:650;font-size:15px;transition:background .15s}
+.btn-more{display:flex;align-items:center;justify-content:center;align-self:center;width:100%;max-width:340px;min-height:52px;padding:0 20px;margin:0 auto 6px;border-radius:15px;border:1px solid var(--violet-line);background:var(--violet-soft);color:var(--violet);font-weight:700;font-size:15.5px;transition:background .15s}
 .btn-more:active{background:rgba(165,139,255,.22)}
 .details-overlay{z-index:60}
 .details-sheet{max-height:88%;display:flex;flex-direction:column;touch-action:pan-y}
@@ -421,7 +420,6 @@ html.rm .card-drag.flipped .card-front{opacity:0}
                 <h2 class="back-word" id="wordBack"></h2>
                 <p class="def" id="defBack"></p>
                 <button class="btn-more" id="btnMore">Подробнее</button>
-                <p class="peek-note" id="peekNote" hidden>Это проверка себя — ответ ещё не засчитан. Вернись к слову и ответь честно.</p>
               </div>
               <p class="return-note" id="returnNote"></p>
               <button class="btn-back" id="btnBackAction">Понятно, повторить позже</button>
@@ -784,7 +782,7 @@ var elBtnBack=$('btnBack'), elSessProgress=$('sessProgress'), elTestPillSession=
     elCardFront=$('cardFront'), elCardBack=$('cardBack'),
     elWordFront=$('wordFront'), elBadgeRepeat=$('badgeRepeat'), elBtnPeek=$('btnPeek'), elTintFront=$('tintFront'),
     elBackScroll=$('backScroll'), elWordBack=$('wordBack'), elDefBack=$('defBack'), elBtnMore=$('btnMore'),
-    elPeekNote=$('peekNote'), elReturnNote=$('returnNote'),
+    elReturnNote=$('returnNote'),
     elBtnBackAction=$('btnBackAction'), elBadgePeek=$('badgePeek'), elTintBack=$('tintBack'),
     elActions=$('actionsBar'), elBtnNo=$('btnNo'), elBtnYes=$('btnYes');
 var elStatFirst=$('statFirst'), elStatRepeated=$('statRepeated'), elStatTomorrow=$('statTomorrow'),
@@ -1211,7 +1209,6 @@ function renderSession(opts){
   var back = state.cardScreen!=='question';
   var peek = state.cardScreen==='peek';
   elBadgePeek.hidden=!peek;
-  elPeekNote.hidden=!peek;
   elReturnNote.hidden=peek;
   if(!peek && r){
     elReturnNote.textContent = (r.errors>=MAX_LAPSES_EVENING) ? 'Это слово вернётся завтра' : 'Это слово вернётся ещё раз сегодня';

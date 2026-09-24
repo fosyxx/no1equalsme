@@ -545,7 +545,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
       <h3>РЕЗЕРВНАЯ КОПИЯ</h3>
       <div class="backup-btns">
         <button class="btn-ghost" id="btnExport">Экспортировать резервную копию</button>
-        <button class="btn-ghost" id="btnVerify">Проверить последнюю копию</button>
+        <button class="btn-ghost" id="btnVerify">Проверить резервную копию</button>
         <button class="btn-ghost" id="btnImport">Импортировать копию</button>
       </div>
       <input type="file" id="fileImport" accept="application/json,.json" hidden>
@@ -553,12 +553,14 @@ html.rm .card-drag.flipped .card-front{opacity:0}
       <div class="export-result" id="exportResult" hidden>
         <div><span>Файл</span><b id="expName">—</b></div>
         <div><span>Размер</span><b id="expSize">—</b></div>
-        <div><span>Создана</span><b id="expWhen">—</b></div>
+        <div><span>Подготовлена</span><b id="expWhen">—</b></div>
+        <div><span>Способ</span><b id="expMethod">—</b></div>
       </div>
       <div class="export-fallback" id="exportFallback" hidden>
-        <label class="fb-label" for="exportText">Резервная копия в виде текста</label>
-        <textarea id="exportText" class="fb-text" readonly spellcheck="false" rows="5"></textarea>
-        <button class="btn-ghost" id="btnCopyBackup">Скопировать резервную копию</button>
+        <p class="fb-label" id="fbNote">На этом устройстве передача файла недоступна. Скопируйте JSON и сохраните его вручную.</p>
+        <textarea id="exportText" class="fb-text" readonly spellcheck="false" rows="5" aria-label="Резервная копия в виде текста"></textarea>
+        <button class="btn-ghost" id="btnCopyBackup">Скопировать JSON</button>
+        <button class="btn-ghost" id="btnRetryExport">Повторить экспорт</button>
       </div>
       <div class="rc-confirm" id="importConfirm" hidden style="margin-top:10px">
         <p id="importInfo"></p>
@@ -2370,7 +2372,7 @@ $('btnFreshStart').addEventListener('click', function(){
 });
 
 /* ================= Экспорт и импорт ================= */
-function exportBackup(){
+function buildBackupText(){
   var data={
     app:'no1equalsme',
     exportVersion:3,
@@ -2383,62 +2385,70 @@ function exportBackup(){
              sessionResults:state.sessionResults, cardScreen:state.cardScreen, startedAt:state.startedAt,
              completedAt:state.completedAt, lastStudyDate:state.lastStudyDate, updatedAt:state.updatedAt}
   };
-  var text=JSON.stringify(data, null, 2);
+  return JSON.stringify(data, null, 2);
+}
+/* Экспорт запускается строго синхронно из обработчика клика:
+   до navigator.share() нет await, fetch, FileReader и таймеров,
+   иначе браузер теряет пользовательскую активацию и блокирует системное меню. */
+function exportBackup(){
+  elExportFallback.hidden=true;
+  elExportText.value='';
+  var text=buildBackupText();
   var now=new Date();
   var name='no1equalsme-backup-'+dateToYMD(now)+'-'
            +String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0')+'.json';
-  runExport(text, name, now);
-}
-function fmtBytes(n){
-  if(n<1024) return n+' Б';
-  if(n<1024*1024) return (n/1024).toFixed(1).replace('.',',')+' КБ';
-  return (n/1048576).toFixed(2).replace('.',',')+' МБ';
-}
-function showExportResult(name, size, when){
-  elExpName.textContent=name;
-  elExpSize.textContent=fmtBytes(size);
-  try{
-    elExpWhen.textContent=new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}).format(when);
-  }catch(e){ elExpWhen.textContent=when.toISOString().slice(0,16).replace('T',' '); }
-  elExportResult.hidden=false;
-}
-function showCopyFallback(text, name, when){
-  elExportText.value=text;
-  elExportFallback.hidden=false;
-  showExportResult(name, byteLength(text), when);
-}
-function byteLength(text){
-  try{ return new Blob([text]).size; }catch(e){ return text.length; }
-}
-/* Экспорт: сначала Web Share API с файлом, затем обычная загрузка, затем копирование */
-function runExport(text, name, when){
-  elExportFallback.hidden=true;
-  elExportText.value='';
   var size=byteLength(text);
+
   var file=null;
   try{
     if(typeof File==='function') file=new File([text], name, {type:'application/json'});
   }catch(e){ file=null; }
+
   var canShareFile=false;
   try{
     canShareFile = !!(file && navigator.share && navigator.canShare && navigator.canShare({files:[file]}));
   }catch(e){ canShareFile=false; }
 
   if(canShareFile){
-    navigator.share({files:[file], title:'No1EqualsMe — резервная копия'}).then(function(){
-      showExportResult(name, size, when);
-      toast('Резервная копия подготовлена. Выберите, куда её сохранить');
-    }, function(err){
-      var n=(err && err.name)?err.name:'';
-      if(n==='AbortError'){ toast('Сохранение отменено'); return; }
-      if(!downloadFile(text, name, size, when)) showCopyFallbackWithMessage(text, name, size, when);
-    });
+    var shared=null;
+    try{
+      shared=navigator.share({files:[file], title:'Резервная копия No1EqualsMe'});
+    }catch(e){
+      offerCopyFallback(text, name, size, now, 'Не удалось открыть меню сохранения. Скопируйте JSON вручную.');
+      return;
+    }
+    showExportResult(name, size, now, 'Системное меню');
+    if(shared && typeof shared.then==='function'){
+      shared.then(function(){
+        toast('Резервная копия передана выбранному приложению');
+      }, function(err){
+        var n=(err && err.name)?err.name:'';
+        if(n==='AbortError'){ toast('Экспорт отменён'); return; }
+        offerCopyFallback(text, name, size, now, 'Не удалось открыть меню сохранения. Скопируйте JSON вручную.');
+        toast('Не удалось открыть меню сохранения. Скопируйте JSON вручную.');
+      });
+    }
     return;
   }
-  if(downloadFile(text, name, size, when)) return;
-  showCopyFallbackWithMessage(text, name, size, when);
+
+  // Вне Telegram допускается обычная загрузка, но без утверждения, что файл сохранён
+  if(!isInsideTelegram() && tryBrowserDownload(text, name)){
+    showExportResult(name, size, now, 'Браузерная загрузка');
+    toast('Попытка загрузки отправлена браузеру');
+    return;
+  }
+
+  offerCopyFallback(text, name, size, now, 'На этом устройстве передача файла недоступна. Скопируйте JSON и сохраните его вручную.');
+  toast('На этом устройстве передача файла недоступна');
 }
-function downloadFile(text, name, size, when){
+function isInsideTelegram(){
+  try{
+    if(!tg) return false;
+    var p=(typeof tg.platform==='string')?tg.platform:'';
+    return !!p && p!=='unknown';
+  }catch(e){ return false; }
+}
+function tryBrowserDownload(text, name){
   try{
     var a=document.createElement('a');
     if(typeof a.download!=='string') return false;
@@ -2448,18 +2458,33 @@ function downloadFile(text, name, size, when){
     a.style.position='fixed'; a.style.left='-9999px';
     document.body.appendChild(a);
     a.click();
-    setTimeout(function(){
-      if(a.parentNode) a.parentNode.removeChild(a);
-    }, 100);
-    setTimeout(function(){ URL.revokeObjectURL(url); }, 30000); // освобождаем с задержкой
-    showExportResult(name, size, when);
-    toast('Загрузка начата. Ищите файл '+name+' в папке Downloads');
+    setTimeout(function(){ if(a.parentNode) a.parentNode.removeChild(a); }, 100);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 30000);
     return true;
   }catch(e){ return false; }
 }
-function showCopyFallbackWithMessage(text, name, size, when){
-  showCopyFallback(text, name, when);
-  toast('Скачивание файлов здесь недоступно. Скопируйте JSON кнопкой ниже.');
+function offerCopyFallback(text, name, size, when, note){
+  elFbNote.textContent=note;
+  elExportText.value=text;
+  elExportFallback.hidden=false;
+  showExportResult(name, size, when, 'Копирование JSON');
+}
+function fmtBytes(n){
+  if(n<1024) return n+' Б';
+  if(n<1024*1024) return (n/1024).toFixed(1).replace('.',',')+' КБ';
+  return (n/1048576).toFixed(2).replace('.',',')+' МБ';
+}
+function showExportResult(name, size, when, method){
+  elExpName.textContent=name;
+  elExpSize.textContent=fmtBytes(size);
+  try{
+    elExpWhen.textContent=new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}).format(when);
+  }catch(e){ elExpWhen.textContent=when.toISOString().slice(0,16).replace('T',' '); }
+  elExpMethod.textContent=method;
+  elExportResult.hidden=false;
+}
+function byteLength(text){
+  try{ return new Blob([text]).size; }catch(e){ return text.length; }
 }
 function copyBackupText(){
   var text=elExportText.value;
@@ -2547,8 +2572,11 @@ function sanitizeImport(obj){
 var pendingImport=null;
 var elFileImport=$('fileImport'), elImportConfirm=$('importConfirm'), elImportInfo=$('importInfo');
 var elFileVerify=$('fileVerify'), elExportResult=$('exportResult'), elExpName=$('expName'),
-    elExpSize=$('expSize'), elExpWhen=$('expWhen'), elExportFallback=$('exportFallback'), elExportText=$('exportText');
+    elExpSize=$('expSize'), elExpWhen=$('expWhen'), elExpMethod=$('expMethod'),
+    elExportFallback=$('exportFallback'), elFbNote=$('fbNote'), elExportText=$('exportText');
+/* Обработчик вызывает exportBackup напрямую: пользовательская активация не теряется */
 $('btnExport').addEventListener('click', exportBackup);
+$('btnRetryExport').addEventListener('click', exportBackup);
 $('btnCopyBackup').addEventListener('click', copyBackupText);
 $('btnImport').addEventListener('click', function(){ elFileImport.click(); });
 $('btnVerify').addEventListener('click', function(){ elFileVerify.click(); });

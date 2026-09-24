@@ -272,6 +272,14 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .sync-diag{font-size:12px;color:var(--muted);line-height:1.45;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;white-space:pre-line;word-break:break-word}
 .backup-btns{display:grid;gap:10px}
 .backup-btns .btn-ghost{width:100%}
+.export-result{display:flex;flex-direction:column;gap:4px;font-size:12.5px;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-top:10px}
+.export-result div{display:flex;justify-content:space-between;gap:10px}
+.export-result span{color:var(--muted);flex:none}
+.export-result b{font-weight:650;text-align:right;word-break:break-all}
+.export-fallback{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.fb-label{font-size:12.5px;color:var(--muted)}
+.fb-text{width:100%;resize:vertical;min-height:110px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--text);padding:10px 12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.5px;line-height:1.45}
+.fb-text:focus-visible{outline:2px solid var(--violet);outline-offset:2px}
 .backup-note{font-size:12px;color:var(--muted);line-height:1.45;margin-top:10px}
 
 /* ---------- Тост ---------- */
@@ -537,9 +545,21 @@ html.rm .card-drag.flipped .card-front{opacity:0}
       <h3>РЕЗЕРВНАЯ КОПИЯ</h3>
       <div class="backup-btns">
         <button class="btn-ghost" id="btnExport">Экспортировать резервную копию</button>
+        <button class="btn-ghost" id="btnVerify">Проверить последнюю копию</button>
         <button class="btn-ghost" id="btnImport">Импортировать копию</button>
       </div>
       <input type="file" id="fileImport" accept="application/json,.json" hidden>
+      <input type="file" id="fileVerify" accept="application/json,.json" hidden>
+      <div class="export-result" id="exportResult" hidden>
+        <div><span>Файл</span><b id="expName">—</b></div>
+        <div><span>Размер</span><b id="expSize">—</b></div>
+        <div><span>Создана</span><b id="expWhen">—</b></div>
+      </div>
+      <div class="export-fallback" id="exportFallback" hidden>
+        <label class="fb-label" for="exportText">Резервная копия в виде текста</label>
+        <textarea id="exportText" class="fb-text" readonly spellcheck="false" rows="5"></textarea>
+        <button class="btn-ghost" id="btnCopyBackup">Скопировать резервную копию</button>
+      </div>
       <div class="rc-confirm" id="importConfirm" hidden style="margin-top:10px">
         <p id="importInfo"></p>
         <div class="rc-btns">
@@ -2238,6 +2258,9 @@ var __openSettings = openSettings;
 openSettings = function(){
   __openSettings();
   elSyncDiag.hidden=true; elSyncDiag.textContent='';
+  elExportResult.hidden=true;
+  elExportFallback.hidden=true;
+  elExportText.value='';
   $('importConfirm').hidden=true;
   $('cloudWipe1').hidden=true; $('cloudWipe2').hidden=true; $('cloudAfter').hidden=true;
   $('btnCloudWipe').hidden=false;
@@ -2361,18 +2384,107 @@ function exportBackup(){
              completedAt:state.completedAt, lastStudyDate:state.lastStudyDate, updatedAt:state.updatedAt}
   };
   var text=JSON.stringify(data, null, 2);
-  var name='no1equalsme-backup-'+effDate()+'.json';
+  var now=new Date();
+  var name='no1equalsme-backup-'+dateToYMD(now)+'-'
+           +String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0')+'.json';
+  runExport(text, name, now);
+}
+function fmtBytes(n){
+  if(n<1024) return n+' Б';
+  if(n<1024*1024) return (n/1024).toFixed(1).replace('.',',')+' КБ';
+  return (n/1048576).toFixed(2).replace('.',',')+' МБ';
+}
+function showExportResult(name, size, when){
+  elExpName.textContent=name;
+  elExpSize.textContent=fmtBytes(size);
   try{
+    elExpWhen.textContent=new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}).format(when);
+  }catch(e){ elExpWhen.textContent=when.toISOString().slice(0,16).replace('T',' '); }
+  elExportResult.hidden=false;
+}
+function showCopyFallback(text, name, when){
+  elExportText.value=text;
+  elExportFallback.hidden=false;
+  showExportResult(name, byteLength(text), when);
+}
+function byteLength(text){
+  try{ return new Blob([text]).size; }catch(e){ return text.length; }
+}
+/* Экспорт: сначала Web Share API с файлом, затем обычная загрузка, затем копирование */
+function runExport(text, name, when){
+  elExportFallback.hidden=true;
+  elExportText.value='';
+  var size=byteLength(text);
+  var file=null;
+  try{
+    if(typeof File==='function') file=new File([text], name, {type:'application/json'});
+  }catch(e){ file=null; }
+  var canShareFile=false;
+  try{
+    canShareFile = !!(file && navigator.share && navigator.canShare && navigator.canShare({files:[file]}));
+  }catch(e){ canShareFile=false; }
+
+  if(canShareFile){
+    navigator.share({files:[file], title:'No1EqualsMe — резервная копия'}).then(function(){
+      showExportResult(name, size, when);
+      toast('Резервная копия подготовлена. Выберите, куда её сохранить');
+    }, function(err){
+      var n=(err && err.name)?err.name:'';
+      if(n==='AbortError'){ toast('Сохранение отменено'); return; }
+      if(!downloadFile(text, name, size, when)) showCopyFallbackWithMessage(text, name, size, when);
+    });
+    return;
+  }
+  if(downloadFile(text, name, size, when)) return;
+  showCopyFallbackWithMessage(text, name, size, when);
+}
+function downloadFile(text, name, size, when){
+  try{
+    var a=document.createElement('a');
+    if(typeof a.download!=='string') return false;
     var blob=new Blob([text], {type:'application/json'});
     var url=URL.createObjectURL(blob);
-    var a=document.createElement('a');
     a.href=url; a.download=name; a.rel='noopener';
+    a.style.position='fixed'; a.style.left='-9999px';
     document.body.appendChild(a);
     a.click();
-    setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1200);
-    toast('Резервная копия сохранена в файл.');
-  }catch(e){
-    toast('Этот клиент Telegram не разрешает скачивание. Откройте сайт в браузере, чтобы сохранить копию.');
+    setTimeout(function(){
+      if(a.parentNode) a.parentNode.removeChild(a);
+    }, 100);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 30000); // освобождаем с задержкой
+    showExportResult(name, size, when);
+    toast('Загрузка начата. Ищите файл '+name+' в папке Downloads');
+    return true;
+  }catch(e){ return false; }
+}
+function showCopyFallbackWithMessage(text, name, size, when){
+  showCopyFallback(text, name, when);
+  toast('Скачивание файлов здесь недоступно. Скопируйте JSON кнопкой ниже.');
+}
+function copyBackupText(){
+  var text=elExportText.value;
+  if(!text){ toast('Сначала создайте резервную копию.'); return; }
+  var done=function(){ toast('JSON скопирован в буфер обмена'); };
+  var fail=function(){ toast('Не удалось скопировать автоматически. Выделите текст вручную и скопируйте.'); };
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done, function(){ if(!legacyCopy()) fail(); });
+      return;
+    }
+  }catch(e){}
+  if(legacyCopy()) done(); else fail();
+  function legacyCopy(){
+    try{
+      elExportText.removeAttribute('readonly');
+      elExportText.focus();
+      elExportText.setSelectionRange(0, text.length);
+      var ok=document.execCommand('copy');
+      elExportText.setAttribute('readonly','');
+      return !!ok;
+    }catch(e){
+      elExportText.setAttribute('readonly','');
+      return false;
+    }
   }
 }
 function sanitizeImport(obj){
@@ -2434,8 +2546,33 @@ function sanitizeImport(obj){
 }
 var pendingImport=null;
 var elFileImport=$('fileImport'), elImportConfirm=$('importConfirm'), elImportInfo=$('importInfo');
+var elFileVerify=$('fileVerify'), elExportResult=$('exportResult'), elExpName=$('expName'),
+    elExpSize=$('expSize'), elExpWhen=$('expWhen'), elExportFallback=$('exportFallback'), elExportText=$('exportText');
 $('btnExport').addEventListener('click', exportBackup);
+$('btnCopyBackup').addEventListener('click', copyBackupText);
 $('btnImport').addEventListener('click', function(){ elFileImport.click(); });
+$('btnVerify').addEventListener('click', function(){ elFileVerify.click(); });
+/* Проверка копии: только валидация структуры, без импорта */
+elFileVerify.addEventListener('change', function(){
+  var f=elFileVerify.files && elFileVerify.files[0];
+  elFileVerify.value='';
+  if(!f) return;
+  if(f.size>2*1024*1024){ toast('Файл слишком большой для резервной копии.'); return; }
+  var reader=new FileReader();
+  reader.onerror=function(){ toast('Не удалось прочитать файл.'); };
+  reader.onload=function(){
+    var parsed=null;
+    try{ parsed=JSON.parse(String(reader.result||'')); }catch(e){ parsed=null; }
+    if(!parsed){ toast('Файл повреждён: это не валидный JSON.'); return; }
+    var clean=sanitizeImport(parsed);
+    if(!clean){ toast('Это не резервная копия No1EqualsMe или её версия не поддерживается.'); return; }
+    var grad=0;
+    Object.keys(clean.cards).forEach(function(id){ if(clean.cards[id].status==='graduated') grad++; });
+    var dateTxt=clean.createdAt?clean.createdAt.slice(0,10):'дата неизвестна';
+    toast('Резервная копия исправна · '+dateTxt+' · карточек: '+Object.keys(clean.cards).length+' · освоено: '+grad);
+  };
+  reader.readAsText(f);
+});
 elFileImport.addEventListener('change', function(){
   var f=elFileImport.files && elFileImport.files[0];
   elFileImport.value='';

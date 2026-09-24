@@ -161,10 +161,14 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .peek-btn{position:absolute;right:12px;top:12px;z-index:7;width:48px;height:48px;border-radius:50%;background:var(--card2);border:1px solid var(--line);color:var(--violet);display:grid;place-items:center;transition:border-color .15s,background .15s}
 .peek-btn:active{border-color:var(--violet-line);background:var(--violet-soft)}
 .peek-btn svg{width:22px;height:22px}
-.back-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding:2px 2px 4px}
-.back-word{font-size:clamp(22px,6.2vw,27px);font-weight:700;letter-spacing:-.01em;margin:2px 0 2px}
+.back-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;
+  padding:44px 4px 6px;                                   /* смещаем блок ниже центра */
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.back-spacer{display:none}
+.back-word{font-size:34px;font-weight:750;letter-spacing:-.015em;margin:0 0 14px;line-height:1.12;
+  white-space:nowrap;max-width:100%}
 .pos{color:var(--muted);font-size:13px;font-style:italic;margin-bottom:10px}
-.def{font-size:15.5px;line-height:1.5;margin-bottom:10px}
+.def{font-size:18.5px;line-height:1.48;margin-bottom:16px;max-width:32ch}
 .syn{font-size:13.5px;margin-bottom:10px}
 .syn-label{color:var(--muted)}
 .ex{color:var(--muted);font-size:13.5px;line-height:1.5;border-left:2px solid rgba(165,139,255,.4);padding-left:10px;margin-bottom:12px}
@@ -172,7 +176,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .return-note{flex:none;color:var(--violet);font-size:13px;text-align:center;padding:6px 4px 10px}
 .btn-back{flex:none;min-height:52px;width:100%;border-radius:15px;background:var(--violet-soft);border:1px solid var(--violet-line);color:var(--violet);font-weight:700;font-size:15.5px;transition:background .15s}
 .btn-back:active{background:rgba(165,139,255,.22)}
-.btn-more{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 18px;margin:2px 0 6px;border-radius:14px;border:1px solid var(--violet-line);background:var(--violet-soft);color:var(--violet);font-weight:650;font-size:14px;transition:background .15s}
+.btn-more{display:inline-flex;align-items:center;justify-content:center;align-self:center;min-height:48px;padding:0 26px;margin:0 auto 6px;border-radius:14px;border:1px solid var(--violet-line);background:var(--violet-soft);color:var(--violet);font-weight:650;font-size:15px;transition:background .15s}
 .btn-more:active{background:rgba(165,139,255,.22)}
 .details-overlay{z-index:60}
 .details-sheet{max-height:88%;display:flex;flex-direction:column;touch-action:pan-y}
@@ -245,6 +249,14 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .seg{display:flex;gap:4px;background:var(--track);border-radius:15px;padding:4px}
 .seg-btn{flex:1;min-height:48px;border-radius:12px;font-weight:650;font-size:13.5px;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:background .15s ease,color .15s ease}
 .seg-btn.on{background:var(--violet-soft);color:var(--violet);box-shadow:inset 0 0 0 1px var(--violet-line)}
+.sens-row{display:flex;align-items:center;gap:10px}
+.sens-cap{flex:none;font-size:11.5px;color:var(--muted)}
+.sens-range{flex:1;min-width:0;height:48px;-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer}
+.sens-range:focus-visible{outline:2px solid var(--violet);outline-offset:2px;border-radius:12px}
+.sens-range::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:var(--track);border:1px solid var(--line)}
+.sens-range::-moz-range-track{height:6px;border-radius:99px;background:var(--track);border:1px solid var(--line)}
+.sens-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;margin-top:-11px;border-radius:50%;background:var(--violet);border:2px solid var(--sheet);box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.sens-range::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--violet);border:2px solid var(--sheet);box-shadow:0 2px 8px rgba(0,0,0,.35)}
 .switch{flex:none;width:56px;height:48px;display:grid;place-items:center;border-radius:14px}
 .switch .track{width:48px;height:28px;border-radius:99px;background:var(--sw-track);position:relative;transition:background .18s}
 .switch .knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--sw-knob);transition:transform .18s,background .18s}
@@ -506,6 +518,18 @@ html.rm .card-drag.flipped .card-front{opacity:0}
       <button class="switch" id="swHaptic" role="switch" aria-checked="true" aria-label="Виброотклик">
         <span class="track"><span class="knob"></span></span>
       </button>
+    </div>
+    <div class="set-row set-row-col">
+      <div class="set-text">
+        <span class="set-name">Чувствительность свайпа</span>
+        <span class="set-sub" id="sensSub">Порог ответа: 25% ширины карточки</span>
+      </div>
+      <div class="sens-row">
+        <span class="sens-cap">Меньше</span>
+        <input type="range" id="sensRange" class="sens-range" min="0" max="100" step="5" value="50"
+               aria-label="Чувствительность свайпа: насколько сильно нужно сдвинуть карточку">
+        <span class="sens-cap">Больше</span>
+      </div>
     </div>
     <button class="set-row" id="archOpen" style="width:100%;text-align:left">
       <span class="set-text">
@@ -837,7 +861,7 @@ function freshState(){
     cards:{},                // прогресс по стабильным id
     lastStudyDate:null,      // последняя использованная учебная дата
     startedAt:null, updatedAt:Date.now(), completedAt:null,
-    settings:{haptics:true, theme:'evening'}
+    settings:{haptics:true, theme:'evening', swipeSens:50}
   };
 }
 function isValidProg(p){
@@ -1148,6 +1172,24 @@ function renderHome(){
   }
 }
 
+/* Подбираем размер слова так, чтобы оно поместилось в одну строку без переносов */
+function fitBackWord(retry){
+  var max=34, min=16;
+  var avail=(elBackScroll.clientWidth||elCardDrag.clientWidth||0)-12;
+  if(avail<=0){
+    // карточка ещё не получила размеры — повторяем после отрисовки
+    if(retry!==false) requestAnimationFrame(function(){ fitBackWord(false); });
+    avail=Math.min(440, (window.innerWidth||360)-64);
+  }
+  elWordBack.style.fontSize=max+'px';
+  var size=max;
+  while(size>min && elWordBack.scrollWidth>avail){
+    size-=1;
+    elWordBack.style.fontSize=size+'px';
+  }
+}
+window.addEventListener('resize', function(){ if(state && state.view==='session') fitBackWord(); });
+
 /* ================= Рендер: сессия ================= */
 function renderSession(opts){
   opts=opts||{};
@@ -1162,7 +1204,8 @@ function renderSession(opts){
   if(!c) return;
   elWordFront.textContent=c.word;              // лицевая сторона — слово без ударения
   elWordBack.textContent=c.stress;
-  elDefBack.textContent=c.definitionShort;     // оборот — только краткое определение
+  elDefBack.textContent=c.definitionFull;      // оборот — развёрнутое определение
+  fitBackWord();
   var r=state.sessionResults[c.id];
   elBadgeRepeat.hidden=!(r && r.errors>0 && !r.done);
   var back = state.cardScreen!=='question';
@@ -1245,7 +1288,7 @@ function showView(v){
   state.view=v; save();
   Object.keys(elViews).forEach(function(k){ elViews[k].classList.toggle('active', k===v); });
   if(v==='home') renderHome();
-  else if(v==='session') renderSession({instantFlip:true});
+  else if(v==='session'){ renderSession({instantFlip:true}); requestAnimationFrame(function(){ fitBackWord(false); }); }
   else if(v==='result') renderResult();
   else if(v==='archive') renderArchive();
   updateTgBack();
@@ -1384,7 +1427,13 @@ function backProceed(){
 }
 
 /* ================= Анимации карточки ================= */
-function threshold(){ return Math.max(48,(elCardDrag.clientWidth||300)*0.25); }
+/* Чувствительность свайпа: 0 — нужно тянуть далеко (40% ширины), 100 — реагирует рано (10%) */
+function swipeSens(){
+  var v=(typeof state!=='undefined' && state && state.settings && typeof state.settings.swipeSens==='number') ? state.settings.swipeSens : 50;
+  return Math.min(100, Math.max(0, v));
+}
+function swipePct(){ return 40 - 0.3*swipeSens(); }
+function threshold(){ return Math.max(26,(elCardDrag.clientWidth||300)*(swipePct()/100)); }
 function clearDragVisual(){
   elTintFront.style.opacity='0'; elTintFront.className='tint';
   elTintBack.style.opacity='0';
@@ -1587,7 +1636,25 @@ segButtons.forEach(function(b){
 function syncSwitch(){
   elSwHaptic.classList.toggle('on', state.settings.haptics);
   elSwHaptic.setAttribute('aria-checked', String(state.settings.haptics));
+  syncSens();
 }
+var elSensRange=$('sensRange'), elSensSub=$('sensSub');
+function syncSens(){
+  var v=swipeSens();
+  elSensRange.value=String(v);
+  elSensSub.textContent='Порог ответа: '+Math.round(swipePct())+'% ширины карточки';
+}
+elSensRange.addEventListener('input', function(){
+  var v=parseInt(elSensRange.value,10);
+  if(isNaN(v)) return;
+  state.settings.swipeSens=Math.min(100, Math.max(0, v));
+  syncSens();
+});
+elSensRange.addEventListener('change', function(){
+  state.settings.updatedAt=Date.now();
+  save();
+  haptic('success');
+});
 elSwHaptic.addEventListener('click', function(){
   state.settings.haptics=!state.settings.haptics;
   state.settings.updatedAt=Date.now();
@@ -1706,13 +1773,14 @@ elBtnResetNo.addEventListener('click', function(){
   elResetConfirm.hidden=true; elBtnReset.hidden=false;
 });
 elBtnResetYes.addEventListener('click', function(){
-  var keepSettings={haptics:state.settings.haptics, theme:state.settings.theme};
+  var keepSettings={haptics:state.settings.haptics, theme:state.settings.theme, swipeSens:swipeSens()};
   try{ localStorage.removeItem(KEY); }catch(e){}
   try{ localStorage.removeItem(TKEY); }catch(e){}
   state=freshState();
   testState={enabled:false, offset:0};
   state.settings.haptics=keepSettings.haptics;
   state.settings.theme=keepSettings.theme;
+  state.settings.swipeSens=keepSettings.swipeSens;
   save();
   saveTest();
   applyTheme();
@@ -1973,7 +2041,8 @@ function buildPayloads(){
   var blockNames=Object.keys(blocks).sort();
   blockNames.forEach(function(bk){ out[bk]=JSON.stringify({v:CLOUD_SCHEMA, c:blocks[bk]}); });
   // настройки (без тестового режима и сдвига даты)
-  out[CK.settings]=JSON.stringify({v:CLOUD_SCHEMA, haptics:!!state.settings.haptics, theme:state.settings.theme||'evening', updatedAt:state.settings.updatedAt||0});
+  out[CK.settings]=JSON.stringify({v:CLOUD_SCHEMA, haptics:!!state.settings.haptics, theme:state.settings.theme||'evening',
+    swipeSens:swipeSens(), updatedAt:state.settings.updatedAt||0});
   // активная/завершённая сессия
   var sr={};
   Object.keys(state.sessionResults||{}).forEach(function(id){
@@ -2029,6 +2098,7 @@ function mergeCloudSettings(obj){
   if(remoteTs <= (state.settings.updatedAt||0)) return;
   if(typeof obj.haptics==='boolean') state.settings.haptics=obj.haptics;
   if(obj.theme==='evening'||obj.theme==='dark'||obj.theme==='light') state.settings.theme=obj.theme;
+  if(typeof obj.swipeSens==='number' && obj.swipeSens>=0 && obj.swipeSens<=100) state.settings.swipeSens=obj.swipeSens;
   state.settings.updatedAt=remoteTs;
 }
 function mergeCloudSession(obj){
@@ -2422,13 +2492,14 @@ $('btnKeepLocal').addEventListener('click', function(){
 });
 $('btnFreshStart').addEventListener('click', function(){
   elCloudAfter.hidden=true; elBtnCloudWipe.hidden=false;
-  var keep={haptics:state.settings.haptics, theme:state.settings.theme};
+  var keep={haptics:state.settings.haptics, theme:state.settings.theme, swipeSens:swipeSens()};
   try{ localStorage.removeItem(KEY); }catch(e){}
   try{ localStorage.removeItem(TKEY); }catch(e){}
   state=freshState();
   testState={enabled:false, offset:0};
   state.settings.haptics=keep.haptics;
   state.settings.theme=keep.theme;
+  state.settings.swipeSens=keep.swipeSens;
   state.settings.updatedAt=Date.now();
   normalizeStats();
   mirror={}; saveMirror();
@@ -2448,7 +2519,7 @@ function buildBackupText(){
     schemaVersion:2,
     createdAt:new Date().toISOString(),
     cards:state.cards,
-    settings:{haptics:!!state.settings.haptics, theme:state.settings.theme||'evening', updatedAt:state.settings.updatedAt||0},
+    settings:{haptics:!!state.settings.haptics, theme:state.settings.theme||'evening', swipeSens:swipeSens(), updatedAt:state.settings.updatedAt||0},
     stats:state.stats,
     session:{status:state.status, sessionDate:state.sessionDate, queue:state.queue, sessionTotal:state.sessionTotal,
              sessionResults:state.sessionResults, cardScreen:state.cardScreen, startedAt:state.startedAt,
@@ -2602,6 +2673,7 @@ function sanitizeImport(obj){
     out.settings={
       haptics:(typeof obj.settings.haptics==='boolean')?obj.settings.haptics:true,
       theme:(['evening','dark','light'].indexOf(obj.settings.theme)>=0)?obj.settings.theme:'evening',
+      swipeSens:(typeof obj.settings.swipeSens==='number' && obj.settings.swipeSens>=0 && obj.settings.swipeSens<=100)?obj.settings.swipeSens:50,
       updatedAt:(typeof obj.settings.updatedAt==='number')?obj.settings.updatedAt:0
     };
   }
@@ -2700,6 +2772,7 @@ $('btnImportYes').addEventListener('click', function(){
   if(c.settings){
     state.settings.haptics=c.settings.haptics;
     state.settings.theme=c.settings.theme;
+    state.settings.swipeSens=c.settings.swipeSens;
     state.settings.updatedAt=Math.max(c.settings.updatedAt, Date.now());
   }
   state.stats=c.stats;
@@ -3004,6 +3077,7 @@ function startApp(){
   loadState();
   loadTest();
   if(!state.settings || !THEME_BG[state.settings.theme]) state.settings.theme='evening';
+  if(typeof state.settings.swipeSens!=='number' || state.settings.swipeSens<0 || state.settings.swipeSens>100) state.settings.swipeSens=50;
   // слова, отсутствующие в текущем словаре, не показываем, но их прогресс сохраняем
   state.queue=state.queue.filter(function(id){ return !!CARD_MAP[id]; });
   ensureDay();

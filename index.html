@@ -1,202 +1,1519 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<meta name="color-scheme" content="dark">
-<title>No1EqualsMe</title>
+<meta name="theme-color" content="#16151b">
+<meta name="description" content="No1EqualsMe — спокойная вечерняя сессия русских слов в Telegram Mini App">
+<title>No1EqualsMe — вечерние слова</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-  :root {
-    /* Переменные темы Telegram подхватываются автоматически внутри клиента,
-       вне Telegram используются значения по умолчанию */
-    --bg:        var(--tg-theme-bg-color, #0e1621);
-    --bg-2:      var(--tg-theme-secondary-bg-color, #17212b);
-    --text:      var(--tg-theme-text-color, #f2f6fb);
-    --hint:      var(--tg-theme-hint-color, #8794a5);
-    --btn:       var(--tg-theme-button-color, #3f9ce8);
-    --btn-text:  var(--tg-theme-button-text-color, #ffffff);
-    --accent:    #54a9eb;
-    --ok:        #4ade80;
-    --radius:    16px;
+  :root{
+    --bg:#16151b;
+    --surface:#201f27;
+    --surface-2:#272631;
+    --card:#24232d;
+    --border:rgba(255,255,255,.07);
+    --text:#eceaf3;
+    --text-2:#a8a5b8;
+    --text-3:#7f7c92;
+    --violet:#8b7fd6;
+    --violet-2:#a495e6;
+    --violet-soft:rgba(139,127,214,.16);
+    --violet-line:rgba(139,127,214,.42);
+    --green:#78b489;
+    --green-soft:rgba(120,180,133,.14);
+    --green-line:rgba(120,180,133,.42);
+    --green-text:#aedebb;
+    --red:#d47c76;
+    --red-soft:rgba(212,124,118,.13);
+    --red-line:rgba(212,124,118,.4);
+    --red-text:#efb3ad;
+    --focus:#a99cf0;
+    --sat:max(env(safe-area-inset-top,0px), var(--tg-viewport-safe-area-inset-top,0px));
+    --sab:max(env(safe-area-inset-bottom,0px), var(--tg-viewport-safe-area-inset-bottom,0px));
+    --r-lg:24px;
+    --r-md:18px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    -webkit-tap-highlight-color:transparent;
+    position:fixed;inset:0;
+  }
+  button{
+    font:inherit;color:inherit;background:none;border:none;cursor:pointer;
+    touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  }
+  button:disabled{cursor:default}
+  :focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:8px}
+  [hidden]{display:none !important}
+  ::selection{background:rgba(139,127,214,.35)}
+
+  #app{
+    position:relative;
+    height:100vh;
+    height:var(--apph,100vh);
+    max-width:480px;
+    margin:0 auto;
+    display:flex;flex-direction:column;
+    background:
+      radial-gradient(120% 55% at 78% -8%, rgba(139,127,214,.14), rgba(139,127,214,0) 58%),
+      radial-gradient(90% 40% at 8% 108%, rgba(120,180,133,.06), rgba(120,180,133,0) 60%),
+      var(--bg);
+    overflow:hidden;
+  }
+  @supports (height:100dvh){
+    #app{height:var(--tg-viewport-stable-height, var(--tg-viewport-height, 100dvh))}
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* ---------- VIEWS ---------- */
+  .view{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;
+    padding:calc(14px + var(--sat)) 16px calc(14px + var(--sab));
+    opacity:0;visibility:hidden;pointer-events:none;
+    transform:translateY(10px);
+    transition:opacity .22s ease, transform .22s ease, visibility 0s linear .22s;
+    z-index:1;
+  }
+  .view.active{
+    opacity:1;visibility:visible;pointer-events:auto;transform:none;z-index:2;
+    transition:opacity .24s ease, transform .24s ease, visibility 0s;
+  }
+  #view-home, #view-result{overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  #view-home::-webkit-scrollbar, #view-result::-webkit-scrollbar{display:none}
 
-  html, body { height: 100%; }
+  .icon-btn{
+    width:48px;height:48px;border-radius:14px;flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--text-2);
+    transition:background .18s ease,color .18s ease;
+  }
+  .icon-btn:hover{background:rgba(255,255,255,.06);color:var(--text)}
+  .icon-btn:active{background:rgba(255,255,255,.1);color:var(--text)}
+  .icon{width:22px;height:22px}
+  .icon-lg{width:26px;height:26px}
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    -webkit-font-smoothing: antialiased;
-    -webkit-tap-highlight-color: transparent;
-    overflow: hidden;
+  /* ---------- HOME ---------- */
+  .home-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .logo{
+    width:44px;height:44px;border-radius:13px;flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:15px;letter-spacing:.02em;color:#17142a;
+    background:linear-gradient(140deg,var(--violet-2),var(--violet));
+    box-shadow:0 8px 22px rgba(139,127,214,.32);
+  }
+  .brand-name{font-weight:750;font-size:1.02rem;letter-spacing:.01em;white-space:nowrap}
+  .home-main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:12px 2px 4px}
+  .home-kicker{
+    display:flex;align-items:center;gap:10px;
+    font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3);
+    margin-bottom:12px;
+  }
+  .home-kicker .moon{color:var(--violet-2)}
+  .home-title{font-size:clamp(1.65rem,7.2vw,2.05rem);font-weight:800;letter-spacing:-.015em;line-height:1.12}
+  .home-date{margin-top:8px;color:var(--text-2);font-size:.98rem;text-transform:capitalize}
+  .cat-card{
+    margin-top:26px;
+    display:flex;align-items:center;gap:14px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--r-md);
+    padding:16px 18px;
+    box-shadow:0 14px 34px rgba(0,0,0,.3);
+  }
+  .cat-icon{
+    width:46px;height:46px;border-radius:13px;flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--violet-soft);color:var(--violet-2);
+    border:1px solid var(--violet-line);
+  }
+  .cat-title{font-weight:750;font-size:1.05rem}
+  .cat-sub{margin-top:3px;color:var(--text-2);font-size:.86rem}
+  .home-summary{
+    margin-top:26px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--r-md);
+    padding:16px 18px;
+    box-shadow:0 14px 34px rgba(0,0,0,.3);
+  }
+  .home-summary-title{font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:9px;color:var(--green-text)}
+  .home-summary-line{margin-top:8px;color:var(--text-2);font-size:.9rem;line-height:1.5}
+  .btn-primary{
+    margin-top:26px;width:100%;min-height:58px;border-radius:var(--r-md);
+    background:linear-gradient(140deg,var(--violet-2),var(--violet));
+    color:#17142a;font-weight:800;font-size:1.05rem;letter-spacing:.01em;
+    box-shadow:0 14px 32px rgba(139,127,214,.3);
+    transition:transform .16s ease, box-shadow .18s ease, filter .18s ease;
+  }
+  .btn-primary:active{transform:translateY(1px) scale(.99);filter:brightness(1.05)}
+  .btn-primary.secondary{
+    background:var(--surface-2);color:var(--text);
+    border:1px solid var(--border);box-shadow:0 12px 28px rgba(0,0,0,.32);
+  }
+  .home-hint{margin-top:14px;text-align:center;color:var(--text-2);font-size:.9rem;min-height:1.2em}
+
+  /* ---------- CARD SCREEN ---------- */
+  .card-top{display:flex;align-items:center;gap:8px}
+  .card-top-mid{flex:1;text-align:center;font-weight:700;font-size:1rem;color:var(--text)}
+  .card-progress-text{font-variant-numeric:tabular-nums;color:var(--text-2);font-size:.95rem;min-width:52px;text-align:right;font-weight:600}
+  .progress-track{
+    margin-top:10px;height:3px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;width:0;border-radius:99px;
+    background:linear-gradient(90deg,var(--violet),var(--violet-2));
+    transition:width .25s ease;
+  }
+  .card-stage{
+    flex:1;min-height:0;
+    display:flex;align-items:center;justify-content:center;
+    position:relative;
+  }
+  .card{
+    position:relative;
+    width:min(calc(100% - 20px), 380px);
+    height:min(100%, 470px);
+    touch-action:manipulation;
+    user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
+    will-change:transform;
+    cursor:grab;
+  }
+  .card.grabbing{cursor:grabbing}
+  .card.anim{transition:transform .24s cubic-bezier(.28,.72,.32,1), opacity .24s ease}
+  .card.no-anim, .card.no-anim .card-inner{transition:none !important}
+  .card-inner{
+    position:absolute;inset:0;
+    transform-style:preserve-3d;
+    transition:transform .24s ease;
+  }
+  .card.flipped .card-inner{transform:rotateY(180deg)}
+  .face{
+    position:absolute;inset:0;
+    border-radius:var(--r-lg);
+    background:linear-gradient(var(--tint,rgba(0,0,0,0)), var(--tint,rgba(0,0,0,0))), var(--card);
+    border:1px solid var(--border);
+    box-shadow:0 18px 46px rgba(0,0,0,.42);
+    backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    display:flex;flex-direction:column;
+    overflow:hidden;
+    transition:box-shadow .22s ease;
+  }
+  .face-front{
+    padding:24px 24px 22px;
+    align-items:center;justify-content:space-between;text-align:center;
+    touch-action:none;
+    background:linear-gradient(var(--tint,rgba(0,0,0,0)), var(--tint,rgba(0,0,0,0))), linear-gradient(165deg,#262532, #211f2a 72%);
+    border:1px solid rgba(255,255,255,.08);
+  }
+  .face-label{
+    font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600;
+  }
+  .word{
+    font-size:clamp(1.62rem, 8.2vw, 2.42rem);
+    font-weight:800;letter-spacing:-.01em;line-height:1.14;color:#f5f3fc;
+    overflow-wrap:anywhere;
+    margin:auto 6px;
+  }
+  .hint{font-size:.86rem;color:var(--text-3)}
+  .badge-repeat{
+    position:absolute;top:16px;left:18px;
+    font-size:.72rem;font-weight:700;letter-spacing:.06em;
+    padding:5px 11px;border-radius:999px;
+    background:var(--violet-soft);color:#c7bdf0;border:1px solid var(--violet-line);
+  }
+  .peek-btn{
+    position:absolute;right:-8px;top:50%;transform:translateY(-50%);
+    width:52px;height:52px;border-radius:50%;z-index:5;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--surface-2);color:#d3cbf6;
+    border:1px solid var(--violet-line);
+    box-shadow:0 10px 24px rgba(0,0,0,.45);
+    transition:background .18s ease, transform .18s ease, opacity .2s ease, visibility .2s;
+  }
+  .peek-btn:hover{background:#322f41}
+  .peek-btn:active{transform:translateY(-50%) scale(.94)}
+  .peek-btn.gone{opacity:0;visibility:hidden;pointer-events:none}
+  .face-back{transform:rotateY(180deg)}
+  .back-scroll{
+    flex:1;min-height:0;overflow-y:auto;
+    padding:22px 22px 10px;
+    touch-action:pan-y;-webkit-overflow-scrolling:touch;
+    scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.14) transparent;
+  }
+  .back-scroll::-webkit-scrollbar{width:4px}
+  .back-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:99px}
+  .peek-note{
+    display:inline-block;
+    font-size:.74rem;font-weight:700;letter-spacing:.04em;
+    padding:5px 11px;border-radius:999px;margin-bottom:12px;
+    background:var(--violet-soft);color:#c7bdf0;border:1px solid var(--violet-line);
+  }
+  .word-back{font-size:clamp(1.28rem, 6vw, 1.5rem);font-weight:800;letter-spacing:-.005em;color:#f5f3fc}
+  .pos{
+    margin-top:6px;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--violet-2);font-weight:700;
+  }
+  .def{margin-top:14px;font-size:1rem;line-height:1.5;color:#e9e7f2}
+  .syn{margin-top:12px;font-size:.9rem;line-height:1.5;color:#c9c6d6}
+  .syn-label{color:var(--text-3);font-weight:700}
+  .example{
+    margin-top:12px;font-size:.9rem;line-height:1.55;font-style:italic;color:#b9b6c9;
+    border-left:3px solid var(--violet-line);padding:8px 12px;
+    background:rgba(255,255,255,.03);border-radius:0 12px 12px 0;
+  }
+  .back-footer{
+    padding:12px 22px 20px;
+    border-top:1px solid rgba(255,255,255,.05);
+    background:linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.14));
+  }
+  .back-note{font-size:.86rem;color:#c1b9ec;margin-bottom:12px;line-height:1.45;min-height:1.2em}
+  .btn-accent{
+    width:100%;min-height:56px;border-radius:16px;
+    background:linear-gradient(140deg,var(--violet-2),var(--violet));
+    color:#17142a;font-weight:800;font-size:1rem;
+    box-shadow:0 12px 26px rgba(139,127,214,.28);
+    transition:transform .16s ease, filter .18s ease;
+  }
+  .btn-accent:active{transform:translateY(1px);filter:brightness(1.06)}
+
+  .answers{
+    display:flex;gap:12px;padding-top:14px;
+    transition:opacity .2s ease, transform .2s ease, visibility .2s;
+  }
+  .answers.is-hidden{opacity:0;visibility:hidden;transform:translateY(8px);pointer-events:none}
+  .answers.locking{pointer-events:none}
+  .btn-answer{
+    flex:1;min-height:58px;border-radius:var(--r-md);
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    font-size:1rem;font-weight:800;
+    border:1px solid;
+    transition:background .18s ease, transform .16s ease;
+  }
+  .btn-answer:active{transform:scale(.985)}
+  .btn-no{background:var(--red-soft);border-color:var(--red-line);color:var(--red-text)}
+  .btn-no:hover{background:rgba(212,124,118,.2)}
+  .btn-yes{background:var(--green-soft);border-color:var(--green-line);color:var(--green-text)}
+  .btn-yes:hover{background:rgba(120,180,133,.2)}
+
+  /* ---------- RESULT ---------- */
+  .result-head{text-align:center;padding:26px 0 6px}
+  .result-ico{
+    width:62px;height:62px;border-radius:50%;margin:0 auto 16px;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--violet-soft);color:var(--violet-2);border:1px solid var(--violet-line);
+    box-shadow:0 12px 30px rgba(139,127,214,.22);
+  }
+  .result-title{font-size:clamp(1.5rem,6.6vw,1.85rem);font-weight:800;letter-spacing:-.01em}
+  .result-date{margin-top:6px;color:var(--text-3);font-size:.9rem;text-transform:capitalize}
+  .stats{
+    margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  }
+  .stat{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);
+    padding:14px 15px;box-shadow:0 10px 26px rgba(0,0,0,.26);
+  }
+  .stat-num{font-size:1.55rem;font-weight:800;letter-spacing:-.01em;display:flex;align-items:baseline;gap:8px}
+  .stat-ico{color:var(--text-3)}
+  .stat-label{margin-top:4px;font-size:.82rem;color:var(--text-2)}
+  .forgotten{
+    margin-top:14px;background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--r-md);padding:16px 18px;box-shadow:0 10px 26px rgba(0,0,0,.26);
+  }
+  .forgotten-title{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);font-weight:700}
+  .forgotten-list{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+  .forgotten-item{
+    display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+    padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.03);
+  }
+  .forgotten-word{font-weight:700;font-size:.98rem}
+  .forgotten-err{color:var(--red-text);font-size:.82rem;white-space:nowrap}
+  .forgotten-empty{margin-top:10px;color:var(--green-text);font-size:.92rem}
+  .calm{margin-top:16px;color:var(--text-2);font-size:.92rem;line-height:1.6;text-align:center;padding:0 6px}
+  .result-btn{margin-top:20px;margin-bottom:6px}
+
+  /* ---------- MODAL ---------- */
+  .modal{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center}
+  .modal-overlay{position:absolute;inset:0;background:rgba(9,8,13,.62);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+  .modal-panel{
+    position:relative;width:100%;max-width:480px;
+    background:var(--surface);
+    border:1px solid var(--border);border-bottom:none;
+    border-radius:22px 22px 0 0;
+    padding:8px 18px calc(18px + var(--sab));
+    animation:sheet .26s cubic-bezier(.3,.8,.3,1);
+    max-height:86%;overflow-y:auto;
+  }
+  @keyframes sheet{from{transform:translateY(34px);opacity:0}}
+  .modal-grip{width:38px;height:4px;border-radius:99px;background:rgba(255,255,255,.16);margin:8px auto 4px}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0 4px}
+  .modal-title{font-size:1.15rem;font-weight:800}
+  .set-row{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    min-height:56px;padding:10px 2px;
+    border-top:1px solid rgba(255,255,255,.05);
+    cursor:pointer;
+  }
+  .set-text{font-size:1rem;font-weight:650}
+  .switch{position:relative;flex:0 0 auto;width:54px;height:32px;display:inline-block}
+  .switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+  .switch .track{
+    position:absolute;inset:0;border-radius:999px;background:#35334a;
+    border:1px solid rgba(255,255,255,.1);
+    transition:background .2s ease,border-color .2s ease;
+  }
+  .switch .knob{
+    position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;
+    background:#d9d6e8;transition:transform .2s ease, background .2s ease;
+    box-shadow:0 3px 8px rgba(0,0,0,.4);
+  }
+  .switch input:checked ~ .track{background:var(--violet);border-color:transparent}
+  .switch input:checked ~ .knob{transform:translateX(22px);background:#fff}
+  .switch input:focus-visible ~ .track{outline:2px solid var(--focus);outline-offset:2px}
+  .danger{margin-top:10px;border-top:1px solid rgba(255,255,255,.05);padding-top:16px}
+  .btn-ghost-danger{
+    width:100%;min-height:52px;border-radius:15px;
+    border:1px solid var(--red-line);color:var(--red-text);background:var(--red-soft);
+    font-weight:750;font-size:.98rem;
+    transition:background .18s ease;
+  }
+  .btn-ghost-danger:hover{background:rgba(212,124,118,.2)}
+  .reset-confirm{margin-top:12px;background:rgba(212,124,118,.08);border:1px solid var(--red-line);border-radius:15px;padding:14px}
+  .reset-confirm p{font-size:.9rem;color:#e6c8c4;line-height:1.5}
+  .reset-row{display:flex;gap:10px;margin-top:12px}
+  .btn-danger{
+    flex:1;min-height:50px;border-radius:13px;
+    background:#a04b46;color:#ffe9e6;font-weight:800;font-size:.95rem;
+  }
+  .btn-ghost{
+    flex:1;min-height:50px;border-radius:13px;
+    background:var(--surface-2);color:var(--text);border:1px solid var(--border);
+    font-weight:750;font-size:.95rem;
   }
 
-  .scene {
-    position: relative;
-    height: 100vh;                /* fallback */
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 24px 20px calc(24px + env(safe-area-inset-bottom, 0px));
-    isolation: isolate;
+  /* ---------- TOAST ---------- */
+  #toast{
+    position:fixed;left:50%;bottom:calc(24px + var(--sab));z-index:90;
+    transform:translate(-50%,18px);
+    background:#2c2a38;color:var(--text);
+    border:1px solid rgba(255,255,255,.12);
+    padding:12px 18px;border-radius:14px;
+    font-size:.9rem;line-height:1.4;text-align:center;max-width:88%;
+    box-shadow:0 16px 40px rgba(0,0,0,.5);
+    opacity:0;pointer-events:none;
+    transition:opacity .22s ease, transform .22s ease;
+  }
+  #toast.show{opacity:1;transform:translate(-50%,0)}
+
+  /* ---------- TIGHT SCREENS ---------- */
+  @media (max-height:620px){
+    .card{height:100%}
+    .face-front{padding:20px 20px 18px}
+    .back-scroll{padding:18px 20px 8px}
+    .back-footer{padding:10px 20px 14px}
+    .def{font-size:.94rem;margin-top:10px}
+    .syn{margin-top:8px}
+    .example{margin-top:8px;font-size:.86rem}
+    .btn-answer{min-height:52px}
+    .answers{padding-top:10px}
+    .back-note{margin-bottom:8px;font-size:.82rem}
+  }
+  @media (max-width:340px){
+    .view{padding-left:14px;padding-right:14px}
+    .def{font-size:.92rem}
   }
 
-  /* Мягкое свечение фона */
-  .scene::before,
-  .scene::after {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    border-radius: 50%;
-    filter: blur(90px);
-    opacity: .35;
-    pointer-events: none;
-  }
-  .scene::before {
-    width: 320px; height: 320px;
-    top: -80px; right: -100px;
-    background: radial-gradient(circle, #2e7fd4 0%, transparent 70%);
-  }
-  .scene::after {
-    width: 380px; height: 380px;
-    bottom: -140px; left: -140px;
-    background: radial-gradient(circle, #1c4f8a 0%, transparent 70%);
-  }
-
-  /* ---------- Центральный блок ---------- */
-  .hero {
-    flex: 1;
-    width: 100%;
-    max-width: 420px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 22px;
-    text-align: center;
-  }
-
-  .logo {
-    width: 92px;
-    height: 92px;
-    border-radius: 28px;
-    display: grid;
-    place-items: center;
-    font-size: 34px;
-    font-weight: 800;
-    letter-spacing: -1px;
-    color: #fff;
-    background: linear-gradient(160deg, #54a9eb 0%, #2a7fd0 55%, #1c5d9e 100%);
-    box-shadow:
-      0 12px 32px rgba(46, 127, 212, .35),
-      inset 0 1px 0 rgba(255, 255, 255, .25);
-    animation: rise .7s cubic-bezier(.2, .8, .2, 1) both;
-  }
-
-  .title {
-    font-size: clamp(26px, 8vw, 34px);
-    font-weight: 800;
-    letter-spacing: -.5px;
-    line-height: 1.1;
-    background: linear-gradient(180deg, #ffffff 30%, #aecbea 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    animation: rise .7s .08s cubic-bezier(.2, .8, .2, 1) both;
-  }
-
-  .status {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    padding: 10px 16px;
-    border-radius: 999px;
-    border: 1px solid rgba(74, 222, 128, .25);
-    background: rgba(74, 222, 128, .08);
-    color: var(--ok);
-    font-size: 13.5px;
-    font-weight: 600;
-    line-height: 1.35;
-    max-width: 320px;
-    animation: rise .7s .16s cubic-bezier(.2, .8, .2, 1) both;
-  }
-  .status svg { flex: none; }
-
-  /* ---------- Кнопка ---------- */
-  .cta {
-    width: 100%;
-    max-width: 420px;
-    appearance: none;
-    border: none;
-    cursor: pointer;
-    padding: 17px 20px;
-    border-radius: var(--radius);
-    font-family: inherit;
-    font-size: 16.5px;
-    font-weight: 700;
-    letter-spacing: .2px;
-    color: var(--btn-text);
-    background: linear-gradient(180deg, #5cb0ef 0%, var(--btn) 60%, #2f8ad6 100%);
-    box-shadow:
-      0 10px 26px rgba(63, 156, 232, .35),
-      inset 0 1px 0 rgba(255, 255, 255, .3);
-    transition: transform .12s ease, box-shadow .12s ease, filter .2s ease;
-    animation: rise .7s .24s cubic-bezier(.2, .8, .2, 1) both;
-  }
-  .cta:hover  { filter: brightness(1.06); }
-  .cta:active {
-    transform: translateY(2px) scale(.985);
-    box-shadow:
-      0 4px 14px rgba(63, 156, 232, .3),
-      inset 0 1px 0 rgba(255, 255, 255, .2);
-    filter: brightness(.97);
-  }
-  .cta:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 3px;
-  }
-
-  .note {
-    margin-top: 12px;
-    font-size: 12px;
-    color: var(--hint);
-    animation: rise .7s .3s cubic-bezier(.2, .8, .2, 1) both;
-  }
-
-  @keyframes rise {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation: none !important; transition: none !important; }
+  /* ---------- REDUCED MOTION ---------- */
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{
+      animation-duration:.01ms !important;animation-iteration-count:1 !important;
+      transition-duration:.1s !important;
+    }
+    .card-inner{transform:none !important;transition:none !important}
+    .face{transition:opacity .16s ease !important}
+    .face-back{opacity:0;pointer-events:none;transform:none}
+    .card.flipped .face-back{opacity:1;pointer-events:auto}
+    .card.flipped .face-front{opacity:0;pointer-events:none}
   }
 </style>
 </head>
 <body>
-  <div class="scene">
-    <div class="hero">
-      <div class="logo" aria-hidden="true">N1</div>
+<div id="app">
 
-      <h1 class="title">No1EqualsMe</h1>
-
-      <div class="status" role="status">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2.2"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="10" opacity=".45"></circle>
-          <path d="M8 12.5l2.7 2.7L16.5 9"></path>
+  <!-- ============ ЭКРАН 1 · СЕГОДНЯ ============ -->
+  <section id="view-home" class="view" aria-labelledby="home-title">
+    <header class="home-top">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">N1</div>
+        <div class="brand-name">No1EqualsMe</div>
+      </div>
+      <button id="btn-settings" class="icon-btn" aria-label="Настройки">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
         </svg>
-        <span>Telegram Mini App подключён успешно</span>
+      </button>
+    </header>
+    <main class="home-main">
+      <p class="home-kicker">
+        <svg class="moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+        </svg>
+        Сегодня
+      </p>
+      <h1 id="home-title" class="home-title">Вечерняя сессия</h1>
+      <p id="home-date" class="home-date"></p>
+
+      <div id="home-cat" class="cat-card">
+        <div class="cat-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+          </svg>
+        </div>
+        <div>
+          <div class="cat-title">Слова</div>
+          <div class="cat-sub">5 карточек · около 2 минут</div>
+        </div>
+      </div>
+
+      <div id="home-summary" class="home-summary" hidden>
+        <div class="home-summary-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11.5 14.5 16 9.5"></polyline>
+          </svg>
+          На сегодня всё
+        </div>
+        <p id="home-summary-line" class="home-summary-line"></p>
+      </div>
+
+      <button id="btn-start" class="btn-primary">Начать</button>
+      <p id="home-hint" class="home-hint" aria-live="polite"></p>
+    </main>
+  </section>
+
+  <!-- ============ ЭКРАН 2 · КАРТОЧКА ============ -->
+  <section id="view-card" class="view" aria-label="Карточка слова">
+    <header class="card-top">
+      <button id="btn-back-home" class="icon-btn" aria-label="Сохранить и выйти на главную">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <div class="card-top-mid">Слова</div>
+      <div id="progress-text" class="card-progress-text" aria-live="polite">0 из 5</div>
+    </header>
+    <div class="progress-track" aria-hidden="true"><div id="progress-bar" class="progress-fill"></div></div>
+
+    <main class="card-stage">
+      <div id="card" class="card">
+        <div id="card-inner" class="card-inner">
+          <div id="face-front" class="face face-front">
+            <span id="badge-repeat" class="badge-repeat" hidden>Повтор</span>
+            <span class="face-label">Помнишь значение?</span>
+            <h2 id="word-front" class="word"></h2>
+            <span class="hint">Свайпни или используй кнопки</span>
+          </div>
+          <div id="face-back" class="face face-back">
+            <div id="back-scroll" class="back-scroll">
+              <span id="peek-note" class="peek-note" hidden>Проверка себя · ответ ещё не засчитан</span>
+              <h3 id="word-back" class="word-back"></h3>
+              <div id="pos" class="pos"></div>
+              <p id="def" class="def"></p>
+              <p class="syn"><span class="syn-label">Синонимы: </span><span id="syn"></span></p>
+              <p id="example" class="example"></p>
+            </div>
+            <div class="back-footer">
+              <p id="back-note" class="back-note"></p>
+              <button id="btn-back-action" class="btn-accent">Понятно, повторить позже</button>
+            </div>
+          </div>
+        </div>
+        <button id="btn-peek" class="peek-btn" aria-label="Проверить себя: посмотреть определение">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </button>
+      </div>
+    </main>
+
+    <footer id="answers" class="answers">
+      <button id="btn-no" class="btn-answer btn-no">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+        <span>Не помню</span>
+      </button>
+      <button id="btn-yes" class="btn-answer btn-yes">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span>Помню</span>
+      </button>
+    </footer>
+  </section>
+
+  <!-- ============ ЭКРАН 3 · РЕЗУЛЬТАТ ============ -->
+  <section id="view-result" class="view" aria-labelledby="result-title">
+    <header class="card-top">
+      <button id="btn-result-back" class="icon-btn" aria-label="На главную">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <div class="card-top-mid">Итог дня</div>
+      <div class="card-progress-text" aria-hidden="true"></div>
+    </header>
+
+    <div class="result-head">
+      <div class="result-ico" aria-hidden="true">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          <polyline points="8.5 12.5 11 15 16 9.5"></polyline>
+        </svg>
+      </div>
+      <h1 id="result-title" class="result-title">Сессия завершена</h1>
+      <p id="result-date" class="result-date"></p>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num"><span id="st-first">0</span>
+          <svg class="stat-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div class="stat-label">С первого раза</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num"><span id="st-repeat">0</span>
+          <svg class="stat-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+        </div>
+        <div class="stat-label">Повторено</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num"><span id="st-tomorrow">0</span>
+          <svg class="stat-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
+        </div>
+        <div class="stat-label">Оставлено на завтра</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num"><span id="st-errors">0</span>
+          <svg class="stat-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+        </div>
+        <div class="stat-label">Всего ошибок</div>
       </div>
     </div>
 
-    <button class="cta" type="button">Начать</button>
-    <div class="note">Тестовая сборка · без внешних зависимостей</div>
+    <div class="forgotten">
+      <div class="forgotten-title">Слова, которые подзабылись</div>
+      <div id="forgotten-list" class="forgotten-list"></div>
+    </div>
+
+    <p id="calm" class="calm"></p>
+    <button id="btn-result-home" class="btn-primary result-btn">На главную</button>
+  </section>
+</div>
+
+<!-- ============ НАСТРОЙКИ ============ -->
+<div id="modal-settings" class="modal" hidden>
+  <div class="modal-overlay" data-close="1"></div>
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div class="modal-grip" aria-hidden="true"></div>
+    <div class="modal-head">
+      <h2 id="settings-title" class="modal-title">Настройки</h2>
+      <button id="btn-close-settings" class="icon-btn" aria-label="Закрыть настройки">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <label class="set-row" for="set-haptics">
+      <span class="set-text">Виброотклик</span>
+      <span class="switch">
+        <input type="checkbox" id="set-haptics" checked>
+        <span class="track" aria-hidden="true"></span>
+        <span class="knob" aria-hidden="true"></span>
+      </span>
+    </label>
+    <div class="danger">
+      <button id="btn-reset" class="btn-ghost-danger">Сбросить тестовый прогресс</button>
+      <div id="reset-confirm" class="reset-confirm" hidden>
+        <p>Точно сбросить прогресс? Сессию этого дня придётся пройти заново. Другие данные не пострадают.</p>
+        <div class="reset-row">
+          <button id="btn-reset-yes" class="btn-danger">Да, сбросить</button>
+          <button id="btn-reset-no" class="btn-ghost">Отмена</button>
+        </div>
+      </div>
+    </div>
   </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* =============== КОНСТАНТЫ И ДАННЫЕ =============== */
+var KEY = 'no1equalsme_state_v1';
+var SCHEMA = 1;
+var TOTAL = 5;
+var MAX_ERRORS = 5;
+var BACK_GUARD_MS = 300;
+var EDGE_GUARD_PX = 18;
+
+var CARDS = [
+  {
+    id:'ambivalentnost', word:'амбивалентность', stress:'амбивале́нтность',
+    pos:'существительное',
+    def:'Одновременное присутствие противоположных чувств или отношений к одному и тому же объекту.',
+    syn:'двойственность, противоречивость',
+    example:'Он испытывал амбивалентность: хотел уехать, но боялся покидать привычный дом.'
+  },
+  {
+    id:'aplomb', word:'апломб', stress:'апло́мб',
+    pos:'существительное',
+    def:'Подчёркнутая самоуверенность в поведении, речи или манерах.',
+    syn:'самоуверенность, важность',
+    example:'Он с апломбом рассуждал о предмете, который едва успел изучить.'
+  },
+  {
+    id:'implicitny', word:'имплицитный', stress:'имплици́тный',
+    pos:'прилагательное',
+    def:'Не выраженный прямо, но подразумеваемый или содержащийся в чём-либо скрыто.',
+    syn:'неявный, подразумеваемый',
+    example:'В его ответе содержалось имплицитное согласие с предложением.'
+  },
+  {
+    id:'indifferentny', word:'индифферентный', stress:'индиффере́нтный',
+    pos:'прилагательное',
+    def:'Не проявляющий интереса, участия или эмоционального отношения; безразличный.',
+    syn:'равнодушный, безразличный',
+    example:'Он оставался индифферентным к спору и не поддержал ни одну сторону.'
+  },
+  {
+    id:'eklektichny', word:'эклектичный', stress:'эклекти́чный',
+    pos:'прилагательное',
+    def:'Соединяющий разнородные элементы, идеи или стили, взятые из разных источников.',
+    syn:'смешанный, разностильный',
+    example:'Интерьер получился эклектичным: антикварная мебель соседствовала с современным светом.'
+  }
+];
+var CARD_MAP = {};
+CARDS.forEach(function(c){ CARD_MAP[c.id] = c; });
+
+var REDUCED = false;
+try { REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){}
+function dur(ms){ return REDUCED ? Math.min(ms, 90) : ms; }
+
+function nowIso(){ return new Date().toISOString(); }
+function todayStr(){
+  var d = new Date();
+  var p = function(n){ return String(n).padStart(2,'0'); };
+  return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate());
+}
+function errWord(n){
+  var a = n % 10, b = n % 100;
+  if (a === 1 && b !== 11) return 'ошибка';
+  if (a >= 2 && a <= 4 && (b < 12 || b > 14)) return 'ошибки';
+  return 'ошибок';
+}
+function pluralCards(n){
+  var a = n % 10, b = n % 100;
+  if (a === 1 && b !== 11) return 'карточка';
+  if (a >= 2 && a <= 4 && (b < 12 || b > 14)) return 'карточки';
+  return 'карточек';
+}
+
+/* =============== СОСТОЯНИЕ =============== */
+var state = null;
+var storageWasCorrupt = false;
+
+function freshState(){
+  return { schemaVersion: SCHEMA, settings: { haptics: true }, session: null };
+}
+function shuffle(arr){
+  for (var i = arr.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+  }
+  return arr;
+}
+function newSession(){
+  var queue = shuffle(CARDS.map(function(c){ return c.id; }));
+  var results = {};
+  CARDS.forEach(function(c){
+    results[c.id] = { errors: 0, firstTry: null, status: 'pending', completedAs: null };
+  });
+  return {
+    date: todayStr(),
+    status: 'active',
+    queue: queue,
+    initialTotal: TOTAL,
+    currentScreen: 'question',
+    results: results,
+    totalErrors: 0,
+    createdAt: nowIso(),
+    updatedAt: nowIso(),
+    completedAt: null
+  };
+}
+function persist(){
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){}
+}
+function validateSession(s){
+  if (!s || typeof s !== 'object') return false;
+  if (typeof s.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s.date)) return false;
+  if (s.status !== 'active' && s.status !== 'completed') return false;
+  if (s.currentScreen !== 'question' && s.currentScreen !== 'peek' && s.currentScreen !== 'definition') return false;
+  if (!Array.isArray(s.queue)) return false;
+  if (!s.results || typeof s.results !== 'object') return false;
+  for (var i = 0; i < CARDS.length; i++){
+    var r = s.results[CARDS[i].id];
+    if (!r || typeof r !== 'object') return false;
+    if (typeof r.errors !== 'number' || !(r.errors >= 0)) return false;
+    r.errors = Math.min(Math.max(0, Math.round(r.errors)), MAX_ERRORS);
+    if (r.status !== 'completed') r.status = 'pending';
+    if (r.completedAs !== 'first' && r.completedAs !== 'repeat' && r.completedAs !== 'tomorrow') r.completedAs = null;
+    if (r.firstTry !== true) r.firstTry = null;
+  }
+  for (var q = 0; q < s.queue.length; q++){
+    if (!CARD_MAP[s.queue[q]]) return false;
+  }
+  if (s.status === 'active'){
+    if (s.queue.length === 0) return false;
+    if (!CARD_MAP[s.queue[0]]) return false;
+    if (s.results[s.queue[0]].status !== 'pending') return false;
+  }
+  if (typeof s.totalErrors !== 'number' || !(s.totalErrors >= 0)) s.totalErrors = 0;
+  if (typeof s.createdAt !== 'string') s.createdAt = nowIso();
+  s.updatedAt = typeof s.updatedAt === 'string' ? s.updatedAt : nowIso();
+  if (typeof s.completedAt !== 'string') s.completedAt = null;
+  return true;
+}
+function loadState(){
+  var raw = null;
+  try { raw = localStorage.getItem(KEY); } catch(e){ raw = null; }
+  if (!raw){ state = freshState(); return; }
+  try {
+    var parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || parsed.schemaVersion !== SCHEMA) throw new Error('schema');
+    if (!parsed.settings || typeof parsed.settings.haptics !== 'boolean') parsed.settings = { haptics: true };
+    if (parsed.session !== null && !validateSession(parsed.session)) throw new Error('session');
+    state = parsed;
+  } catch(e){
+    state = freshState();
+    storageWasCorrupt = true;
+    persist();
+  }
+}
+function todaySession(){
+  if (state.session && state.session.date === todayStr()) return state.session;
+  return null;
+}
+function completedCount(s){
+  var n = 0;
+  for (var id in s.results){ if (s.results[id] && s.results[id].status === 'completed') n++; }
+  return n;
+}
+function computeStats(s){
+  var first = 0, repeat = 0, tomorrow = 0, errors = 0, forgotten = [];
+  CARDS.forEach(function(c){
+    var r = s.results[c.id];
+    if (!r) return;
+    errors += r.errors;
+    if (r.completedAs === 'first') first++;
+    else if (r.completedAs === 'repeat') repeat++;
+    else if (r.completedAs === 'tomorrow') tomorrow++;
+    if (r.errors > 0) forgotten.push({ id: c.id, stress: c.stress, errors: r.errors });
+  });
+  forgotten.sort(function(a, b){ return b.errors - a.errors; });
+  return { first: first, repeat: repeat, tomorrow: tomorrow, errors: errors, forgotten: forgotten };
+}
+
+/* =============== ЭЛЕМЕНТЫ =============== */
+function $(sel){ return document.querySelector(sel); }
+var views = { home: $('#view-home'), card: $('#view-card'), result: $('#view-result') };
+var els = {
+  homeDate: $('#home-date'), homeTitle: $('#home-title'), homeCat: $('#home-cat'),
+  homeSummary: $('#home-summary'), homeSummaryLine: $('#home-summary-line'),
+  btnStart: $('#btn-start'), homeHint: $('#home-hint'), btnSettings: $('#btn-settings'),
+  progressText: $('#progress-text'), progressBar: $('#progress-bar'),
+  card: $('#card'), cardInner: $('#card-inner'),
+  faceFront: $('#face-front'), faceBack: $('#face-back'),
+  wordFront: $('#word-front'), badgeRepeat: $('#badge-repeat'),
+  wordBack: $('#word-back'), pos: $('#pos'), def: $('#def'), syn: $('#syn'), example: $('#example'),
+  peekNote: $('#peek-note'), backNote: $('#back-note'), backScroll: $('#back-scroll'),
+  btnBackAction: $('#btn-back-action'), btnPeek: $('#btn-peek'),
+  answers: $('#answers'), btnNo: $('#btn-no'), btnYes: $('#btn-yes'),
+  btnBackHome: $('#btn-back-home'),
+  resultDate: $('#result-date'), stFirst: $('#st-first'), stRepeat: $('#st-repeat'),
+  stTomorrow: $('#st-tomorrow'), stErrors: $('#st-errors'),
+  forgottenList: $('#forgotten-list'), calm: $('#calm'),
+  btnResultHome: $('#btn-result-home'), btnResultBack: $('#btn-result-back'),
+  modal: $('#modal-settings'), setHaptics: $('#set-haptics'),
+  btnCloseSettings: $('#btn-close-settings'),
+  btnReset: $('#btn-reset'), resetConfirm: $('#reset-confirm'),
+  btnResetYes: $('#btn-reset-yes'), btnResetNo: $('#btn-reset-no'),
+  toast: $('#toast')
+};
+
+var currentView = 'home';
+var lock = false;
+var backShownAt = 0;
+
+/* =============== TELEGRAM =============== */
+var tg = null;
+try { if (window.Telegram && window.Telegram.WebApp) tg = window.Telegram.WebApp; } catch(e){ tg = null; }
+
+function hexToRgb(h){
+  try {
+    var m = h.replace('#','');
+    if (m.length === 3) m = m[0]+m[0]+m[1]+m[1]+m[2]+m[2];
+    var n = parseInt(m, 16);
+    if (isNaN(n)) return null;
+    return [(n>>16)&255, (n>>8)&255, n&255];
+  } catch(e){ return null; }
+}
+function luminance(rgb){
+  var f = function(v){ v /= 255; return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); };
+  return 0.2126*f(rgb[0]) + 0.7152*f(rgb[1]) + 0.0722*f(rgb[2]);
+}
+function shifted(rgb, d){
+  return 'rgb(' + Math.min(255, Math.max(0, rgb[0]+d)) + ',' +
+         Math.min(255, Math.max(0, rgb[1]+d)) + ',' +
+         Math.min(255, Math.max(0, rgb[2]+d+2)) + ')';
+}
+function applyTgTheme(){
+  if (!tg || !tg.themeParams) return;
+  try {
+    var tp = tg.themeParams;
+    if (tp.bg_color){
+      var rgb = hexToRgb(tp.bg_color);
+      if (rgb && luminance(rgb) < 0.22){
+        var root = document.documentElement.style;
+        root.setProperty('--bg', shifted(rgb, 0));
+        root.setProperty('--surface', shifted(rgb, 10));
+        root.setProperty('--surface-2', shifted(rgb, 17));
+        root.setProperty('--card', shifted(rgb, 14));
+      }
+    }
+  } catch(e){}
+}
+function haptic(kind){
+  if (!state || !state.settings.haptics) return;
+  if (!tg || !tg.HapticFeedback) return;
+  var hf = tg.HapticFeedback;
+  try {
+    if (kind === 'success' && typeof hf.notificationOccurred === 'function') hf.notificationOccurred('success');
+    else if (kind === 'error' && typeof hf.notificationOccurred === 'function') hf.notificationOccurred('error');
+    else if (kind === 'light' && typeof hf.impactOccurred === 'function') hf.impactOccurred('light');
+    else if (kind === 'select' && typeof hf.selectionChanged === 'function') hf.selectionChanged();
+  } catch(e){}
+}
+function syncBackButton(){
+  if (!tg || !tg.BackButton) return;
+  try {
+    if (currentView === 'home') {
+      if (typeof tg.BackButton.hide === 'function') tg.BackButton.hide();
+    } else if (typeof tg.BackButton.show === 'function') {
+      tg.BackButton.show();
+    }
+  } catch(e){}
+}
+function onTgBack(){
+  if (!els.modal.hidden){ closeSettings(); return; }
+  persist();
+  if (currentView !== 'home') showView('home');
+}
+function tgInit(){
+  if (!tg) return;
+  try { if (typeof tg.ready === 'function') tg.ready(); } catch(e){}
+  try { if (typeof tg.expand === 'function') tg.expand(); } catch(e){}
+  try { if (typeof tg.setHeaderColor === 'function') tg.setHeaderColor('#16151b'); } catch(e){}
+  try { if (typeof tg.setBackgroundColor === 'function') tg.setBackgroundColor('#16151b'); } catch(e){}
+  try { if (typeof tg.disableVerticalSwipes === 'function') tg.disableVerticalSwipes(); } catch(e){}
+  try {
+    if (tg.BackButton && typeof tg.BackButton.onClick === 'function') tg.BackButton.onClick(onTgBack);
+  } catch(e){}
+  applyTgTheme();
+}
+
+/* =============== ТОСТ =============== */
+var toastTimer = null;
+function toast(msg){
+  els.toast.textContent = msg;
+  els.toast.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ els.toast.classList.remove('show'); }, 3600);
+}
+
+/* =============== НАВИГАЦИЯ =============== */
+function showView(name){
+  currentView = name;
+  for (var k in views){
+    var on = (k === name);
+    views[k].classList.toggle('active', on);
+    views[k].setAttribute('aria-hidden', on ? 'false' : 'true');
+  }
+  if (name === 'home') renderHome();
+  else if (name === 'card') renderCard();
+  else if (name === 'result') renderResult();
+  syncBackButton();
+}
+function goHomeWithSave(){
+  persist();
+  showView('home');
+}
+
+/* =============== РЕНДЕР: ГЛАВНАЯ =============== */
+function renderHome(){
+  try {
+    els.homeDate.textContent = new Intl.DateTimeFormat('ru-RU', {
+      weekday: 'long', day: 'numeric', month: 'long'
+    }).format(new Date());
+  } catch(e){
+    els.homeDate.textContent = todayStr();
+  }
+  var s = todaySession();
+  els.homeSummary.hidden = true;
+  els.homeCat.hidden = false;
+  els.btnStart.classList.remove('secondary');
+  els.homeHint.textContent = '';
+
+  if (!s){
+    els.homeTitle.textContent = 'Вечерняя сессия';
+    els.btnStart.textContent = 'Начать';
+    els.btnStart.dataset.mode = 'start';
+    return;
+  }
+  if (s.status === 'active'){
+    var done = completedCount(s);
+    els.homeTitle.textContent = 'Вечерняя сессия';
+    els.btnStart.textContent = 'Продолжить';
+    els.btnStart.dataset.mode = 'continue';
+    var left = s.queue.length;
+    els.homeHint.textContent = 'Пройдено ' + done + ' из ' + TOTAL + ' · осталось ' + left + ' ' + pluralCards(left);
+    return;
+  }
+  // завершена
+  var st = computeStats(s);
+  els.homeTitle.textContent = 'На сегодня всё';
+  els.homeCat.hidden = true;
+  els.homeSummary.hidden = false;
+  els.homeSummaryLine.textContent =
+    'С первого раза: ' + st.first + ' · Повторено: ' + st.repeat +
+    ' · На завтра: ' + st.tomorrow + '. Ошибок за вечер: ' + st.errors + '.';
+  els.btnStart.textContent = 'Посмотреть результат';
+  els.btnStart.classList.add('secondary');
+  els.btnStart.dataset.mode = 'result';
+}
+
+/* =============== РЕНДЕР: КАРТОЧКА =============== */
+function renderCard(){
+  var s = state.session;
+  if (!s || s.status !== 'active' || s.date !== todayStr() || s.queue.length === 0){
+    showView('home');
+    return;
+  }
+  var id = s.queue[0];
+  var c = CARD_MAP[id];
+  if (!c){ showView('home'); return; }
+  var r = s.results[id];
+  var mode = s.currentScreen;
+
+  els.wordFront.textContent = c.word;
+  els.badgeRepeat.hidden = !(r.errors > 0);
+
+  els.wordBack.textContent = c.stress;
+  els.pos.textContent = c.pos;
+  els.def.textContent = c.def;
+  els.syn.textContent = c.syn;
+  els.example.textContent = '«' + c.example + '»';
+  els.backScroll.scrollTop = 0;
+
+  els.peekNote.hidden = (mode !== 'peek');
+  if (mode === 'definition'){
+    els.backNote.textContent = (r.errors >= MAX_ERRORS)
+      ? 'Это слово вернётся завтра'
+      : 'Это слово вернётся ещё раз сегодня';
+    els.btnBackAction.textContent = 'Понятно, повторить позже';
+  } else if (mode === 'peek'){
+    els.backNote.textContent = 'Проверка ни на что не влияет: прогресс и ошибки не меняются.';
+    els.btnBackAction.textContent = 'Вернуться к слову';
+  } else {
+    els.backNote.textContent = '';
+  }
+
+  var backOn = (mode !== 'question');
+  els.card.classList.toggle('flipped', backOn);
+  if (backOn) backShownAt = Math.max(backShownAt, Date.now());
+
+  els.answers.classList.toggle('is-hidden', backOn);
+  els.btnNo.disabled = backOn;
+  els.btnYes.disabled = backOn;
+  els.btnPeek.classList.toggle('gone', backOn);
+  els.btnPeek.disabled = backOn;
+
+  var done = completedCount(s);
+  els.progressText.textContent = done + ' из ' + TOTAL;
+  els.progressBar.style.width = (done / TOTAL * 100) + '%';
+}
+
+/* =============== РЕНДЕР: РЕЗУЛЬТАТ =============== */
+function renderResult(){
+  var s = todaySession();
+  if (!s || s.status !== 'completed'){ showView('home'); return; }
+  var st = computeStats(s);
+  els.stFirst.textContent = st.first;
+  els.stRepeat.textContent = st.repeat;
+  els.stTomorrow.textContent = st.tomorrow;
+  els.stErrors.textContent = st.errors;
+  try {
+    els.resultDate.textContent = new Intl.DateTimeFormat('ru-RU', {
+      weekday: 'long', day: 'numeric', month: 'long'
+    }).format(new Date());
+  } catch(e){ els.resultDate.textContent = s.date; }
+
+  els.forgottenList.textContent = '';
+  if (st.forgotten.length === 0){
+    var p = document.createElement('p');
+    p.className = 'forgotten-empty';
+    p.textContent = 'Все слова вспомнились без единой ошибки.';
+    els.forgottenList.appendChild(p);
+    els.calm.textContent = 'Идеально ровная сессия. Такой вечерний ритм запоминается лучше всего.';
+  } else {
+    st.forgotten.forEach(function(f){
+      var row = document.createElement('div');
+      row.className = 'forgotten-item';
+      var w = document.createElement('span');
+      w.className = 'forgotten-word';
+      w.textContent = f.stress;
+      var e = document.createElement('span');
+      e.className = 'forgotten-err';
+      e.textContent = f.errors + ' ' + errWord(f.errors);
+      row.appendChild(w);
+      row.appendChild(e);
+      els.forgottenList.appendChild(row);
+    });
+    els.calm.textContent = 'Если какие-то слова ускользнули — ничего страшного. Они уже в списке и спокойно дождутся своего повтора.';
+  }
+}
+
+/* =============== ПОДСВЕТКА И ЖЕСТЫ =============== */
+var GLOWS = {
+  yes:    [120, 180, 133],
+  no:     [212, 124, 118],
+  violet: [150, 136, 224]
+};
+function setGlow(kind, k){
+  if (!kind || k <= 0.02){
+    els.faceFront.style.boxShadow = '';
+    els.faceBack.style.boxShadow = '';
+    els.card.style.removeProperty('--tint');
+    return;
+  }
+  var pal = GLOWS[kind];
+  var r = pal[0], g = pal[1], b = pal[2];
+  var backOn = els.card.classList.contains('flipped');
+  var active = backOn ? els.faceBack : els.faceFront;
+  var other = backOn ? els.faceFront : els.faceBack;
+  other.style.boxShadow = '';
+  active.style.boxShadow =
+    '0 0 0 2px rgba(' + r + ',' + g + ',' + b + ',' + (0.22 + 0.62*k).toFixed(3) + '), ' +
+    '0 14px 44px rgba(' + r + ',' + g + ',' + b + ',' + (0.14 + 0.3*k).toFixed(3) + ')';
+  els.card.style.setProperty('--tint', 'rgba(' + r + ',' + g + ',' + b + ',' + (0.05 + 0.11*k).toFixed(3) + ')');
+}
+function setCardTransform(dx, rot){
+  els.card.style.transform = 'translate3d(' + dx + 'px, 0, 0) rotate(' + rot + 'deg)';
+}
+function springBack(){
+  els.card.classList.add('anim');
+  els.card.style.transform = '';
+  setGlow(null);
+  setTimeout(function(){ els.card.classList.remove('anim'); }, dur(230));
+}
+
+var drag = null;
+
+els.card.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+els.card.addEventListener('dragstart', function(e){ e.preventDefault(); });
+
+els.card.addEventListener('pointerdown', function(e){
+  if (e.button !== undefined && e.button > 0) return;
+  if (e.target.closest('button')) return;
+  if (lock || drag) return;
+  if (currentView !== 'card') return;
+  var s = state.session;
+  if (!s || s.status !== 'active') return;
+  if (e.clientX < EDGE_GUARD_PX) return; // системный жест «назад»
+  var mode = s.currentScreen;
+  if (mode !== 'question' && Date.now() - backShownAt < BACK_GUARD_MS) return;
+  drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, dx: 0, dy: 0, downAt: Date.now() };
+  try { els.card.setPointerCapture(e.pointerId); } catch(err){}
+  els.card.classList.add('grabbing');
+  els.card.classList.remove('anim');
+});
+
+els.card.addEventListener('pointermove', function(e){
+  if (!drag || e.pointerId !== drag.id) return;
+  drag.dx = e.clientX - drag.x0;
+  drag.dy = e.clientY - drag.y0;
+  var s = state.session;
+  var mode = s ? s.currentScreen : 'question';
+  var w = Math.max(1, els.card.offsetWidth);
+  if (mode === 'question'){
+    var rot = Math.max(-7.5, Math.min(7.5, drag.dx / w * 14));
+    setCardTransform(drag.dx, rot);
+    setGlow(drag.dx >= 0 ? 'yes' : 'no', Math.min(1, Math.abs(drag.dx) / (w * 0.35)));
+  } else {
+    var rot2 = Math.max(-5, Math.min(5, drag.dx / w * 10));
+    setCardTransform(drag.dx, rot2);
+    setGlow('violet', Math.min(1, Math.abs(drag.dx) / (w * 0.4)));
+  }
+});
+
+function endDrag(e, cancelled){
+  if (!drag) return;
+  if (e.pointerId !== undefined && e.pointerId !== drag.id) return;
+  var d = drag; drag = null;
+  els.card.classList.remove('grabbing');
+  var s = state.session;
+  if (!s || s.status !== 'active'){ springBack(); return; }
+  var mode = s.currentScreen;
+  var w = Math.max(1, els.card.offsetWidth);
+  var dt = Date.now() - d.downAt;
+  var dist = Math.sqrt(d.dx*d.dx + d.dy*d.dy);
+
+  if (mode === 'question'){
+    if (!cancelled && Math.abs(d.dx) >= w * 0.25){
+      handleAnswer(d.dx > 0, d.dx > 0 ? 1 : -1);
+      return;
+    }
+    springBack();
+    return;
+  }
+  // обратная сторона: только свежие жесты после переворота
+  var fresh = d.downAt >= backShownAt && (Date.now() - backShownAt) >= BACK_GUARD_MS;
+  if (cancelled || !fresh){ springBack(); return; }
+  var scrollable = els.backScroll.scrollHeight > els.backScroll.clientHeight + 4;
+  var isSwipe;
+  if (scrollable){
+    isSwipe = Math.abs(d.dx) > 48 && Math.abs(d.dx) > Math.abs(d.dy) * 1.2;
+  } else {
+    isSwipe = dist > 48;
+  }
+  var isTap = dist < 12 && dt < 400;
+  if (isSwipe || isTap){
+    leaveBackSide(isSwipe ? (d.dx >= 0 ? 1 : -1) : 1);
+    return;
+  }
+  springBack();
+}
+els.card.addEventListener('pointerup', function(e){ endDrag(e, false); });
+els.card.addEventListener('pointercancel', function(e){ endDrag(e, true); });
+
+/* =============== ЛОГИКА ОТВЕТОВ =============== */
+function setLock(v){
+  lock = v;
+  els.answers.classList.toggle('locking', v);
+}
+
+function animateExit(dir, kind, cb){
+  els.card.classList.add('anim');
+  setGlow(kind, 1);
+  var w = els.card.offsetWidth;
+  setCardTransform(dir * (w * 1.15 + 60), dir * 8);
+  els.card.style.opacity = '0';
+  setTimeout(cb, dur(250));
+}
+
+function swapToNextCard(){
+  els.card.classList.add('no-anim');
+  els.card.style.transform = '';
+  els.card.style.opacity = '0';
+  setGlow(null);
+  renderCard();
+  els.card.style.transform = 'translate3d(0, 12px, 0)';
+  void els.card.offsetWidth;
+  els.card.classList.remove('no-anim');
+  els.card.classList.add('anim');
+  els.card.style.transform = '';
+  els.card.style.opacity = '';
+  setTimeout(function(){
+    els.card.classList.remove('anim');
+    setGlow(null);
+    setLock(false);
+  }, dur(230));
+}
+
+/* Единая функция обработки ответа — её вызывают и свайпы, и кнопки. */
+function handleAnswer(remembered, dir){
+  var s = state.session;
+  if (lock) return;
+  if (!s || s.status !== 'active' || s.date !== todayStr()) return;
+  if (s.currentScreen !== 'question') return;
+  var id = s.queue[0];
+  if (!id) return;
+  var r = s.results[id];
+  setLock(true);
+
+  if (remembered){
+    r.status = 'completed';
+    r.completedAs = (r.errors === 0) ? 'first' : 'repeat';
+    if (r.errors === 0) r.firstTry = true;
+    s.queue.shift();
+    s.updatedAt = nowIso();
+    persist();
+    haptic('success');
+    animateExit(1, 'yes', advance);
+  } else {
+    var applied = Math.min(r.errors + 1, MAX_ERRORS);
+    var delta = applied - r.errors;
+    r.errors = applied;
+    s.totalErrors += delta;
+    s.currentScreen = 'definition';
+    s.updatedAt = nowIso();
+    persist();
+    haptic('error');
+    els.card.classList.add('anim');
+    setGlow(null);
+    els.card.style.transform = '';
+    flipToBack();
+  }
+}
+
+function flipToBack(){
+  renderCard();
+  focusBackAction();
+  setTimeout(function(){
+    els.card.classList.remove('anim');
+    backShownAt = Date.now();
+    setLock(false);
+  }, dur(270));
+}
+function focusBackAction(){
+  setTimeout(function(){
+    try { els.btnBackAction.focus({ preventScroll: true }); } catch(e){}
+  }, dur(280));
+}
+
+function advance(){
+  var s = state.session;
+  if (!s){ setLock(false); return; }
+  if (s.queue.length === 0){
+    s.status = 'completed';
+    s.completedAt = nowIso();
+    s.updatedAt = nowIso();
+    s.currentScreen = 'question';
+    persist();
+    setLock(false);
+    // вернуть карточку в первоначальный вид без анимации
+    els.card.classList.add('no-anim');
+    els.card.style.transform = '';
+    els.card.style.opacity = '';
+    els.card.classList.remove('flipped');
+    setGlow(null);
+    void els.card.offsetWidth;
+    els.card.classList.remove('no-anim');
+    showView('result');
+    return;
+  }
+  s.currentScreen = 'question';
+  s.updatedAt = nowIso();
+  persist();
+  swapToNextCard();
+}
+
+/* Уход с обратной стороны: тап, свайп или кнопка зовут именно эту функцию. */
+function leaveBackSide(dir){
+  var s = state.session;
+  if (lock) return;
+  if (!s || s.status !== 'active') return;
+  if (Date.now() - backShownAt < BACK_GUARD_MS) return;
+
+  if (s.currentScreen === 'peek'){
+    setLock(true);
+    s.currentScreen = 'question';
+    s.updatedAt = nowIso();
+    persist();
+    haptic('select');
+    setGlow(null);
+    els.card.style.transform = '';
+    renderCard();
+    setTimeout(function(){
+      setLock(false);
+      try { els.btnPeek.focus({ preventScroll: true }); } catch(e){}
+    }, dur(270));
+    return;
+  }
+  if (s.currentScreen !== 'definition') return;
+
+  setLock(true);
+  var id = s.queue[0];
+  var r = s.results[id];
+  s.queue.shift();
+  if (r.errors >= MAX_ERRORS){
+    r.status = 'completed';
+    r.completedAs = 'tomorrow';
+  } else if (s.queue.length >= 2){
+    s.queue.splice(2, 0, id); // минимум через две карточки
+  } else {
+    s.queue.push(id); // меньше двух — в конец
+  }
+  s.currentScreen = 'question';
+  s.updatedAt = nowIso();
+  persist();
+  haptic('light');
+  animateExit(dir || 1, 'violet', advance);
+}
+
+function enterPeek(){
+  var s = state.session;
+  if (lock) return;
+  if (!s || s.status !== 'active') return;
+  if (s.currentScreen !== 'question') return;
+  setLock(true);
+  s.currentScreen = 'peek';
+  s.updatedAt = nowIso();
+  persist();
+  haptic('select');
+  setGlow(null);
+  els.card.style.transform = '';
+  flipToBack();
+}
+
+/* =============== НАЧАЛО / ПРОДОЛЖЕНИЕ =============== */
+function openCardScreen(){
+  els.card.classList.add('no-anim');
+  showView('card');
+  void els.card.offsetWidth;
+  var s = todaySession();
+  if (s && s.status === 'active' && s.currentScreen !== 'question') focusBackAction();
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){ els.card.classList.remove('no-anim'); });
+  });
+}
+els.btnStart.addEventListener('click', function(){
+  var mode = els.btnStart.dataset.mode || 'start';
+  if (mode === 'result'){ showView('result'); return; }
+  if (mode === 'continue'){ openCardScreen(); return; }
+  state.session = newSession();
+  persist();
+  haptic('light');
+  openCardScreen();
+});
+
+els.btnNo.addEventListener('click', function(){ handleAnswer(false, -1); });
+els.btnYes.addEventListener('click', function(){ handleAnswer(true, 1); });
+els.btnBackAction.addEventListener('click', function(e){
+  e.stopPropagation();
+  leaveBackSide(1);
+});
+els.btnPeek.addEventListener('click', function(e){
+  e.stopPropagation();
+  enterPeek();
+});
+els.btnPeek.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
+
+els.btnBackHome.addEventListener('click', goHomeWithSave);
+els.btnResultBack.addEventListener('click', goHomeWithSave);
+els.btnResultHome.addEventListener('click', goHomeWithSave);
+
+/* =============== НАСТРОЙКИ =============== */
+function openSettings(){
+  els.setHaptics.checked = !!state.settings.haptics;
+  els.resetConfirm.hidden = true;
+  els.modal.hidden = false;
+  try { els.btnCloseSettings.focus({ preventScroll: true }); } catch(e){}
+}
+function closeSettings(){
+  els.modal.hidden = true;
+  els.resetConfirm.hidden = true;
+  try { els.btnSettings.focus({ preventScroll: true }); } catch(e){}
+}
+els.btnSettings.addEventListener('click', openSettings);
+els.btnCloseSettings.addEventListener('click', closeSettings);
+els.modal.addEventListener('click', function(e){
+  if (e.target && e.target.getAttribute && e.target.getAttribute('data-close') === '1') closeSettings();
+});
+els.setHaptics.addEventListener('change', function(){
+  state.settings.haptics = !!els.setHaptics.checked;
+  persist();
+});
+els.btnReset.addEventListener('click', function(){
+  els.resetConfirm.hidden = false;
+  try { els.btnResetNo.focus({ preventScroll: true }); } catch(e){}
+});
+els.btnResetNo.addEventListener('click', function(){ els.resetConfirm.hidden = true; });
+els.btnResetYes.addEventListener('click', function(){
+  try { localStorage.removeItem(KEY); } catch(e){}
+  var keepHaptics = state.settings.haptics;
+  state = freshState();
+  state.settings.haptics = keepHaptics;
+  persist();
+  drag = null;
+  setLock(false);
+  els.card.classList.add('no-anim');
+  els.card.style.transform = '';
+  els.card.style.opacity = '';
+  els.card.classList.remove('flipped');
+  setGlow(null);
+  closeSettings();
+  showView('home');
+  toast('Прогресс сброшен — можно начать тест заново');
+});
+
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape' && !els.modal.hidden){ closeSettings(); }
+});
+
+/* =============== СОХРАНЕНИЕ ПРИ ЗАКРЫТИИ =============== */
+document.addEventListener('visibilitychange', function(){
+  if (document.visibilityState === 'hidden') persist();
+});
+window.addEventListener('pagehide', persist);
+
+/* =============== РАЗМЕР ОКНА =============== */
+function setAppHeight(){
+  document.documentElement.style.setProperty('--apph', window.innerHeight + 'px');
+}
+window.addEventListener('resize', setAppHeight);
+window.addEventListener('orientationchange', setAppHeight);
+
+/* =============== СТАРТ =============== */
+loadState();
+persist();
+setAppHeight();
+tgInit();
+renderHome();
+syncBackButton();
+
+var s0 = todaySession();
+if (s0 && s0.status === 'active'){
+  openCardScreen(); // продолжаем ровно с того места, где остановились
+} else {
+  showView('home');
+}
+if (storageWasCorrupt){
+  setTimeout(function(){
+    toast('Локальные данные были повреждены, поэтому мы аккуратно начали заново');
+  }, 600);
+}
+})();
+</script>
+<noscript>
+  <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#16151b;color:#eceaf3;font-family:sans-serif;padding:24px;text-align:center;z-index:999">
+    Для работы No1EqualsMe нужен включённый JavaScript.
+  </div>
+</noscript>
 </body>
 </html>

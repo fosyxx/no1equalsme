@@ -1546,8 +1546,12 @@ document.addEventListener('keydown', function(e){
 var settingsOpen=false, overlayTimer=null;
 var THEME_BG={evening:'#131117', dark:'#0f0f12', light:'#f4f2fa'};
 var segButtons=Array.prototype.slice.call(document.querySelectorAll('[data-theme-btn]'));
+/* Тема должна быть безопасна и до создания состояния приложения */
+function currentTheme(){
+  return (typeof state!=='undefined' && state && state.settings && THEME_BG[state.settings.theme]) ? state.settings.theme : 'evening';
+}
 function syncThemeSeg(){
-  var t=(state.settings && state.settings.theme) || 'evening';
+  var t=currentTheme();
   segButtons.forEach(function(b){
     var on=b.getAttribute('data-theme-btn')===t;
     b.classList.toggle('on', on);
@@ -1555,7 +1559,7 @@ function syncThemeSeg(){
   });
 }
 function applyTheme(){
-  var t=(state && state.settings && THEME_BG[state.settings.theme]) ? state.settings.theme : 'evening';
+  var t=currentTheme();
   document.documentElement.setAttribute('data-theme', t);
   var mc=document.querySelector('meta[name="theme-color"]');
   if(mc) mc.setAttribute('content', THEME_BG[t]);
@@ -3060,7 +3064,7 @@ function loadContentThenStart(){
   });
   if(cached && !appStarted) startApp();        // не ждём сеть, если копия уже есть
 }
-applyTheme();
+try{ applyTheme(); }catch(e){}   // тема не должна блокировать загрузку словаря
 loadContentThenStart();
 })();
 </script>

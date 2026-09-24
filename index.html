@@ -2,1518 +2,1601 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<meta name="theme-color" content="#16151b">
-<meta name="description" content="No1EqualsMe — спокойная вечерняя сессия русских слов в Telegram Mini App">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#131117">
+<meta name="color-scheme" content="dark light">
 <title>No1EqualsMe — вечерние слова</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-  :root{
-    --bg:#16151b;
-    --surface:#201f27;
-    --surface-2:#272631;
-    --card:#24232d;
-    --border:rgba(255,255,255,.07);
-    --text:#eceaf3;
-    --text-2:#a8a5b8;
-    --text-3:#7f7c92;
-    --violet:#8b7fd6;
-    --violet-2:#a495e6;
-    --violet-soft:rgba(139,127,214,.16);
-    --violet-line:rgba(139,127,214,.42);
-    --green:#78b489;
-    --green-soft:rgba(120,180,133,.14);
-    --green-line:rgba(120,180,133,.42);
-    --green-text:#aedebb;
-    --red:#d47c76;
-    --red-soft:rgba(212,124,118,.13);
-    --red-line:rgba(212,124,118,.4);
-    --red-text:#efb3ad;
-    --focus:#a99cf0;
-    --sat:max(env(safe-area-inset-top,0px), var(--tg-viewport-safe-area-inset-top,0px));
-    --sab:max(env(safe-area-inset-bottom,0px), var(--tg-viewport-safe-area-inset-bottom,0px));
-    --r-lg:24px;
-    --r-md:18px;
-  }
-  *{margin:0;padding:0;box-sizing:border-box}
-  html,body{height:100%;overflow:hidden;overscroll-behavior:none}
-  body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-    background:var(--bg);
-    color:var(--text);
-    -webkit-font-smoothing:antialiased;
-    text-rendering:optimizeLegibility;
-    -webkit-tap-highlight-color:transparent;
-    position:fixed;inset:0;
-  }
-  button{
-    font:inherit;color:inherit;background:none;border:none;cursor:pointer;
-    touch-action:manipulation;-webkit-tap-highlight-color:transparent;
-  }
-  button:disabled{cursor:default}
-  :focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:8px}
-  [hidden]{display:none !important}
-  ::selection{background:rgba(139,127,214,.35)}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --radius:22px; --dur:.22s; --flipdur:.26s; --flydur:.24s;
+}
+html, html[data-theme="evening"]{
+  color-scheme:dark;
+  --outer:#0d0b11; --bg:#131117; --bg2:#17151e;
+  --card:#1f1c28; --card-hi:#232030; --card2:#262233; --line:#2d2940;
+  --text:#ece8f4; --muted:#9c94ad; --faint:#6f6880;
+  --violet:#a58bff; --violet-deep:#8f74e0; --violet-soft:rgba(165,139,255,.13); --violet-line:rgba(165,139,255,.38);
+  --green:#82b991; --green-soft:rgba(130,185,145,.14); --green-line:rgba(130,185,145,.38);
+  --red:#d68d8d; --red-soft:rgba(214,141,141,.13); --red-line:rgba(214,141,141,.38);
+  --track:#262233; --sheet:#1c1926; --sw-track:#35304a; --sw-knob:#cfc8e2;
+  --glow:rgba(165,139,255,.13);
+  --shadow-card:0 16px 36px rgba(0,0,0,.4);
+  --shadow-soft:0 10px 26px rgba(0,0,0,.28);
+}
+html[data-theme="dark"]{
+  color-scheme:dark;
+  --outer:#0a0a0c; --bg:#0f0f12; --bg2:#121215;
+  --card:#181920; --card-hi:#1c1d25; --card2:#1f212a; --line:#282a33;
+  --text:#efedf3; --muted:#9b99a6; --faint:#6d6c78;
+  --violet:#a58bff; --violet-deep:#8f74e0; --violet-soft:rgba(165,139,255,.12); --violet-line:rgba(165,139,255,.36);
+  --green:#80b78f; --green-soft:rgba(128,183,143,.13); --green-line:rgba(128,183,143,.36);
+  --red:#d38989; --red-soft:rgba(211,137,137,.12); --red-line:rgba(211,137,137,.36);
+  --track:#1f212a; --sheet:#16171d; --sw-track:#33353f; --sw-knob:#c9c7d4;
+  --glow:rgba(165,139,255,.08);
+  --shadow-card:0 16px 36px rgba(0,0,0,.45);
+  --shadow-soft:0 10px 26px rgba(0,0,0,.3);
+}
+html[data-theme="light"]{
+  color-scheme:light;
+  --outer:#e9e6f2; --bg:#f4f2fa; --bg2:#fbfaff;
+  --card:#ffffff; --card-hi:#ffffff; --card2:#f1eef9; --line:#e2ddf0;
+  --text:#241f36; --muted:#6f6884; --faint:#8a849e;
+  --violet:#7a5ae0; --violet-deep:#6d4ed0; --violet-soft:rgba(122,90,224,.10); --violet-line:rgba(122,90,224,.34);
+  --green:#2f7d50; --green-soft:rgba(47,125,80,.10); --green-line:rgba(47,125,80,.34);
+  --red:#bf4a4a; --red-soft:rgba(191,74,74,.09); --red-line:rgba(191,74,74,.34);
+  --track:#e7e3f3; --sheet:#ffffff; --sw-track:#d9d3ea; --sw-knob:#ffffff;
+  --glow:rgba(122,90,224,.12);
+  --shadow-card:0 16px 34px rgba(80,60,140,.16);
+  --shadow-soft:0 10px 24px rgba(80,60,140,.10);
+}
+html{background:var(--bg)}
+html,body{height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif;
+  background:var(--outer); color:var(--text);
+  overflow:hidden; overscroll-behavior:none;
+  -webkit-font-smoothing:antialiased; -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation; font-size:16px; line-height:1.45;
+}
+#app{
+  position:relative; height:100%; height:100dvh; height:var(--apph,100dvh);
+  max-width:480px; margin:0 auto; overflow:hidden;
+  background:
+    radial-gradient(130% 55% at 50% -12%, var(--glow), transparent 62%),
+    linear-gradient(180deg,var(--bg2),var(--bg) 34%);
+}
+@media(min-width:520px){#app{border-left:1px solid var(--line);border-right:1px solid var(--line)}}
 
-  #app{
-    position:relative;
-    height:100vh;
-    height:var(--apph,100vh);
-    max-width:480px;
-    margin:0 auto;
-    display:flex;flex-direction:column;
-    background:
-      radial-gradient(120% 55% at 78% -8%, rgba(139,127,214,.14), rgba(139,127,214,0) 58%),
-      radial-gradient(90% 40% at 8% 108%, rgba(120,180,133,.06), rgba(120,180,133,0) 60%),
-      var(--bg);
-    overflow:hidden;
-  }
-  @supports (height:100dvh){
-    #app{height:var(--tg-viewport-stable-height, var(--tg-viewport-height, 100dvh))}
-  }
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;user-select:none;-webkit-user-select:none}
+button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);outline-offset:2px;border-radius:10px}
+[hidden]{display:none!important}
 
-  /* ---------- VIEWS ---------- */
-  .view{
-    position:absolute;inset:0;
-    display:flex;flex-direction:column;
-    padding:calc(14px + var(--sat)) 16px calc(14px + var(--sab));
-    opacity:0;visibility:hidden;pointer-events:none;
-    transform:translateY(10px);
-    transition:opacity .22s ease, transform .22s ease, visibility 0s linear .22s;
-    z-index:1;
-  }
-  .view.active{
-    opacity:1;visibility:visible;pointer-events:auto;transform:none;z-index:2;
-    transition:opacity .24s ease, transform .24s ease, visibility 0s;
-  }
-  #view-home, #view-result{overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-  #view-home::-webkit-scrollbar, #view-result::-webkit-scrollbar{display:none}
+.view{position:absolute;inset:0;display:flex;flex-direction:column;min-height:0;
+  padding:calc(env(safe-area-inset-top,0px) + 10px) 16px calc(env(safe-area-inset-bottom,0px) + 12px);
+  opacity:0;visibility:hidden;transform:translateY(10px);pointer-events:none;
+  transition:opacity var(--dur) ease,transform var(--dur) ease,visibility 0s linear var(--dur)}
+.view.active{opacity:1;visibility:visible;transform:none;pointer-events:auto;
+  transition:opacity var(--dur) ease,transform var(--dur) ease}
 
-  .icon-btn{
-    width:48px;height:48px;border-radius:14px;flex:0 0 auto;
-    display:flex;align-items:center;justify-content:center;
-    color:var(--text-2);
-    transition:background .18s ease,color .18s ease;
-  }
-  .icon-btn:hover{background:rgba(255,255,255,.06);color:var(--text)}
-  .icon-btn:active{background:rgba(255,255,255,.1);color:var(--text)}
-  .icon{width:22px;height:22px}
-  .icon-lg{width:26px;height:26px}
+.icon-btn{width:48px;height:48px;flex:none;border-radius:14px;display:grid;place-items:center;color:var(--muted);transition:background var(--dur),color var(--dur)}
+.icon-btn:active{background:var(--violet-soft);color:var(--text)}
+.icon-btn svg{width:22px;height:22px}
 
-  /* ---------- HOME ---------- */
-  .home-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
-  .brand{display:flex;align-items:center;gap:12px;min-width:0}
-  .logo{
-    width:44px;height:44px;border-radius:13px;flex:0 0 auto;
-    display:flex;align-items:center;justify-content:center;
-    font-weight:800;font-size:15px;letter-spacing:.02em;color:#17142a;
-    background:linear-gradient(140deg,var(--violet-2),var(--violet));
-    box-shadow:0 8px 22px rgba(139,127,214,.32);
-  }
-  .brand-name{font-weight:750;font-size:1.02rem;letter-spacing:.01em;white-space:nowrap}
-  .home-main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:12px 2px 4px}
-  .home-kicker{
-    display:flex;align-items:center;gap:10px;
-    font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3);
-    margin-bottom:12px;
-  }
-  .home-kicker .moon{color:var(--violet-2)}
-  .home-title{font-size:clamp(1.65rem,7.2vw,2.05rem);font-weight:800;letter-spacing:-.015em;line-height:1.12}
-  .home-date{margin-top:8px;color:var(--text-2);font-size:.98rem;text-transform:capitalize}
-  .cat-card{
-    margin-top:26px;
-    display:flex;align-items:center;gap:14px;
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:var(--r-md);
-    padding:16px 18px;
-    box-shadow:0 14px 34px rgba(0,0,0,.3);
-  }
-  .cat-icon{
-    width:46px;height:46px;border-radius:13px;flex:0 0 auto;
-    display:flex;align-items:center;justify-content:center;
-    background:var(--violet-soft);color:var(--violet-2);
-    border:1px solid var(--violet-line);
-  }
-  .cat-title{font-weight:750;font-size:1.05rem}
-  .cat-sub{margin-top:3px;color:var(--text-2);font-size:.86rem}
-  .home-summary{
-    margin-top:26px;
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:var(--r-md);
-    padding:16px 18px;
-    box-shadow:0 14px 34px rgba(0,0,0,.3);
-  }
-  .home-summary-title{font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:9px;color:var(--green-text)}
-  .home-summary-line{margin-top:8px;color:var(--text-2);font-size:.9rem;line-height:1.5}
-  .btn-primary{
-    margin-top:26px;width:100%;min-height:58px;border-radius:var(--r-md);
-    background:linear-gradient(140deg,var(--violet-2),var(--violet));
-    color:#17142a;font-weight:800;font-size:1.05rem;letter-spacing:.01em;
-    box-shadow:0 14px 32px rgba(139,127,214,.3);
-    transition:transform .16s ease, box-shadow .18s ease, filter .18s ease;
-  }
-  .btn-primary:active{transform:translateY(1px) scale(.99);filter:brightness(1.05)}
-  .btn-primary.secondary{
-    background:var(--surface-2);color:var(--text);
-    border:1px solid var(--border);box-shadow:0 12px 28px rgba(0,0,0,.32);
-  }
-  .home-hint{margin-top:14px;text-align:center;color:var(--text-2);font-size:.9rem;min-height:1.2em}
+.btn-primary{min-height:56px;border-radius:18px;background:linear-gradient(135deg,var(--violet-deep),#b394ff);color:#181022;font-weight:750;font-size:16px;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 10px 24px rgba(143,116,224,.32);transition:transform .15s ease,filter .15s ease}
+.btn-primary:active{transform:scale(.985);filter:brightness(1.06)}
+.btn-ghost{min-height:52px;border-radius:18px;border:1px solid var(--line);color:var(--text);background:var(--card);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;transition:background var(--dur)}
+.btn-ghost:active{background:var(--card2)}
 
-  /* ---------- CARD SCREEN ---------- */
-  .card-top{display:flex;align-items:center;gap:8px}
-  .card-top-mid{flex:1;text-align:center;font-weight:700;font-size:1rem;color:var(--text)}
-  .card-progress-text{font-variant-numeric:tabular-nums;color:var(--text-2);font-size:.95rem;min-width:52px;text-align:right;font-weight:600}
-  .progress-track{
-    margin-top:10px;height:3px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;
-  }
-  .progress-fill{
-    height:100%;width:0;border-radius:99px;
-    background:linear-gradient(90deg,var(--violet),var(--violet-2));
-    transition:width .25s ease;
-  }
-  .card-stage{
-    flex:1;min-height:0;
-    display:flex;align-items:center;justify-content:center;
-    position:relative;
-  }
-  .card{
-    position:relative;
-    width:min(calc(100% - 20px), 380px);
-    height:min(100%, 470px);
-    touch-action:manipulation;
-    user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
-    will-change:transform;
-    cursor:grab;
-  }
-  .card.grabbing{cursor:grabbing}
-  .card.anim{transition:transform .24s cubic-bezier(.28,.72,.32,1), opacity .24s ease}
-  .card.no-anim, .card.no-anim .card-inner{transition:none !important}
-  .card-inner{
-    position:absolute;inset:0;
-    transform-style:preserve-3d;
-    transition:transform .24s ease;
-  }
-  .card.flipped .card-inner{transform:rotateY(180deg)}
-  .face{
-    position:absolute;inset:0;
-    border-radius:var(--r-lg);
-    background:linear-gradient(var(--tint,rgba(0,0,0,0)), var(--tint,rgba(0,0,0,0))), var(--card);
-    border:1px solid var(--border);
-    box-shadow:0 18px 46px rgba(0,0,0,.42);
-    backface-visibility:hidden;-webkit-backface-visibility:hidden;
-    display:flex;flex-direction:column;
-    overflow:hidden;
-    transition:box-shadow .22s ease;
-  }
-  .face-front{
-    padding:24px 24px 22px;
-    align-items:center;justify-content:space-between;text-align:center;
-    touch-action:none;
-    background:linear-gradient(var(--tint,rgba(0,0,0,0)), var(--tint,rgba(0,0,0,0))), linear-gradient(165deg,#262532, #211f2a 72%);
-    border:1px solid rgba(255,255,255,.08);
-  }
-  .face-label{
-    font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600;
-  }
-  .word{
-    font-size:clamp(1.62rem, 8.2vw, 2.42rem);
-    font-weight:800;letter-spacing:-.01em;line-height:1.14;color:#f5f3fc;
-    overflow-wrap:anywhere;
-    margin:auto 6px;
-  }
-  .hint{font-size:.86rem;color:var(--text-3)}
-  .badge-repeat{
-    position:absolute;top:16px;left:18px;
-    font-size:.72rem;font-weight:700;letter-spacing:.06em;
-    padding:5px 11px;border-radius:999px;
-    background:var(--violet-soft);color:#c7bdf0;border:1px solid var(--violet-line);
-  }
-  .peek-btn{
-    position:absolute;right:-8px;top:50%;transform:translateY(-50%);
-    width:52px;height:52px;border-radius:50%;z-index:5;
-    display:flex;align-items:center;justify-content:center;
-    background:var(--surface-2);color:#d3cbf6;
-    border:1px solid var(--violet-line);
-    box-shadow:0 10px 24px rgba(0,0,0,.45);
-    transition:background .18s ease, transform .18s ease, opacity .2s ease, visibility .2s;
-  }
-  .peek-btn:hover{background:#322f41}
-  .peek-btn:active{transform:translateY(-50%) scale(.94)}
-  .peek-btn.gone{opacity:0;visibility:hidden;pointer-events:none}
-  .face-back{transform:rotateY(180deg)}
-  .back-scroll{
-    flex:1;min-height:0;overflow-y:auto;
-    padding:22px 22px 10px;
-    touch-action:pan-y;-webkit-overflow-scrolling:touch;
-    scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.14) transparent;
-  }
-  .back-scroll::-webkit-scrollbar{width:4px}
-  .back-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:99px}
-  .peek-note{
-    display:inline-block;
-    font-size:.74rem;font-weight:700;letter-spacing:.04em;
-    padding:5px 11px;border-radius:999px;margin-bottom:12px;
-    background:var(--violet-soft);color:#c7bdf0;border:1px solid var(--violet-line);
-  }
-  .word-back{font-size:clamp(1.28rem, 6vw, 1.5rem);font-weight:800;letter-spacing:-.005em;color:#f5f3fc}
-  .pos{
-    margin-top:6px;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--violet-2);font-weight:700;
-  }
-  .def{margin-top:14px;font-size:1rem;line-height:1.5;color:#e9e7f2}
-  .syn{margin-top:12px;font-size:.9rem;line-height:1.5;color:#c9c6d6}
-  .syn-label{color:var(--text-3);font-weight:700}
-  .example{
-    margin-top:12px;font-size:.9rem;line-height:1.55;font-style:italic;color:#b9b6c9;
-    border-left:3px solid var(--violet-line);padding:8px 12px;
-    background:rgba(255,255,255,.03);border-radius:0 12px 12px 0;
-  }
-  .back-footer{
-    padding:12px 22px 20px;
-    border-top:1px solid rgba(255,255,255,.05);
-    background:linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.14));
-  }
-  .back-note{font-size:.86rem;color:#c1b9ec;margin-bottom:12px;line-height:1.45;min-height:1.2em}
-  .btn-accent{
-    width:100%;min-height:56px;border-radius:16px;
-    background:linear-gradient(140deg,var(--violet-2),var(--violet));
-    color:#17142a;font-weight:800;font-size:1rem;
-    box-shadow:0 12px 26px rgba(139,127,214,.28);
-    transition:transform .16s ease, filter .18s ease;
-  }
-  .btn-accent:active{transform:translateY(1px);filter:brightness(1.06)}
+/* ---------- Главная ---------- */
+.home-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 0 6px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.mono{width:40px;height:40px;flex:none;border-radius:13px;background:linear-gradient(135deg,var(--violet-deep),#c0a4ff);display:grid;place-items:center;font-weight:800;font-size:15px;color:#181022;letter-spacing:.02em;box-shadow:0 6px 18px rgba(143,116,224,.35)}
+.brand-name{font-weight:700;font-size:16px;white-space:nowrap}
+.home-main{flex:1;display:flex;flex-direction:column;min-height:0;padding-top:14px;overflow-y:auto;overscroll-behavior:contain}
+.home-date-row{display:flex;align-items:center;flex-wrap:wrap;gap:2px}
+.home-date{color:var(--violet);font-size:13px;font-weight:600;letter-spacing:.06em}
+.test-pill{display:inline-flex;align-items:center;font-size:10px;font-weight:800;letter-spacing:.12em;color:#fff;background:var(--violet-deep);border-radius:999px;padding:5px 10px;margin-left:8px}
+.test-pill.mini{font-size:9px;padding:3px 8px;margin-left:6px;letter-spacing:.08em}
+.home-title{font-size:27px;font-weight:750;letter-spacing:-.01em;margin:6px 0 16px}
+.cat-card{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow-soft)}
+.cat-ic{width:46px;height:46px;flex:none;border-radius:14px;background:var(--violet-soft);display:grid;place-items:center;color:var(--violet)}
+.cat-ic svg{width:22px;height:22px}
+.cat-info{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+.cat-name{font-weight:650;font-size:16px}
+.cat-sub{color:var(--muted);font-size:13px;line-height:1.4}
+.chip{flex:none;font-size:12px;font-weight:600;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 10px;white-space:nowrap}
+.chip.is-active{color:var(--violet);border-color:var(--violet-line);background:var(--violet-soft)}
+.chip.is-done{color:var(--green);border-color:var(--green-line);background:var(--green-soft)}
+.arch-row{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:6px 16px;min-height:52px;margin-top:12px;font-weight:600;font-size:14.5px;color:var(--text)}
+.arch-row .cnt{color:var(--violet)}
+.arch-row svg{width:18px;height:18px;color:var(--muted);flex:none}
+.home-bottom{margin-top:auto;display:flex;flex-direction:column;gap:12px;padding-top:16px}
+.summary{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.summary h2{font-size:15px;font-weight:650}
+.summary p{color:var(--muted);font-size:13.5px}
+.summary strong{color:var(--text);font-weight:650}
+.empty-day{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.empty-day h2{font-size:16px;font-weight:700}
+.empty-day p{color:var(--muted);font-size:13.5px;line-height:1.45}
 
-  .answers{
-    display:flex;gap:12px;padding-top:14px;
-    transition:opacity .2s ease, transform .2s ease, visibility .2s;
-  }
-  .answers.is-hidden{opacity:0;visibility:hidden;transform:translateY(8px);pointer-events:none}
-  .answers.locking{pointer-events:none}
-  .btn-answer{
-    flex:1;min-height:58px;border-radius:var(--r-md);
-    display:flex;align-items:center;justify-content:center;gap:10px;
-    font-size:1rem;font-weight:800;
-    border:1px solid;
-    transition:background .18s ease, transform .16s ease;
-  }
-  .btn-answer:active{transform:scale(.985)}
-  .btn-no{background:var(--red-soft);border-color:var(--red-line);color:var(--red-text)}
-  .btn-no:hover{background:rgba(212,124,118,.2)}
-  .btn-yes{background:var(--green-soft);border-color:var(--green-line);color:var(--green-text)}
-  .btn-yes:hover{background:rgba(120,180,133,.2)}
+/* ---------- Сессия ---------- */
+.sess-head{display:flex;align-items:center;gap:4px;padding:0 0 8px}
+.sess-mid{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;min-width:0}
+.sess-cat{color:var(--muted);font-size:14px;font-weight:600}
+.sess-progress{font-size:14px;font-weight:700}
+.head-spacer{width:48px;height:48px;flex:none}
+.bar{height:3px;flex:none;border-radius:99px;background:var(--track);overflow:hidden}
+.bar-fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--violet-deep),var(--violet));transition:width .25s ease}
+.stage{flex:1;display:flex;flex-direction:column;min-height:0;padding-top:12px}
+.card-area{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center}
+.card-drag{flex:1;min-height:0;max-height:560px;width:100%;max-width:440px;margin-left:auto;margin-right:auto;position:relative;will-change:transform;user-select:none;-webkit-user-select:none;cursor:grab}
+.card-drag.is-drag{cursor:grabbing}
+.card-drag.anim{transition:transform var(--flydur) cubic-bezier(.25,.7,.3,1)}
+.card-drag.no-anim{transition:none!important}
+@keyframes cardIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.card-drag.enter{animation:cardIn .24s ease both}
+.card-inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform var(--flipdur) cubic-bezier(.35,.1,.25,1)}
+.card-inner.no-anim{transition:none!important}
+.card-drag.flipped .card-inner{transform:rotateY(180deg)}
+.card-face{position:absolute;inset:0;border-radius:var(--radius);background:linear-gradient(180deg,var(--card-hi),var(--card));border:1px solid var(--line);box-shadow:var(--shadow-card);overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;transition:border-color .15s ease,box-shadow .15s ease}
+.card-front{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 30px;text-align:center;touch-action:none}
+.card-back{transform:rotateY(180deg);display:flex;flex-direction:column;padding:18px 18px 16px;touch-action:pan-y}
+.card-drag.flipped .card-front{pointer-events:none}
+.card-drag:not(.flipped) .card-back{pointer-events:none}
+.card-drag.gl-green .card-front{border-color:var(--green-line);box-shadow:var(--shadow-card),0 0 30px rgba(130,185,145,.22)}
+.card-drag.gl-red .card-front{border-color:var(--red-line);box-shadow:var(--shadow-card),0 0 30px rgba(214,141,141,.22)}
+.card-drag.gl-violet .card-back{border-color:var(--violet-line);box-shadow:var(--shadow-card),0 0 30px rgba(165,139,255,.22)}
+.tint{position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;z-index:4;transition:opacity .1s linear}
+.tint.green{background:linear-gradient(180deg,rgba(130,185,145,.2),rgba(130,185,145,.1))}
+.tint.red{background:linear-gradient(180deg,rgba(214,141,141,.2),rgba(214,141,141,.1))}
+.tint.violet{background:linear-gradient(180deg,rgba(165,139,255,.2),rgba(165,139,255,.1))}
+.front-label{position:absolute;top:24px;left:52px;right:52px;text-align:center;color:var(--muted);font-size:13px;font-weight:600;letter-spacing:.06em}
+.front-word{font-size:clamp(29px,8.8vw,40px);font-weight:700;letter-spacing:-.01em;line-height:1.12;overflow-wrap:anywhere}
+.front-hint{position:absolute;bottom:20px;left:0;right:0;text-align:center;color:var(--faint);font-size:13px}
+.badge{position:absolute;top:16px;left:16px;z-index:6;font-size:12px;font-weight:650;color:var(--violet);background:var(--violet-soft);border:1px solid rgba(165,139,255,.35);border-radius:999px;padding:5px 11px}
+.peek-btn{position:absolute;right:12px;top:12px;z-index:7;width:48px;height:48px;border-radius:50%;background:var(--card2);border:1px solid var(--line);color:var(--violet);display:grid;place-items:center;transition:border-color .15s,background .15s}
+.peek-btn:active{border-color:var(--violet-line);background:var(--violet-soft)}
+.peek-btn svg{width:22px;height:22px}
+.back-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding:2px 2px 4px}
+.back-word{font-size:clamp(22px,6.2vw,27px);font-weight:700;letter-spacing:-.01em;margin:2px 0 2px}
+.pos{color:var(--muted);font-size:13px;font-style:italic;margin-bottom:10px}
+.def{font-size:15.5px;line-height:1.5;margin-bottom:10px}
+.syn{font-size:13.5px;margin-bottom:10px}
+.syn-label{color:var(--muted)}
+.ex{color:var(--muted);font-size:13.5px;line-height:1.5;border-left:2px solid rgba(165,139,255,.4);padding-left:10px;margin-bottom:12px}
+.peek-note{font-size:13.5px;color:var(--violet);background:var(--violet-soft);border:1px solid rgba(165,139,255,.3);border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.return-note{flex:none;color:var(--violet);font-size:13px;text-align:center;padding:6px 4px 10px}
+.btn-back{flex:none;min-height:52px;width:100%;border-radius:15px;background:var(--violet-soft);border:1px solid var(--violet-line);color:var(--violet);font-weight:700;font-size:15.5px;transition:background .15s}
+.btn-back:active{background:rgba(165,139,255,.22)}
+.actions{display:flex;gap:12px;padding-top:14px;transition:opacity .18s ease,visibility .18s}
+.actions.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.act{flex:1;min-height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;gap:9px;font-weight:700;font-size:15.5px;border:1px solid;transition:transform .14s ease}
+.act:active{transform:scale(.975)}
+.act svg{width:20px;height:20px;flex:none}
+.act-no{color:var(--red);background:var(--red-soft);border-color:var(--red-line)}
+.act-yes{color:var(--green);background:var(--green-soft);border-color:var(--green-line)}
 
-  /* ---------- RESULT ---------- */
-  .result-head{text-align:center;padding:26px 0 6px}
-  .result-ico{
-    width:62px;height:62px;border-radius:50%;margin:0 auto 16px;
-    display:flex;align-items:center;justify-content:center;
-    background:var(--violet-soft);color:var(--violet-2);border:1px solid var(--violet-line);
-    box-shadow:0 12px 30px rgba(139,127,214,.22);
-  }
-  .result-title{font-size:clamp(1.5rem,6.6vw,1.85rem);font-weight:800;letter-spacing:-.01em}
-  .result-date{margin-top:6px;color:var(--text-3);font-size:.9rem;text-transform:capitalize}
-  .stats{
-    margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:10px;
-  }
-  .stat{
-    background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);
-    padding:14px 15px;box-shadow:0 10px 26px rgba(0,0,0,.26);
-  }
-  .stat-num{font-size:1.55rem;font-weight:800;letter-spacing:-.01em;display:flex;align-items:baseline;gap:8px}
-  .stat-ico{color:var(--text-3)}
-  .stat-label{margin-top:4px;font-size:.82rem;color:var(--text-2)}
-  .forgotten{
-    margin-top:14px;background:var(--surface);border:1px solid var(--border);
-    border-radius:var(--r-md);padding:16px 18px;box-shadow:0 10px 26px rgba(0,0,0,.26);
-  }
-  .forgotten-title{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);font-weight:700}
-  .forgotten-list{margin-top:10px;display:flex;flex-direction:column;gap:8px}
-  .forgotten-item{
-    display:flex;align-items:baseline;justify-content:space-between;gap:12px;
-    padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.03);
-  }
-  .forgotten-word{font-weight:700;font-size:.98rem}
-  .forgotten-err{color:var(--red-text);font-size:.82rem;white-space:nowrap}
-  .forgotten-empty{margin-top:10px;color:var(--green-text);font-size:.92rem}
-  .calm{margin-top:16px;color:var(--text-2);font-size:.92rem;line-height:1.6;text-align:center;padding:0 6px}
-  .result-btn{margin-top:20px;margin-bottom:6px}
+/* ---------- Результат ---------- */
+.result-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 2px 14px}
+.result-ic{width:64px;height:64px;border-radius:50%;background:var(--violet-soft);border:1px solid rgba(165,139,255,.35);display:grid;place-items:center;color:var(--violet);margin-bottom:14px;flex:none}
+.result-ic svg{width:30px;height:30px}
+.result-title{font-size:23px;font-weight:750;margin-bottom:18px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;align-items:flex-start;text-align:left}
+.stat b{font-size:22px;font-weight:750}
+.stat span{color:var(--muted);font-size:12.5px;line-height:1.3}
+.forgot{width:100%;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;margin-bottom:14px}
+.forgot h3{font-size:14px;font-weight:650;margin-bottom:8px}
+.forgot ul{list-style:none;display:flex;flex-wrap:wrap;gap:8px}
+.forgot li{font-size:13px;color:var(--violet);background:var(--violet-soft);border:1px solid rgba(165,139,255,.3);border-radius:999px;padding:5px 11px}
+.forgot .all-ok{color:var(--muted);font-size:13.5px}
+.result-msg{color:var(--muted);font-size:14px;max-width:310px;margin:0 auto}
+.result-bottom{flex:none;padding-top:8px}
 
-  /* ---------- MODAL ---------- */
-  .modal{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center}
-  .modal-overlay{position:absolute;inset:0;background:rgba(9,8,13,.62);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
-  .modal-panel{
-    position:relative;width:100%;max-width:480px;
-    background:var(--surface);
-    border:1px solid var(--border);border-bottom:none;
-    border-radius:22px 22px 0 0;
-    padding:8px 18px calc(18px + var(--sab));
-    animation:sheet .26s cubic-bezier(.3,.8,.3,1);
-    max-height:86%;overflow-y:auto;
-  }
-  @keyframes sheet{from{transform:translateY(34px);opacity:0}}
-  .modal-grip{width:38px;height:4px;border-radius:99px;background:rgba(255,255,255,.16);margin:8px auto 4px}
-  .modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0 4px}
-  .modal-title{font-size:1.15rem;font-weight:800}
-  .set-row{
-    display:flex;align-items:center;justify-content:space-between;gap:14px;
-    min-height:56px;padding:10px 2px;
-    border-top:1px solid rgba(255,255,255,.05);
-    cursor:pointer;
-  }
-  .set-text{font-size:1rem;font-weight:650}
-  .switch{position:relative;flex:0 0 auto;width:54px;height:32px;display:inline-block}
-  .switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
-  .switch .track{
-    position:absolute;inset:0;border-radius:999px;background:#35334a;
-    border:1px solid rgba(255,255,255,.1);
-    transition:background .2s ease,border-color .2s ease;
-  }
-  .switch .knob{
-    position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;
-    background:#d9d6e8;transition:transform .2s ease, background .2s ease;
-    box-shadow:0 3px 8px rgba(0,0,0,.4);
-  }
-  .switch input:checked ~ .track{background:var(--violet);border-color:transparent}
-  .switch input:checked ~ .knob{transform:translateX(22px);background:#fff}
-  .switch input:focus-visible ~ .track{outline:2px solid var(--focus);outline-offset:2px}
-  .danger{margin-top:10px;border-top:1px solid rgba(255,255,255,.05);padding-top:16px}
-  .btn-ghost-danger{
-    width:100%;min-height:52px;border-radius:15px;
-    border:1px solid var(--red-line);color:var(--red-text);background:var(--red-soft);
-    font-weight:750;font-size:.98rem;
-    transition:background .18s ease;
-  }
-  .btn-ghost-danger:hover{background:rgba(212,124,118,.2)}
-  .reset-confirm{margin-top:12px;background:rgba(212,124,118,.08);border:1px solid var(--red-line);border-radius:15px;padding:14px}
-  .reset-confirm p{font-size:.9rem;color:#e6c8c4;line-height:1.5}
-  .reset-row{display:flex;gap:10px;margin-top:12px}
-  .btn-danger{
-    flex:1;min-height:50px;border-radius:13px;
-    background:#a04b46;color:#ffe9e6;font-weight:800;font-size:.95rem;
-  }
-  .btn-ghost{
-    flex:1;min-height:50px;border-radius:13px;
-    background:var(--surface-2);color:var(--text);border:1px solid var(--border);
-    font-weight:750;font-size:.95rem;
-  }
+/* ---------- Архив ---------- */
+.arch-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:10px;padding-top:10px}
+.arch-count{font-size:15px;font-weight:700}
+.arch-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.arch-list li{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.arch-list .aw{font-weight:650;font-size:15px}
+.arch-list .ad{color:var(--muted);font-size:12.5px;flex:none}
+.arch-empty{color:var(--muted);font-size:13.5px;line-height:1.45}
 
-  /* ---------- TOAST ---------- */
-  #toast{
-    position:fixed;left:50%;bottom:calc(24px + var(--sab));z-index:90;
-    transform:translate(-50%,18px);
-    background:#2c2a38;color:var(--text);
-    border:1px solid rgba(255,255,255,.12);
-    padding:12px 18px;border-radius:14px;
-    font-size:.9rem;line-height:1.4;text-align:center;max-width:88%;
-    box-shadow:0 16px 40px rgba(0,0,0,.5);
-    opacity:0;pointer-events:none;
-    transition:opacity .22s ease, transform .22s ease;
-  }
-  #toast.show{opacity:1;transform:translate(-50%,0)}
+/* ---------- Настройки ---------- */
+.overlay{position:fixed;inset:0;z-index:50;background:rgba(9,7,13,.6);display:flex;align-items:flex-end;justify-content:center;opacity:0;transition:opacity var(--dur) ease}
+.overlay.show{opacity:1}
+.sheet{width:100%;max-width:480px;max-height:88%;overflow-y:auto;overscroll-behavior:contain;background:var(--sheet);border:1px solid var(--line);border-bottom:0;border-radius:24px 24px 0 0;padding:8px 16px calc(env(safe-area-inset-bottom,0px) + 16px);transform:translateY(102%);transition:transform var(--dur) cubic-bezier(.3,.8,.3,1)}
+.overlay.show .sheet{transform:none}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;padding:6px 0 10px}
+.sheet-head h2{font-size:18px;font-weight:750}
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 4px;border-top:1px solid var(--line)}
+.set-row-col{flex-direction:column;align-items:stretch;gap:10px}
+.set-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.set-name{font-weight:600;font-size:15px}
+.set-sub{color:var(--muted);font-size:12.5px}
+.set-row .go{display:flex;align-items:center;gap:8px;color:var(--muted);flex:none}
+.set-row .go svg{width:18px;height:18px}
+.go-cnt{color:var(--violet);font-weight:650;font-size:14px}
+.seg{display:flex;gap:4px;background:var(--track);border-radius:15px;padding:4px}
+.seg-btn{flex:1;min-height:48px;border-radius:12px;font-weight:650;font-size:13.5px;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:background .15s ease,color .15s ease}
+.seg-btn.on{background:var(--violet-soft);color:var(--violet);box-shadow:inset 0 0 0 1px var(--violet-line)}
+.switch{flex:none;width:56px;height:48px;display:grid;place-items:center;border-radius:14px}
+.switch .track{width:48px;height:28px;border-radius:99px;background:var(--sw-track);position:relative;transition:background .18s}
+.switch .knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--sw-knob);transition:transform .18s,background .18s}
+.switch.on .track{background:var(--violet-deep)}
+.switch.on .knob{transform:translateX(20px);background:#fff}
+.test-block{border:1px solid var(--violet-line);background:var(--violet-soft);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:10px;margin:0 4px 12px}
+.test-warn{font-size:12.5px;line-height:1.45}
+.test-lines{display:flex;flex-direction:column;gap:4px;font-size:13px}
+.test-lines div{display:flex;justify-content:space-between;gap:10px}
+.test-lines span{color:var(--muted)}
+.test-lines b{font-weight:650}
+.test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.test-grid .tb{min-height:48px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--text);font-weight:650;font-size:13px}
+.test-grid .tb:disabled{opacity:.45;pointer-events:none}
+.test-grid .wide{grid-column:span 3}
+.test-lock{font-size:12.5px;color:var(--red)}
+.reset-zone{padding:14px 4px 2px;border-top:1px solid var(--line)}
+.reset-zone h3{font-size:13px;font-weight:650;color:var(--muted);margin-bottom:10px;letter-spacing:.04em}
+.btn-danger{width:100%;min-height:50px;border-radius:15px;border:1px solid var(--red-line);color:var(--red);background:var(--red-soft);font-weight:650;font-size:15px}
+.btn-danger:active{filter:brightness(1.1)}
+.rc-confirm{display:flex;flex-direction:column;gap:10px}
+.rc-confirm p{color:var(--muted);font-size:13.5px}
+.rc-btns{display:flex;gap:10px}
+.btn-danger-solid{flex:1;min-height:48px;border-radius:14px;background:var(--red);color:#241114;font-weight:750}
+.rc-cancel{flex:1;min-height:48px;border-radius:14px;border:1px solid var(--line);color:var(--text);font-weight:600;background:var(--card)}
 
-  /* ---------- TIGHT SCREENS ---------- */
-  @media (max-height:620px){
-    .card{height:100%}
-    .face-front{padding:20px 20px 18px}
-    .back-scroll{padding:18px 20px 8px}
-    .back-footer{padding:10px 20px 14px}
-    .def{font-size:.94rem;margin-top:10px}
-    .syn{margin-top:8px}
-    .example{margin-top:8px;font-size:.86rem}
-    .btn-answer{min-height:52px}
-    .answers{padding-top:10px}
-    .back-note{margin-bottom:8px;font-size:.82rem}
-  }
-  @media (max-width:340px){
-    .view{padding-left:14px;padding-right:14px}
-    .def{font-size:.92rem}
-  }
+/* ---------- Тост ---------- */
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%) translateY(8px);z-index:80;max-width:min(88vw,380px);background:var(--card2);border:1px solid var(--line);color:var(--text);font-size:13.5px;line-height:1.4;padding:11px 16px;border-radius:14px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;text-align:center;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+.toast.show{opacity:1;transform:translateX(-50%)}
 
-  /* ---------- REDUCED MOTION ---------- */
-  @media (prefers-reduced-motion: reduce){
-    *,*::before,*::after{
-      animation-duration:.01ms !important;animation-iteration-count:1 !important;
-      transition-duration:.1s !important;
-    }
-    .card-inner{transform:none !important;transition:none !important}
-    .face{transition:opacity .16s ease !important}
-    .face-back{opacity:0;pointer-events:none;transform:none}
-    .card.flipped .face-back{opacity:1;pointer-events:auto}
-    .card.flipped .face-front{opacity:0;pointer-events:none}
-  }
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion:reduce){
+  :root{--dur:.05s;--flipdur:.02s;--flydur:.08s}
+  .card-drag.enter{animation:none}
+}
+html.rm .card-inner{transform:none!important;transition:none!important}
+html.rm .card-back{transform:none;opacity:0;visibility:hidden;transition:opacity .14s ease,visibility 0s linear .14s}
+html.rm .card-drag.flipped .card-back{opacity:1;visibility:visible;transition:opacity .14s ease}
+html.rm .card-front{transition:opacity .14s ease}
+html.rm .card-drag.flipped .card-front{opacity:0}
 </style>
 </head>
 <body>
 <div id="app">
 
-  <!-- ============ ЭКРАН 1 · СЕГОДНЯ ============ -->
-  <section id="view-home" class="view" aria-labelledby="home-title">
-    <header class="home-top">
+  <!-- Экран 1: Сегодня -->
+  <section class="view active" id="view-home" aria-label="Сегодня">
+    <header class="home-head">
       <div class="brand">
-        <div class="logo" aria-hidden="true">N1</div>
-        <div class="brand-name">No1EqualsMe</div>
+        <div class="mono" aria-hidden="true">N1</div>
+        <span class="brand-name">No1EqualsMe</span>
       </div>
-      <button id="btn-settings" class="icon-btn" aria-label="Настройки">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
-          <circle cx="12" cy="12" r="3"></circle>
-        </svg>
+      <button class="icon-btn" id="btnSettings" aria-label="Настройки">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
       </button>
     </header>
     <main class="home-main">
-      <p class="home-kicker">
-        <svg class="moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
-        </svg>
-        Сегодня
-      </p>
-      <h1 id="home-title" class="home-title">Вечерняя сессия</h1>
-      <p id="home-date" class="home-date"></p>
-
-      <div id="home-cat" class="cat-card">
-        <div class="cat-icon" aria-hidden="true">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-          </svg>
-        </div>
-        <div>
-          <div class="cat-title">Слова</div>
-          <div class="cat-sub">5 карточек · около 2 минут</div>
-        </div>
+      <div class="home-date-row">
+        <p class="home-date" id="homeDate"></p>
+        <span class="test-pill" id="testPillHome" hidden>ТЕСТОВАЯ ДАТА</span>
       </div>
-
-      <div id="home-summary" class="home-summary" hidden>
-        <div class="home-summary-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11.5 14.5 16 9.5"></polyline>
-          </svg>
-          На сегодня всё
+      <h1 class="home-title" id="homeTitle">Вечерняя сессия</h1>
+      <div class="cat-card">
+        <div class="cat-ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
         </div>
-        <p id="home-summary-line" class="home-summary-line"></p>
+        <div class="cat-info">
+          <span class="cat-name">Слова</span>
+          <span class="cat-sub" id="catSub"></span>
+        </div>
+        <span class="chip" id="catChip">Сегодня</span>
       </div>
-
-      <button id="btn-start" class="btn-primary">Начать</button>
-      <p id="home-hint" class="home-hint" aria-live="polite"></p>
+      <button class="arch-row" id="archRow">
+        <span>Освоено слов: <span class="cnt" id="archRowCount">0</span></span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+      <div class="home-bottom">
+        <div class="summary" id="homeSummary" hidden>
+          <h2>Итог дня</h2>
+          <p id="summaryLine1"></p>
+          <p id="summaryLine2"></p>
+        </div>
+        <div class="empty-day" id="emptyDay" hidden>
+          <h2>На сегодня повторений нет</h2>
+          <p id="emptyDayText"></p>
+          <button class="btn-ghost" id="btnNearest" hidden>К ближайшему повторению</button>
+        </div>
+        <button class="btn-primary" id="btnStart">Начать</button>
+        <button class="btn-ghost" id="btnShowResult" hidden>Посмотреть результат</button>
+      </div>
     </main>
   </section>
 
-  <!-- ============ ЭКРАН 2 · КАРТОЧКА ============ -->
-  <section id="view-card" class="view" aria-label="Карточка слова">
-    <header class="card-top">
-      <button id="btn-back-home" class="icon-btn" aria-label="Сохранить и выйти на главную">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
+  <!-- Экран 2: Карточка -->
+  <section class="view" id="view-session" aria-label="Карточка слова">
+    <header class="sess-head">
+      <button class="icon-btn" id="btnBack" aria-label="Сохранить и вернуться на главную">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
       </button>
-      <div class="card-top-mid">Слова</div>
-      <div id="progress-text" class="card-progress-text" aria-live="polite">0 из 5</div>
+      <div class="sess-mid">
+        <span class="sess-cat">Слова</span>
+        <span class="sess-progress" id="sessProgress" aria-live="polite">0 из 5</span>
+        <span class="test-pill mini" id="testPillSession" hidden>ТЕСТОВАЯ ДАТА</span>
+      </div>
+      <div class="head-spacer" aria-hidden="true"></div>
     </header>
-    <div class="progress-track" aria-hidden="true"><div id="progress-bar" class="progress-fill"></div></div>
-
-    <main class="card-stage">
-      <div id="card" class="card">
-        <div id="card-inner" class="card-inner">
-          <div id="face-front" class="face face-front">
-            <span id="badge-repeat" class="badge-repeat" hidden>Повтор</span>
-            <span class="face-label">Помнишь значение?</span>
-            <h2 id="word-front" class="word"></h2>
-            <span class="hint">Свайпни или используй кнопки</span>
-          </div>
-          <div id="face-back" class="face face-back">
-            <div id="back-scroll" class="back-scroll">
-              <span id="peek-note" class="peek-note" hidden>Проверка себя · ответ ещё не засчитан</span>
-              <h3 id="word-back" class="word-back"></h3>
-              <div id="pos" class="pos"></div>
-              <p id="def" class="def"></p>
-              <p class="syn"><span class="syn-label">Синонимы: </span><span id="syn"></span></p>
-              <p id="example" class="example"></p>
+    <div class="bar" id="bar" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" aria-label="Прогресс сессии">
+      <div class="bar-fill" id="barFill"></div>
+    </div>
+    <main class="stage">
+      <div class="card-area" id="cardArea">
+        <div class="card-drag" id="cardDrag">
+          <div class="card-inner" id="cardInner">
+            <div class="card-face card-front" id="cardFront">
+              <span class="badge" id="badgeRepeat" hidden>Повтор</span>
+              <span class="front-label">Помнишь значение?</span>
+              <h2 class="front-word" id="wordFront"></h2>
+              <span class="front-hint">Свайпни или используй кнопки</span>
+              <button class="peek-btn" id="btnPeek" aria-label="Проверить себя: подсмотреть определение, не отвечая">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.1 9a3 3 0 0 1 5.8 1c0 1.6-1.2 2.3-2.1 2.9-.6.4-.9.8-.9 1.6v.2"/><circle cx="12" cy="17.5" r="1.1" fill="currentColor" stroke="none"/></svg>
+              </button>
+              <div class="tint" id="tintFront" aria-hidden="true"></div>
             </div>
-            <div class="back-footer">
-              <p id="back-note" class="back-note"></p>
-              <button id="btn-back-action" class="btn-accent">Понятно, повторить позже</button>
+            <div class="card-face card-back" id="cardBack">
+              <span class="badge" id="badgePeek" hidden>Проверка себя</span>
+              <div class="back-scroll" id="backScroll">
+                <h2 class="back-word" id="wordBack"></h2>
+                <div class="pos" id="posBack"></div>
+                <p class="def" id="defBack"></p>
+                <p class="syn"><span class="syn-label">Синонимы: </span><span id="synBack"></span></p>
+                <p class="ex" id="exBack"></p>
+                <p class="peek-note" id="peekNote" hidden>Это проверка себя — ответ ещё не засчитан. Вернись к слову и ответь честно.</p>
+              </div>
+              <p class="return-note" id="returnNote"></p>
+              <button class="btn-back" id="btnBackAction">Понятно, повторить позже</button>
+              <div class="tint violet" id="tintBack" aria-hidden="true"></div>
             </div>
           </div>
         </div>
-        <button id="btn-peek" class="peek-btn" aria-label="Проверить себя: посмотреть определение">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-            <line x1="12" y1="17" x2="12.01" y2="17"></line>
-          </svg>
+      </div>
+      <div class="actions" id="actionsBar">
+        <button class="act act-no" id="btnNo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          <span>Не помню</span>
+        </button>
+        <button class="act act-yes" id="btnYes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          <span>Помню</span>
         </button>
       </div>
     </main>
-
-    <footer id="answers" class="answers">
-      <button id="btn-no" class="btn-answer btn-no">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-        <span>Не помню</span>
-      </button>
-      <button id="btn-yes" class="btn-answer btn-yes">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-        <span>Помню</span>
-      </button>
-    </footer>
   </section>
 
-  <!-- ============ ЭКРАН 3 · РЕЗУЛЬТАТ ============ -->
-  <section id="view-result" class="view" aria-labelledby="result-title">
-    <header class="card-top">
-      <button id="btn-result-back" class="icon-btn" aria-label="На главную">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
+  <!-- Экран 3: Результат -->
+  <section class="view" id="view-result" aria-label="Результат сессии">
+    <main class="result-scroll" id="resultScroll">
+      <div class="result-ic" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <h1 class="result-title">Сессия завершена</h1>
+      <div class="stats">
+        <div class="stat"><b id="statFirst">0</b><span>С первого раза</span></div>
+        <div class="stat"><b id="statRepeated">0</b><span>Повторено после ошибки</span></div>
+        <div class="stat"><b id="statTomorrow">0</b><span>Оставлено на завтра</span></div>
+        <div class="stat"><b id="statErrors">0</b><span>Всего ошибок</span></div>
+        <div class="stat"><b id="statAdvanced">0</b><span>Перешли на следующий этап</span></div>
+        <div class="stat"><b id="statGraduated">0</b><span>Полностью освоено</span></div>
+      </div>
+      <div class="forgot">
+        <h3>Слова, которые подзабылись</h3>
+        <ul id="forgotList"></ul>
+        <p class="all-ok" id="forgotEmpty" hidden>Все слова вспомнились с первого раза.</p>
+      </div>
+      <p class="result-msg" id="resultMsg"></p>
+    </main>
+    <div class="result-bottom">
+      <button class="btn-primary" id="btnResultHome" style="width:100%">На главную</button>
+    </div>
+  </section>
+
+  <!-- Экран 4: Архив освоенных слов -->
+  <section class="view" id="view-archive" aria-label="Освоенные слова">
+    <header class="sess-head">
+      <button class="icon-btn" id="btnArchBack" aria-label="Назад на главную">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
       </button>
-      <div class="card-top-mid">Итог дня</div>
-      <div class="card-progress-text" aria-hidden="true"></div>
+      <div class="sess-mid">
+        <span class="sess-progress">Освоенные слова</span>
+      </div>
+      <div class="head-spacer" aria-hidden="true"></div>
     </header>
-
-    <div class="result-head">
-      <div class="result-ico" aria-hidden="true">
-        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
-          <polyline points="8.5 12.5 11 15 16 9.5"></polyline>
-        </svg>
-      </div>
-      <h1 id="result-title" class="result-title">Сессия завершена</h1>
-      <p id="result-date" class="result-date"></p>
-    </div>
-
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-num"><span id="st-first">0</span>
-          <svg class="stat-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
-        </div>
-        <div class="stat-label">С первого раза</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num"><span id="st-repeat">0</span>
-          <svg class="stat-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
-        </div>
-        <div class="stat-label">Повторено</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num"><span id="st-tomorrow">0</span>
-          <svg class="stat-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
-        </div>
-        <div class="stat-label">Оставлено на завтра</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num"><span id="st-errors">0</span>
-          <svg class="stat-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-        </div>
-        <div class="stat-label">Всего ошибок</div>
-      </div>
-    </div>
-
-    <div class="forgotten">
-      <div class="forgotten-title">Слова, которые подзабылись</div>
-      <div id="forgotten-list" class="forgotten-list"></div>
-    </div>
-
-    <p id="calm" class="calm"></p>
-    <button id="btn-result-home" class="btn-primary result-btn">На главную</button>
+    <main class="arch-scroll">
+      <p class="arch-count" id="archCount">Освоено слов: 0</p>
+      <ul class="arch-list" id="archList"></ul>
+      <p class="arch-empty" id="archEmpty" hidden>Пока пусто. Слова появятся здесь после полного цикла повторений 1 · 3 · 7 · 15 · 30 дней.</p>
+    </main>
   </section>
+
 </div>
 
-<!-- ============ НАСТРОЙКИ ============ -->
-<div id="modal-settings" class="modal" hidden>
-  <div class="modal-overlay" data-close="1"></div>
-  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
-    <div class="modal-grip" aria-hidden="true"></div>
-    <div class="modal-head">
-      <h2 id="settings-title" class="modal-title">Настройки</h2>
-      <button id="btn-close-settings" class="icon-btn" aria-label="Закрыть настройки">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
+<!-- Настройки -->
+<div class="overlay" id="settingsOverlay" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="sheet-head">
+      <h2 id="settingsTitle">Настройки</h2>
+      <button class="icon-btn" id="btnCloseSettings" aria-label="Закрыть настройки">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
-    <label class="set-row" for="set-haptics">
-      <span class="set-text">Виброотклик</span>
-      <span class="switch">
-        <input type="checkbox" id="set-haptics" checked>
-        <span class="track" aria-hidden="true"></span>
-        <span class="knob" aria-hidden="true"></span>
+    <div class="set-row set-row-col">
+      <div class="set-text">
+        <span class="set-name">Тема</span>
+        <span class="set-sub">Оформление интерфейса</span>
+      </div>
+      <div class="seg" role="radiogroup" aria-label="Тема оформления">
+        <button class="seg-btn on" role="radio" aria-checked="true" data-theme-btn="evening">Стандартная</button>
+        <button class="seg-btn" role="radio" aria-checked="false" data-theme-btn="dark">Тёмная</button>
+        <button class="seg-btn" role="radio" aria-checked="false" data-theme-btn="light">Светлая</button>
+      </div>
+    </div>
+    <div class="set-row">
+      <div class="set-text">
+        <span class="set-name">Виброотклик</span>
+        <span class="set-sub">Лёгкий отклик при ответах в Telegram</span>
+      </div>
+      <button class="switch" id="swHaptic" role="switch" aria-checked="true" aria-label="Виброотклик">
+        <span class="track"><span class="knob"></span></span>
+      </button>
+    </div>
+    <button class="set-row" id="archOpen" style="width:100%;text-align:left">
+      <span class="set-text">
+        <span class="set-name">Архив освоенных слов</span>
+        <span class="set-sub">Слова, прошедшие полный цикл интервалов</span>
       </span>
-    </label>
-    <div class="danger">
-      <button id="btn-reset" class="btn-ghost-danger">Сбросить тестовый прогресс</button>
-      <div id="reset-confirm" class="reset-confirm" hidden>
-        <p>Точно сбросить прогресс? Сессию этого дня придётся пройти заново. Другие данные не пострадают.</p>
-        <div class="reset-row">
-          <button id="btn-reset-yes" class="btn-danger">Да, сбросить</button>
-          <button id="btn-reset-no" class="btn-ghost">Отмена</button>
+      <span class="go"><span class="go-cnt" id="archSettingsCount">0</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </span>
+    </button>
+    <div class="set-row">
+      <div class="set-text">
+        <span class="set-name">Режим проверки интервалов</span>
+        <span class="set-sub">Подмена учебной даты для тестирования</span>
+      </div>
+      <button class="switch" id="swTest" role="switch" aria-checked="false" aria-label="Режим проверки интервалов">
+        <span class="track"><span class="knob"></span></span>
+      </button>
+    </div>
+    <div class="test-block" id="testBlock" hidden>
+      <p class="test-warn">Тестовая дата влияет только на учебный план внутри приложения и не меняет дату телефона.</p>
+      <div class="test-lines">
+        <div><span>Реальная дата</span><b id="tbReal"></b></div>
+        <div><span>Учебная дата</span><b id="tbEff"></b></div>
+        <div><span>Текущий сдвиг</span><b id="tbShift"></b></div>
+      </div>
+      <div class="test-grid">
+        <button class="tb" data-bump="1">+1 день</button>
+        <button class="tb" data-bump="3">+3 дня</button>
+        <button class="tb" data-bump="7">+7 дней</button>
+        <button class="tb" data-bump="15">+15 дней</button>
+        <button class="tb" data-bump="30">+30 дней</button>
+        <button class="tb" id="tbNearest">К ближайшему повторению</button>
+        <button class="tb wide" id="tbRealBtn">Вернуть реальную дату</button>
+      </div>
+      <p class="test-lock" id="tbLock" hidden>Сначала завершите текущую сессию</p>
+    </div>
+    <div class="reset-zone">
+      <h3>ТЕСТИРОВАНИЕ ВЕРСИИ 2</h3>
+      <button class="btn-danger" id="btnReset">Сбросить тестовый прогресс</button>
+      <div class="rc-confirm" id="resetConfirm" hidden>
+        <p>Удалить прогресс планировщика, сессию и тестовую дату? Настройки темы и вибрации сохранятся.</p>
+        <div class="rc-btns">
+          <button class="rc-cancel" id="btnResetNo">Отмена</button>
+          <button class="btn-danger-solid" id="btnResetYes">Да, сбросить</button>
+        </div>
+      </div>
+    </div>
+    <div class="reset-zone">
+      <h3>РЕЗЕРВНАЯ КОПИЯ ВЕРСИИ 1</h3>
+      <button class="btn-danger" id="btnResetV1">Удалить резерв версии 1</button>
+      <div class="rc-confirm" id="resetV1Confirm" hidden>
+        <p>Удалить сохранённую копию данных первой версии? Текущий прогресс версии 2 не пострадает.</p>
+        <div class="rc-btns">
+          <button class="rc-cancel" id="btnResetV1No">Отмена</button>
+          <button class="btn-danger-solid" id="btnResetV1Yes">Да, удалить</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<div id="toast" role="status" aria-live="polite"></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<noscript><div style="position:fixed;inset:0;display:grid;place-items:center;background:#131117;color:#ece8f4;padding:24px;text-align:center;font-family:sans-serif">Для работы приложения нужен включённый JavaScript.</div></noscript>
 
 <script>
 (function(){
 'use strict';
 
-/* =============== КОНСТАНТЫ И ДАННЫЕ =============== */
-var KEY = 'no1equalsme_state_v1';
-var SCHEMA = 1;
-var TOTAL = 5;
-var MAX_ERRORS = 5;
-var BACK_GUARD_MS = 300;
-var EDGE_GUARD_PX = 18;
+/* ================= Telegram ================= */
+var tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+try{
+  if(tg){
+    if(typeof tg.ready==='function') tg.ready();
+    if(typeof tg.expand==='function') tg.expand();
+  }
+}catch(e){}
+
+function setAppHeight(){
+  var h = window.innerHeight;
+  try{ if(tg && typeof tg.viewportStableHeight==='number' && tg.viewportStableHeight>0) h = tg.viewportStableHeight; }catch(e){}
+  document.documentElement.style.setProperty('--apph', h+'px');
+}
+setAppHeight();
+window.addEventListener('resize', setAppHeight);
+window.addEventListener('orientationchange', function(){ setTimeout(setAppHeight,120); });
+try{ if(tg && typeof tg.onEvent==='function') tg.onEvent('viewportChanged', setAppHeight); }catch(e){}
+
+/* ================= Контент ================= */
+var KEY = 'no1equalsme_state_v2';
+var TKEY = 'no1equalsme_testdate_v1';
+var V1KEY = 'no1equalsme_state_v1';
+var BACKUP_PREFIX = 'no1equalsme_state_v2_backup_';
+var INTERVALS = [1,3,7,15,30];
+var MAX_SESSION = 15;
+var MAX_NEW = 5;
+var MAX_LAPSES_EVENING = 5;
 
 var CARDS = [
-  {
-    id:'ambivalentnost', word:'амбивалентность', stress:'амбивале́нтность',
-    pos:'существительное',
-    def:'Одновременное присутствие противоположных чувств или отношений к одному и тому же объекту.',
-    syn:'двойственность, противоречивость',
-    example:'Он испытывал амбивалентность: хотел уехать, но боялся покидать привычный дом.'
-  },
-  {
-    id:'aplomb', word:'апломб', stress:'апло́мб',
-    pos:'существительное',
-    def:'Подчёркнутая самоуверенность в поведении, речи или манерах.',
-    syn:'самоуверенность, важность',
-    example:'Он с апломбом рассуждал о предмете, который едва успел изучить.'
-  },
-  {
-    id:'implicitny', word:'имплицитный', stress:'имплици́тный',
-    pos:'прилагательное',
-    def:'Не выраженный прямо, но подразумеваемый или содержащийся в чём-либо скрыто.',
-    syn:'неявный, подразумеваемый',
-    example:'В его ответе содержалось имплицитное согласие с предложением.'
-  },
-  {
-    id:'indifferentny', word:'индифферентный', stress:'индиффере́нтный',
-    pos:'прилагательное',
-    def:'Не проявляющий интереса, участия или эмоционального отношения; безразличный.',
-    syn:'равнодушный, безразличный',
-    example:'Он оставался индифферентным к спору и не поддержал ни одну сторону.'
-  },
-  {
-    id:'eklektichny', word:'эклектичный', stress:'эклекти́чный',
-    pos:'прилагательное',
-    def:'Соединяющий разнородные элементы, идеи или стили, взятые из разных источников.',
-    syn:'смешанный, разностильный',
-    example:'Интерьер получился эклектичным: антикварная мебель соседствовала с современным светом.'
-  }
+  {id:'ambivalentnost', word:'амбивалентность', stress:'амбивале́нтность', pos:'существительное',
+   def:'Одновременное присутствие противоположных чувств или отношений к одному и тому же объекту.',
+   syn:['двойственность','противоречивость'],
+   ex:'Он испытывал амбивалентность: хотел уехать, но боялся покидать привычный дом.'},
+  {id:'aplomb', word:'апломб', stress:'апло́мб', pos:'существительное',
+   def:'Подчёркнутая самоуверенность в поведении, речи или манерах.',
+   syn:['самоуверенность','важность'],
+   ex:'Он с апломбом рассуждал о предмете, который едва успел изучить.'},
+  {id:'implicitny', word:'имплицитный', stress:'имплици́тный', pos:'прилагательное',
+   def:'Не выраженный прямо, но подразумеваемый или содержащийся в чём-либо скрыто.',
+   syn:['неявный','подразумеваемый'],
+   ex:'В его ответе содержалось имплицитное согласие с предложением.'},
+  {id:'indifferentny', word:'индифферентный', stress:'индиффере́нтный', pos:'прилагательное',
+   def:'Не проявляющий интереса, участия или эмоционального отношения; безразличный.',
+   syn:['равнодушный','безразличный'],
+   ex:'Он оставался индифферентным к спору и не поддержал ни одну сторону.'},
+  {id:'eklektichny', word:'эклектичный', stress:'эклекти́чный', pos:'прилагательное',
+   def:'Соединяющий разнородные элементы, идеи или стили, взятые из разных источников.',
+   syn:['смешанный','разностильный'],
+   ex:'Интерьер получился эклектичным: антикварная мебель соседствовала с современным светом.'}
 ];
 var CARD_MAP = {};
-CARDS.forEach(function(c){ CARD_MAP[c.id] = c; });
+CARDS.forEach(function(c){ CARD_MAP[c.id]=c; });
 
 var REDUCED = false;
-try { REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){}
-function dur(ms){ return REDUCED ? Math.min(ms, 90) : ms; }
+try{ REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
+if(REDUCED) document.documentElement.classList.add('rm');
+var D = REDUCED ? {fly:90, spring:60, flip:60} : {fly:250, spring:200, flip:280};
 
-function nowIso(){ return new Date().toISOString(); }
-function todayStr(){
-  var d = new Date();
-  var p = function(n){ return String(n).padStart(2,'0'); };
-  return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate());
-}
-function errWord(n){
-  var a = n % 10, b = n % 100;
-  if (a === 1 && b !== 11) return 'ошибка';
-  if (a >= 2 && a <= 4 && (b < 12 || b > 14)) return 'ошибки';
-  return 'ошибок';
-}
-function pluralCards(n){
-  var a = n % 10, b = n % 100;
-  if (a === 1 && b !== 11) return 'карточка';
-  if (a >= 2 && a <= 4 && (b < 12 || b > 14)) return 'карточки';
-  return 'карточек';
-}
+/* ================= DOM ================= */
+function $(id){ return document.getElementById(id); }
+var elViews = {home:$('view-home'), session:$('view-session'), result:$('view-result'), archive:$('view-archive')};
+var elHomeDate=$('homeDate'), elTestPillHome=$('testPillHome'), elHomeTitle=$('homeTitle'), elCatSub=$('catSub'), elCatChip=$('catChip'),
+    elArchRow=$('archRow'), elArchRowCount=$('archRowCount'),
+    elHomeSummary=$('homeSummary'), elSummaryLine1=$('summaryLine1'), elSummaryLine2=$('summaryLine2'),
+    elEmptyDay=$('emptyDay'), elEmptyDayText=$('emptyDayText'), elBtnNearest=$('btnNearest'),
+    elBtnStart=$('btnStart'), elBtnShowResult=$('btnShowResult'), elBtnSettings=$('btnSettings');
+var elBtnBack=$('btnBack'), elSessProgress=$('sessProgress'), elTestPillSession=$('testPillSession'), elBar=$('bar'), elBarFill=$('barFill'),
+    elCardArea=$('cardArea'), elCardDrag=$('cardDrag'), elCardInner=$('cardInner'),
+    elCardFront=$('cardFront'), elCardBack=$('cardBack'),
+    elWordFront=$('wordFront'), elBadgeRepeat=$('badgeRepeat'), elBtnPeek=$('btnPeek'), elTintFront=$('tintFront'),
+    elBackScroll=$('backScroll'), elWordBack=$('wordBack'), elPosBack=$('posBack'), elDefBack=$('defBack'),
+    elSynBack=$('synBack'), elExBack=$('exBack'), elPeekNote=$('peekNote'), elReturnNote=$('returnNote'),
+    elBtnBackAction=$('btnBackAction'), elBadgePeek=$('badgePeek'), elTintBack=$('tintBack'),
+    elActions=$('actionsBar'), elBtnNo=$('btnNo'), elBtnYes=$('btnYes');
+var elStatFirst=$('statFirst'), elStatRepeated=$('statRepeated'), elStatTomorrow=$('statTomorrow'),
+    elStatErrors=$('statErrors'), elStatAdvanced=$('statAdvanced'), elStatGraduated=$('statGraduated'),
+    elForgotList=$('forgotList'), elForgotEmpty=$('forgotEmpty'),
+    elResultMsg=$('resultMsg'), elBtnResultHome=$('btnResultHome');
+var elBtnArchBack=$('btnArchBack'), elArchCount=$('archCount'), elArchList=$('archList'), elArchEmpty=$('archEmpty');
+var elOverlay=$('settingsOverlay'), elBtnCloseSettings=$('btnCloseSettings'), elSwHaptic=$('swHaptic'),
+    elArchOpen=$('archOpen'), elArchSettingsCount=$('archSettingsCount'),
+    elSwTest=$('swTest'), elTestBlock=$('testBlock'),
+    elTbReal=$('tbReal'), elTbEff=$('tbEff'), elTbShift=$('tbShift'), elTbNearest=$('tbNearest'), elTbRealBtn=$('tbRealBtn'), elTbLock=$('tbLock'),
+    elBtnReset=$('btnReset'), elResetConfirm=$('resetConfirm'), elBtnResetYes=$('btnResetYes'), elBtnResetNo=$('btnResetNo'),
+    elBtnResetV1=$('btnResetV1'), elResetV1Confirm=$('resetV1Confirm'), elBtnResetV1Yes=$('btnResetV1Yes'), elBtnResetV1No=$('btnResetV1No');
+var elToast=$('toast');
+var bumpButtons = Array.prototype.slice.call(document.querySelectorAll('[data-bump]'));
 
-/* =============== СОСТОЯНИЕ =============== */
-var state = null;
-var storageWasCorrupt = false;
-
-function freshState(){
-  return { schemaVersion: SCHEMA, settings: { haptics: true }, session: null };
+/* ================= Даты (локальные, без UTC) ================= */
+function fmtYMD(y, m, d){ return y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0'); }
+function dateToYMD(d){ return fmtYMD(d.getFullYear(), d.getMonth()+1, d.getDate()); }
+function realToday(){ return dateToYMD(new Date()); }
+function parseYMD(s){ var p=s.split('-'); return {y:+p[0], m:+p[1], d:+p[2]}; }
+function addDaysStr(ymd, n){
+  var p=parseYMD(ymd);
+  return dateToYMD(new Date(p.y, p.m-1, p.d+n)); // календарное прибавление, переход через месяцы и годы
+}
+function diffDays(fromYmd, toYmd){
+  var a=parseYMD(fromYmd), b=parseYMD(toYmd);
+  var da=new Date(a.y,a.m-1,a.d), db=new Date(b.y,b.m-1,b.d);
+  return Math.round((db-da)/86400000);
+}
+function fmtHuman(ymd){
+  try{
+    var p=parseYMD(ymd);
+    return new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long',year:'numeric'}).format(new Date(p.y,p.m-1,p.d));
+  }catch(e){ return ymd; }
+}
+function rusDateStr(ymd){
+  try{
+    var p=parseYMD(ymd);
+    var s=new Intl.DateTimeFormat('ru-RU',{weekday:'long',day:'numeric',month:'long'}).format(new Date(p.y,p.m-1,p.d));
+    return s.charAt(0).toUpperCase()+s.slice(1);
+  }catch(e){ return ''; }
+}
+function plural(n, one, few, many){
+  var m=Math.abs(n)%100, d=m%10;
+  if(m>10&&m<20) return many;
+  if(d>1&&d<5) return few;
+  if(d===1) return one;
+  return many;
 }
 function shuffle(arr){
-  for (var i = arr.length - 1; i > 0; i--){
-    var j = Math.floor(Math.random() * (i + 1));
-    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+  for(var i=arr.length-1;i>0;i--){
+    var j=Math.floor(Math.random()*(i+1));
+    var t=arr[i]; arr[i]=arr[j]; arr[j]=t;
   }
   return arr;
 }
-function newSession(){
-  var queue = shuffle(CARDS.map(function(c){ return c.id; }));
-  var results = {};
-  CARDS.forEach(function(c){
-    results[c.id] = { errors: 0, firstTry: null, status: 'pending', completedAs: null };
-  });
+
+/* ================= Состояние ================= */
+function defaultProg(){
+  return {status:'new', stage:null, dueDate:null, firstSeenDate:null, lastReviewedDate:null,
+          lapses:0, successfulReviews:0, updatedAt:null, history:[]};
+}
+function freshState(){
   return {
-    date: todayStr(),
-    status: 'active',
-    queue: queue,
-    initialTotal: TOTAL,
-    currentScreen: 'question',
-    results: results,
-    totalErrors: 0,
-    createdAt: nowIso(),
-    updatedAt: nowIso(),
-    completedAt: null
+    schemaVersion:2,
+    status:'idle',           // idle | active | completed
+    sessionDate:null,        // учебная дата текущей сессии
+    view:'home',             // home | session | result | archive
+    cardScreen:'question',   // question | peek | definition
+    queue:[],
+    sessionTotal:0,
+    sessionResults:{},
+    cards:{},                // прогресс по стабильным id
+    lastStudyDate:null,      // последняя использованная учебная дата
+    startedAt:null, updatedAt:Date.now(), completedAt:null,
+    settings:{haptics:true, theme:'evening'}
   };
 }
-function persist(){
-  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){}
-}
-function validateSession(s){
-  if (!s || typeof s !== 'object') return false;
-  if (typeof s.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s.date)) return false;
-  if (s.status !== 'active' && s.status !== 'completed') return false;
-  if (s.currentScreen !== 'question' && s.currentScreen !== 'peek' && s.currentScreen !== 'definition') return false;
-  if (!Array.isArray(s.queue)) return false;
-  if (!s.results || typeof s.results !== 'object') return false;
-  for (var i = 0; i < CARDS.length; i++){
-    var r = s.results[CARDS[i].id];
-    if (!r || typeof r !== 'object') return false;
-    if (typeof r.errors !== 'number' || !(r.errors >= 0)) return false;
-    r.errors = Math.min(Math.max(0, Math.round(r.errors)), MAX_ERRORS);
-    if (r.status !== 'completed') r.status = 'pending';
-    if (r.completedAs !== 'first' && r.completedAs !== 'repeat' && r.completedAs !== 'tomorrow') r.completedAs = null;
-    if (r.firstTry !== true) r.firstTry = null;
-  }
-  for (var q = 0; q < s.queue.length; q++){
-    if (!CARD_MAP[s.queue[q]]) return false;
-  }
-  if (s.status === 'active'){
-    if (s.queue.length === 0) return false;
-    if (!CARD_MAP[s.queue[0]]) return false;
-    if (s.results[s.queue[0]].status !== 'pending') return false;
-  }
-  if (typeof s.totalErrors !== 'number' || !(s.totalErrors >= 0)) s.totalErrors = 0;
-  if (typeof s.createdAt !== 'string') s.createdAt = nowIso();
-  s.updatedAt = typeof s.updatedAt === 'string' ? s.updatedAt : nowIso();
-  if (typeof s.completedAt !== 'string') s.completedAt = null;
+function isValidProg(p){
+  if(!p || typeof p!=='object') return false;
+  if(['new','learning','graduated','suspended'].indexOf(p.status)<0) return false;
+  if(!(p.stage===null || (typeof p.stage==='number' && p.stage>=0 && p.stage<=4 && Math.floor(p.stage)===p.stage))) return false;
+  if(!(p.dueDate===null || (typeof p.dueDate==='string' && /^\d{4}-\d{2}-\d{2}$/.test(p.dueDate)))) return false;
+  if(!(p.firstSeenDate===null || typeof p.firstSeenDate==='string')) return false;
+  if(!(p.lastReviewedDate===null || typeof p.lastReviewedDate==='string')) return false;
+  if(typeof p.lapses!=='number' || p.lapses<0 || typeof p.successfulReviews!=='number' || p.successfulReviews<0) return false;
+  if(!Array.isArray(p.history) || p.history.length>50) return false;
   return true;
 }
+function isValidState(s){
+  try{
+    if(!s || typeof s!=='object') return false;
+    if(s.schemaVersion!==2) return false;
+    if(['idle','active','completed'].indexOf(s.status)<0) return false;
+    if(['home','session','result','archive'].indexOf(s.view)<0) return false;
+    if(['question','peek','definition'].indexOf(s.cardScreen)<0) return false;
+    if(!(s.sessionDate===null || /^\d{4}-\d{2}-\d{2}$/.test(s.sessionDate))) return false;
+    if(!(s.lastStudyDate===null || /^\d{4}-\d{2}-\d{2}$/.test(s.lastStudyDate))) return false;
+    if(!Array.isArray(s.queue)) return false;
+    for(var i=0;i<s.queue.length;i++){ if(!CARD_MAP[s.queue[i]]) return false; }
+    if(typeof s.sessionTotal!=='number' || s.sessionTotal<0) return false;
+    if(!s.sessionResults || typeof s.sessionResults!=='object') return false;
+    for(var j=0;j<s.queue.length;j++){
+      var r=s.sessionResults[s.queue[j]];
+      if(!r || typeof r.errors!=='number' || r.errors<0) return false;
+      if(typeof r.done!=='boolean' || typeof r.firstTry!=='boolean' || typeof r.tomorrow!=='boolean') return false;
+    }
+    if(!s.cards || typeof s.cards!=='object') return false;
+    var keys=Object.keys(s.cards);
+    for(var k=0;k<keys.length;k++){ if(!isValidProg(s.cards[keys[k]])) return false; }
+    if(!s.settings || typeof s.settings.haptics!=='boolean') return false;
+    return true;
+  }catch(e){ return false; }
+}
+
+var state, testState={enabled:false, offset:0}, hadCorruption=false, freshInstall=false;
 function loadState(){
-  var raw = null;
-  try { raw = localStorage.getItem(KEY); } catch(e){ raw = null; }
-  if (!raw){ state = freshState(); return; }
-  try {
-    var parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== 'object' || parsed.schemaVersion !== SCHEMA) throw new Error('schema');
-    if (!parsed.settings || typeof parsed.settings.haptics !== 'boolean') parsed.settings = { haptics: true };
-    if (parsed.session !== null && !validateSession(parsed.session)) throw new Error('session');
-    state = parsed;
-  } catch(e){
-    state = freshState();
-    storageWasCorrupt = true;
-    persist();
+  var raw=null;
+  try{ raw=localStorage.getItem(KEY); }catch(e){}
+  if(!raw){ state=freshState(); freshInstall=true; return; }
+  try{
+    var s=JSON.parse(raw);
+    if(!isValidState(s)) throw new Error('incompatible');
+    state=s;
+  }catch(e){
+    try{ localStorage.setItem(BACKUP_PREFIX+Date.now(), raw); }catch(err){}
+    state=freshState();
+    hadCorruption=true;
   }
 }
-function todaySession(){
-  if (state.session && state.session.date === todayStr()) return state.session;
-  return null;
+function loadTest(){
+  try{
+    var raw=localStorage.getItem(TKEY);
+    if(!raw) return;
+    var t=JSON.parse(raw);
+    if(t && typeof t==='object' && typeof t.enabled==='boolean' && typeof t.offset==='number' && isFinite(t.offset) && t.offset>=0){
+      testState={enabled:t.enabled, offset:Math.floor(t.offset)};
+    }
+  }catch(e){}
 }
-function completedCount(s){
-  var n = 0;
-  for (var id in s.results){ if (s.results[id] && s.results[id].status === 'completed') n++; }
+function save(){
+  try{ state.updatedAt=Date.now(); localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+}
+function saveTest(){
+  try{ localStorage.setItem(TKEY, JSON.stringify(testState)); }catch(e){}
+}
+function effDate(){
+  return testState.enabled ? addDaysStr(realToday(), testState.offset) : realToday();
+}
+
+/* ================= Прогресс карточек ================= */
+function cardProg(id){
+  var p=state.cards[id];
+  if(!p){ p=defaultProg(); state.cards[id]=p; }
+  return p;
+}
+function pushHistory(p, studyDate, action, from, to){
+  p.history.push({d:studyDate, a:action, f:from, t:to});
+  if(p.history.length>50) p.history.splice(0, p.history.length-50);
+}
+/* Успешный ответ: первая встреча, чистое междневное повторение или успех после вечерней ошибки */
+function applySuccess(id, studyDate, firstTry){
+  var p=cardProg(id);
+  var from=p.stage;
+  var advanced=false, graduated=false;
+  if(!p.firstSeenDate) p.firstSeenDate=studyDate;
+  if(p.status==='new'){
+    p.status='learning';
+    p.stage=0;
+    p.dueDate=addDaysStr(studyDate, INTERVALS[0]);
+    pushHistory(p, studyDate, 'ok', null, 0);
+  } else if(firstTry){
+    if(p.stage>=4){
+      p.status='graduated';
+      p.stage=null;
+      p.dueDate=null;
+      graduated=true; advanced=true;
+      pushHistory(p, studyDate, 'ok', 4, 'grad');
+    } else {
+      var to=p.stage+1;
+      p.dueDate=addDaysStr(studyDate, INTERVALS[to]);
+      p.stage=to;
+      advanced=true;
+      pushHistory(p, studyDate, 'ok', from, to);
+    }
+    p.successfulReviews++;
+  } else {
+    p.status='learning';
+    p.stage=0;
+    p.dueDate=addDaysStr(studyDate, INTERVALS[0]);
+    pushHistory(p, studyDate, 'ok', from, 0);
+  }
+  p.lastReviewedDate=studyDate;
+  p.updatedAt=Date.now();
+  return {advanced:advanced, graduated:graduated};
+}
+/* Ошибка вечером: только фиксация, дата не назначается */
+function applyForgot(id, studyDate){
+  var p=cardProg(id);
+  p.lapses++;
+  p.updatedAt=Date.now();
+  pushHistory(p, studyDate, 'no', p.stage, p.stage);
+}
+/* Защитный лимит ошибок: завершение вечера со stage 0 и датой +1 день */
+function applyCap(id, studyDate){
+  var p=cardProg(id);
+  var from=p.stage;
+  if(!p.firstSeenDate) p.firstSeenDate=studyDate;
+  p.status='learning';
+  p.stage=0;
+  p.dueDate=addDaysStr(studyDate, INTERVALS[0]);
+  p.lastReviewedDate=studyDate;
+  p.updatedAt=Date.now();
+  pushHistory(p, studyDate, 'cap', from, 0);
+}
+function graduatedCount(){
+  var n=0;
+  CARDS.forEach(function(c){ var p=state.cards[c.id]; if(p && p.status==='graduated') n++; });
   return n;
 }
-function computeStats(s){
-  var first = 0, repeat = 0, tomorrow = 0, errors = 0, forgotten = [];
+
+/* ================= Планировщик очереди ================= */
+function buildDayQueue(eff){
+  var overdue=[], dueToday=[], fresh=[];
   CARDS.forEach(function(c){
-    var r = s.results[c.id];
-    if (!r) return;
-    errors += r.errors;
-    if (r.completedAs === 'first') first++;
-    else if (r.completedAs === 'repeat') repeat++;
-    else if (r.completedAs === 'tomorrow') tomorrow++;
-    if (r.errors > 0) forgotten.push({ id: c.id, stress: c.stress, errors: r.errors });
-  });
-  forgotten.sort(function(a, b){ return b.errors - a.errors; });
-  return { first: first, repeat: repeat, tomorrow: tomorrow, errors: errors, forgotten: forgotten };
-}
-
-/* =============== ЭЛЕМЕНТЫ =============== */
-function $(sel){ return document.querySelector(sel); }
-var views = { home: $('#view-home'), card: $('#view-card'), result: $('#view-result') };
-var els = {
-  homeDate: $('#home-date'), homeTitle: $('#home-title'), homeCat: $('#home-cat'),
-  homeSummary: $('#home-summary'), homeSummaryLine: $('#home-summary-line'),
-  btnStart: $('#btn-start'), homeHint: $('#home-hint'), btnSettings: $('#btn-settings'),
-  progressText: $('#progress-text'), progressBar: $('#progress-bar'),
-  card: $('#card'), cardInner: $('#card-inner'),
-  faceFront: $('#face-front'), faceBack: $('#face-back'),
-  wordFront: $('#word-front'), badgeRepeat: $('#badge-repeat'),
-  wordBack: $('#word-back'), pos: $('#pos'), def: $('#def'), syn: $('#syn'), example: $('#example'),
-  peekNote: $('#peek-note'), backNote: $('#back-note'), backScroll: $('#back-scroll'),
-  btnBackAction: $('#btn-back-action'), btnPeek: $('#btn-peek'),
-  answers: $('#answers'), btnNo: $('#btn-no'), btnYes: $('#btn-yes'),
-  btnBackHome: $('#btn-back-home'),
-  resultDate: $('#result-date'), stFirst: $('#st-first'), stRepeat: $('#st-repeat'),
-  stTomorrow: $('#st-tomorrow'), stErrors: $('#st-errors'),
-  forgottenList: $('#forgotten-list'), calm: $('#calm'),
-  btnResultHome: $('#btn-result-home'), btnResultBack: $('#btn-result-back'),
-  modal: $('#modal-settings'), setHaptics: $('#set-haptics'),
-  btnCloseSettings: $('#btn-close-settings'),
-  btnReset: $('#btn-reset'), resetConfirm: $('#reset-confirm'),
-  btnResetYes: $('#btn-reset-yes'), btnResetNo: $('#btn-reset-no'),
-  toast: $('#toast')
-};
-
-var currentView = 'home';
-var lock = false;
-var backShownAt = 0;
-
-/* =============== TELEGRAM =============== */
-var tg = null;
-try { if (window.Telegram && window.Telegram.WebApp) tg = window.Telegram.WebApp; } catch(e){ tg = null; }
-
-function hexToRgb(h){
-  try {
-    var m = h.replace('#','');
-    if (m.length === 3) m = m[0]+m[0]+m[1]+m[1]+m[2]+m[2];
-    var n = parseInt(m, 16);
-    if (isNaN(n)) return null;
-    return [(n>>16)&255, (n>>8)&255, n&255];
-  } catch(e){ return null; }
-}
-function luminance(rgb){
-  var f = function(v){ v /= 255; return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); };
-  return 0.2126*f(rgb[0]) + 0.7152*f(rgb[1]) + 0.0722*f(rgb[2]);
-}
-function shifted(rgb, d){
-  return 'rgb(' + Math.min(255, Math.max(0, rgb[0]+d)) + ',' +
-         Math.min(255, Math.max(0, rgb[1]+d)) + ',' +
-         Math.min(255, Math.max(0, rgb[2]+d+2)) + ')';
-}
-function applyTgTheme(){
-  if (!tg || !tg.themeParams) return;
-  try {
-    var tp = tg.themeParams;
-    if (tp.bg_color){
-      var rgb = hexToRgb(tp.bg_color);
-      if (rgb && luminance(rgb) < 0.22){
-        var root = document.documentElement.style;
-        root.setProperty('--bg', shifted(rgb, 0));
-        root.setProperty('--surface', shifted(rgb, 10));
-        root.setProperty('--surface-2', shifted(rgb, 17));
-        root.setProperty('--card', shifted(rgb, 14));
-      }
+    var p=state.cards[c.id] || defaultProg();
+    if(p.status==='graduated' || p.status==='suspended') return;
+    if(p.status==='new'){ fresh.push(c.id); return; }
+    if(p.status==='learning' && p.dueDate){
+      if(p.dueDate<eff) overdue.push({id:c.id, due:p.dueDate});
+      else if(p.dueDate===eff) dueToday.push(c.id);
     }
-  } catch(e){}
+  });
+  overdue.sort(function(a,b){ return a.due<b.due ? -1 : (a.due>b.due ? 1 : 0); });
+  shuffle(dueToday); // назначенные с одинаковой датой перемешиваем один раз
+  var queue = overdue.map(function(o){return o.id;}).concat(dueToday).slice(0, MAX_SESSION);
+  if(queue.length < MAX_SESSION){
+    var cap = Math.min(MAX_NEW, MAX_SESSION - queue.length, fresh.length);
+    if(cap>0){ shuffle(fresh); queue = queue.concat(fresh.slice(0, cap)); }
+  }
+  return queue;
+}
+function previewDay(eff){
+  var overdueN=0, dueN=0, freshN=0;
+  CARDS.forEach(function(c){
+    var p=state.cards[c.id] || defaultProg();
+    if(p.status==='graduated' || p.status==='suspended') return;
+    if(p.status==='new'){ freshN++; return; }
+    if(p.status==='learning' && p.dueDate){
+      if(p.dueDate<eff) overdueN++;
+      else if(p.dueDate===eff) dueN++;
+    }
+  });
+  var assigned = overdueN + dueN;
+  var capped = Math.min(assigned, MAX_SESSION);
+  var newAllowed = capped>=MAX_SESSION ? 0 : Math.min(MAX_NEW, MAX_SESSION-capped, freshN);
+  return {overdue:overdueN, dueToday:dueN, assigned:capped, newAllowed:newAllowed, total:capped+newAllowed};
+}
+function nearestFutureDue(){
+  var eff=effDate(), best=null;
+  CARDS.forEach(function(c){
+    var p=state.cards[c.id];
+    if(p && p.status==='learning' && p.dueDate && p.dueDate>eff){
+      if(!best || p.dueDate<best) best=p.dueDate;
+    }
+  });
+  return best;
+}
+/* Сессия другой учебной даты больше не актуальна */
+function ensureDay(){
+  var eff=effDate();
+  if(state.status==='completed' && state.sessionDate!==eff){
+    state.status='idle'; save();
+  } else if(state.status==='active' && state.sessionDate!==eff){
+    state.status='idle'; state.queue=[]; state.sessionResults={}; state.sessionTotal=0; state.cardScreen='question';
+    if(state.view==='session' || state.view==='result') state.view='home';
+    save();
+  }
+}
+
+/* ================= Хелперы ================= */
+function currentCard(){ return state.queue.length ? CARD_MAP[state.queue[0]] : null; }
+function doneCount(){
+  var n=0;
+  Object.keys(state.sessionResults).forEach(function(id){ if(state.sessionResults[id].done) n++; });
+  return n;
+}
+function computeStats(){
+  var first=0, rep=0, tom=0, err=0, adv=0, grad=0, forgot=[];
+  Object.keys(state.sessionResults).forEach(function(id){
+    var r=state.sessionResults[id];
+    err+=r.errors;
+    if(r.errors>0 && CARD_MAP[id]) forgot.push(CARD_MAP[id].stress);
+    if(r.done){ if(r.tomorrow) tom++; else if(r.firstTry) first++; else rep++; }
+    if(r.advanced) adv++;
+    if(r.graduatedNow) grad++;
+  });
+  return {first:first, repeated:rep, tomorrow:tom, errors:err, advanced:adv, graduated:grad, forgot:forgot};
 }
 function haptic(kind){
-  if (!state || !state.settings.haptics) return;
-  if (!tg || !tg.HapticFeedback) return;
-  var hf = tg.HapticFeedback;
-  try {
-    if (kind === 'success' && typeof hf.notificationOccurred === 'function') hf.notificationOccurred('success');
-    else if (kind === 'error' && typeof hf.notificationOccurred === 'function') hf.notificationOccurred('error');
-    else if (kind === 'light' && typeof hf.impactOccurred === 'function') hf.impactOccurred('light');
-    else if (kind === 'select' && typeof hf.selectionChanged === 'function') hf.selectionChanged();
-  } catch(e){}
+  if(!state.settings.haptics) return;
+  if(!tg || !tg.HapticFeedback) return;
+  try{
+    var hf=tg.HapticFeedback;
+    if(kind==='success' && typeof hf.impactOccurred==='function') hf.impactOccurred('light');
+    else if(kind==='error' && typeof hf.notificationOccurred==='function') hf.notificationOccurred('error');
+    else if(kind==='done' && typeof hf.notificationOccurred==='function') hf.notificationOccurred('success');
+  }catch(e){}
 }
-function syncBackButton(){
-  if (!tg || !tg.BackButton) return;
-  try {
-    if (currentView === 'home') {
-      if (typeof tg.BackButton.hide === 'function') tg.BackButton.hide();
-    } else if (typeof tg.BackButton.show === 'function') {
-      tg.BackButton.show();
-    }
-  } catch(e){}
-}
-function onTgBack(){
-  if (!els.modal.hidden){ closeSettings(); return; }
-  persist();
-  if (currentView !== 'home') showView('home');
-}
-function tgInit(){
-  if (!tg) return;
-  try { if (typeof tg.ready === 'function') tg.ready(); } catch(e){}
-  try { if (typeof tg.expand === 'function') tg.expand(); } catch(e){}
-  try { if (typeof tg.setHeaderColor === 'function') tg.setHeaderColor('#16151b'); } catch(e){}
-  try { if (typeof tg.setBackgroundColor === 'function') tg.setBackgroundColor('#16151b'); } catch(e){}
-  try { if (typeof tg.disableVerticalSwipes === 'function') tg.disableVerticalSwipes(); } catch(e){}
-  try {
-    if (tg.BackButton && typeof tg.BackButton.onClick === 'function') tg.BackButton.onClick(onTgBack);
-  } catch(e){}
-  applyTgTheme();
-}
-
-/* =============== ТОСТ =============== */
-var toastTimer = null;
+var toastTimer=null;
 function toast(msg){
-  els.toast.textContent = msg;
-  els.toast.classList.add('show');
-  if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(function(){ els.toast.classList.remove('show'); }, 3600);
+  elToast.textContent=msg; elToast.hidden=false;
+  requestAnimationFrame(function(){ elToast.classList.add('show'); });
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){
+    elToast.classList.remove('show');
+    setTimeout(function(){ elToast.hidden=true; },240);
+  },3200);
 }
 
-/* =============== НАВИГАЦИЯ =============== */
-function showView(name){
-  currentView = name;
-  for (var k in views){
-    var on = (k === name);
-    views[k].classList.toggle('active', on);
-    views[k].setAttribute('aria-hidden', on ? 'false' : 'true');
-  }
-  if (name === 'home') renderHome();
-  else if (name === 'card') renderCard();
-  else if (name === 'result') renderResult();
-  syncBackButton();
-}
-function goHomeWithSave(){
-  persist();
-  showView('home');
-}
-
-/* =============== РЕНДЕР: ГЛАВНАЯ =============== */
+/* ================= Рендер: главная ================= */
+function strong(text){ var b=document.createElement('strong'); b.textContent=text; return b; }
 function renderHome(){
-  try {
-    els.homeDate.textContent = new Intl.DateTimeFormat('ru-RU', {
-      weekday: 'long', day: 'numeric', month: 'long'
-    }).format(new Date());
-  } catch(e){
-    els.homeDate.textContent = todayStr();
-  }
-  var s = todaySession();
-  els.homeSummary.hidden = true;
-  els.homeCat.hidden = false;
-  els.btnStart.classList.remove('secondary');
-  els.homeHint.textContent = '';
-
-  if (!s){
-    els.homeTitle.textContent = 'Вечерняя сессия';
-    els.btnStart.textContent = 'Начать';
-    els.btnStart.dataset.mode = 'start';
+  var eff=effDate();
+  elHomeDate.textContent=rusDateStr(eff);
+  elTestPillHome.hidden=!testState.enabled;
+  elArchRowCount.textContent=String(graduatedCount());
+  elCatChip.className='chip';
+  if(state.status==='completed' && state.sessionDate===eff){
+    var st=computeStats();
+    elHomeTitle.textContent='На сегодня всё';
+    elCatSub.textContent=state.sessionTotal+' '+plural(state.sessionTotal,'карточка','карточки','карточек')+' · день завершён';
+    elCatChip.textContent='Готово'; elCatChip.classList.add('is-done');
+    elSummaryLine1.innerHTML='';
+    elSummaryLine1.appendChild(document.createTextNode('С первого раза: ')); elSummaryLine1.appendChild(strong(String(st.first)));
+    elSummaryLine1.appendChild(document.createTextNode(' · Повторено: ')); elSummaryLine1.appendChild(strong(String(st.repeated)));
+    elSummaryLine1.appendChild(document.createTextNode(' · На завтра: ')); elSummaryLine1.appendChild(strong(String(st.tomorrow)));
+    elSummaryLine2.innerHTML='';
+    elSummaryLine2.appendChild(document.createTextNode('Ошибок: ')); elSummaryLine2.appendChild(strong(String(st.errors)));
+    elSummaryLine2.appendChild(document.createTextNode(' · +Этап: ')); elSummaryLine2.appendChild(strong(String(st.advanced)));
+    elSummaryLine2.appendChild(document.createTextNode(' · Освоено: ')); elSummaryLine2.appendChild(strong(String(st.graduated)));
+    elHomeSummary.hidden=false;
+    elEmptyDay.hidden=true;
+    elBtnStart.hidden=true;
+    elBtnShowResult.hidden=false;
     return;
   }
-  if (s.status === 'active'){
-    var done = completedCount(s);
-    els.homeTitle.textContent = 'Вечерняя сессия';
-    els.btnStart.textContent = 'Продолжить';
-    els.btnStart.dataset.mode = 'continue';
-    var left = s.queue.length;
-    els.homeHint.textContent = 'Пройдено ' + done + ' из ' + TOTAL + ' · осталось ' + left + ' ' + pluralCards(left);
+  elHomeSummary.hidden=true;
+  elBtnShowResult.hidden=true;
+  elHomeTitle.textContent='Вечерняя сессия';
+  if(state.status==='active'){
+    var done=doneCount();
+    elCatSub.textContent='Пройдено '+done+' из '+state.sessionTotal+' · продолжим с того же места';
+    elCatChip.textContent='В процессе'; elCatChip.classList.add('is-active');
+    elEmptyDay.hidden=true;
+    elBtnStart.hidden=false;
+    elBtnStart.textContent='Продолжить';
     return;
   }
-  // завершена
-  var st = computeStats(s);
-  els.homeTitle.textContent = 'На сегодня всё';
-  els.homeCat.hidden = true;
-  els.homeSummary.hidden = false;
-  els.homeSummaryLine.textContent =
-    'С первого раза: ' + st.first + ' · Повторено: ' + st.repeat +
-    ' · На завтра: ' + st.tomorrow + '. Ошибок за вечер: ' + st.errors + '.';
-  els.btnStart.textContent = 'Посмотреть результат';
-  els.btnStart.classList.add('secondary');
-  els.btnStart.dataset.mode = 'result';
-}
-
-/* =============== РЕНДЕР: КАРТОЧКА =============== */
-function renderCard(){
-  var s = state.session;
-  if (!s || s.status !== 'active' || s.date !== todayStr() || s.queue.length === 0){
-    showView('home');
-    return;
-  }
-  var id = s.queue[0];
-  var c = CARD_MAP[id];
-  if (!c){ showView('home'); return; }
-  var r = s.results[id];
-  var mode = s.currentScreen;
-
-  els.wordFront.textContent = c.word;
-  els.badgeRepeat.hidden = !(r.errors > 0);
-
-  els.wordBack.textContent = c.stress;
-  els.pos.textContent = c.pos;
-  els.def.textContent = c.def;
-  els.syn.textContent = c.syn;
-  els.example.textContent = '«' + c.example + '»';
-  els.backScroll.scrollTop = 0;
-
-  els.peekNote.hidden = (mode !== 'peek');
-  if (mode === 'definition'){
-    els.backNote.textContent = (r.errors >= MAX_ERRORS)
-      ? 'Это слово вернётся завтра'
-      : 'Это слово вернётся ещё раз сегодня';
-    els.btnBackAction.textContent = 'Понятно, повторить позже';
-  } else if (mode === 'peek'){
-    els.backNote.textContent = 'Проверка ни на что не влияет: прогресс и ошибки не меняются.';
-    els.btnBackAction.textContent = 'Вернуться к слову';
+  var pv=previewDay(eff);
+  if(pv.total===0){
+    elCatSub.textContent='Сегодня свободно';
+    elCatChip.textContent='Нет карточек';
+    elBtnStart.hidden=true;
+    elEmptyDay.hidden=false;
+    var nd=nearestFutureDue();
+    if(nd){ elEmptyDayText.textContent='Ближайшее повторение: '+fmtHuman(nd)+'.'; }
+    else if(graduatedCount()>0){ elEmptyDayText.textContent='Все слова освоены — новых назначений нет.'; }
+    else { elEmptyDayText.textContent='Назначенных и новых карточек на сегодня нет.'; }
+    elBtnNearest.hidden = !(testState.enabled && nd);
   } else {
-    els.backNote.textContent = '';
+    elEmptyDay.hidden=true;
+    elCatChip.textContent='Сегодня';
+    var mins=Math.max(1, Math.round(pv.total*24/60));
+    elCatSub.textContent =
+      pv.total+' '+plural(pv.total,'карточка','карточки','карточек') +
+      (pv.overdue ? ' · просрочено: '+pv.overdue : '') +
+      (pv.newAllowed ? ' · новых: '+pv.newAllowed : '') +
+      ' · около '+mins+' '+plural(mins,'минуты','минут','минут');
+    elBtnStart.hidden=false;
+    elBtnStart.textContent='Начать';
   }
-
-  var backOn = (mode !== 'question');
-  els.card.classList.toggle('flipped', backOn);
-  if (backOn) backShownAt = Math.max(backShownAt, Date.now());
-
-  els.answers.classList.toggle('is-hidden', backOn);
-  els.btnNo.disabled = backOn;
-  els.btnYes.disabled = backOn;
-  els.btnPeek.classList.toggle('gone', backOn);
-  els.btnPeek.disabled = backOn;
-
-  var done = completedCount(s);
-  els.progressText.textContent = done + ' из ' + TOTAL;
-  els.progressBar.style.width = (done / TOTAL * 100) + '%';
 }
 
-/* =============== РЕНДЕР: РЕЗУЛЬТАТ =============== */
+/* ================= Рендер: сессия ================= */
+function renderSession(opts){
+  opts=opts||{};
+  var done=doneCount();
+  var total=state.sessionTotal||0;
+  elSessProgress.textContent=done+' из '+total;
+  elBarFill.style.width=(total? done/total*100 : 0)+'%';
+  elBar.setAttribute('aria-valuenow', String(done));
+  elBar.setAttribute('aria-valuemax', String(total));
+  elTestPillSession.hidden=!testState.enabled;
+  var c=currentCard();
+  if(!c) return;
+  elWordFront.textContent=c.word;
+  elWordBack.textContent=c.stress;
+  elPosBack.textContent=c.pos;
+  elDefBack.textContent=c.def;
+  elSynBack.textContent=c.syn.join(', ');
+  elExBack.textContent=c.ex;
+  var r=state.sessionResults[c.id];
+  elBadgeRepeat.hidden=!(r && r.errors>0 && !r.done);
+  var back = state.cardScreen!=='question';
+  var peek = state.cardScreen==='peek';
+  elBadgePeek.hidden=!peek;
+  elPeekNote.hidden=!peek;
+  elReturnNote.hidden=peek;
+  if(!peek && r){
+    elReturnNote.textContent = (r.errors>=MAX_LAPSES_EVENING) ? 'Это слово вернётся завтра' : 'Это слово вернётся ещё раз сегодня';
+  }
+  elBtnBackAction.textContent = peek ? 'Вернуться к слову' : 'Понятно, повторить позже';
+  elActions.classList.toggle('hidden', back);
+  elBtnPeek.tabIndex = back ? -1 : 0;
+  elBtnBackAction.tabIndex = back ? 0 : -1;
+  if(back) elBackScroll.scrollTop=0;
+  if(opts.instantFlip) elCardInner.classList.add('no-anim');
+  elCardDrag.classList.toggle('flipped', back);
+  if(opts.instantFlip){ void elCardInner.offsetWidth; elCardInner.classList.remove('no-anim'); }
+  if(opts.enter){
+    elCardDrag.classList.remove('enter');
+    void elCardDrag.offsetWidth;
+    elCardDrag.classList.add('enter');
+  }
+}
+
+/* ================= Рендер: результат ================= */
 function renderResult(){
-  var s = todaySession();
-  if (!s || s.status !== 'completed'){ showView('home'); return; }
-  var st = computeStats(s);
-  els.stFirst.textContent = st.first;
-  els.stRepeat.textContent = st.repeat;
-  els.stTomorrow.textContent = st.tomorrow;
-  els.stErrors.textContent = st.errors;
-  try {
-    els.resultDate.textContent = new Intl.DateTimeFormat('ru-RU', {
-      weekday: 'long', day: 'numeric', month: 'long'
-    }).format(new Date());
-  } catch(e){ els.resultDate.textContent = s.date; }
-
-  els.forgottenList.textContent = '';
-  if (st.forgotten.length === 0){
-    var p = document.createElement('p');
-    p.className = 'forgotten-empty';
-    p.textContent = 'Все слова вспомнились без единой ошибки.';
-    els.forgottenList.appendChild(p);
-    els.calm.textContent = 'Идеально ровная сессия. Такой вечерний ритм запоминается лучше всего.';
-  } else {
-    st.forgotten.forEach(function(f){
-      var row = document.createElement('div');
-      row.className = 'forgotten-item';
-      var w = document.createElement('span');
-      w.className = 'forgotten-word';
-      w.textContent = f.stress;
-      var e = document.createElement('span');
-      e.className = 'forgotten-err';
-      e.textContent = f.errors + ' ' + errWord(f.errors);
-      row.appendChild(w);
-      row.appendChild(e);
-      els.forgottenList.appendChild(row);
+  var st=computeStats();
+  elStatFirst.textContent=String(st.first);
+  elStatRepeated.textContent=String(st.repeated);
+  elStatTomorrow.textContent=String(st.tomorrow);
+  elStatErrors.textContent=String(st.errors);
+  elStatAdvanced.textContent=String(st.advanced);
+  elStatGraduated.textContent=String(st.graduated);
+  elForgotList.innerHTML='';
+  if(st.forgot.length){
+    elForgotEmpty.hidden=true;
+    st.forgot.forEach(function(w){
+      var li=document.createElement('li');
+      li.textContent=w;
+      elForgotList.appendChild(li);
     });
-    els.calm.textContent = 'Если какие-то слова ускользнули — ничего страшного. Они уже в списке и спокойно дождутся своего повтора.';
-  }
-}
-
-/* =============== ПОДСВЕТКА И ЖЕСТЫ =============== */
-var GLOWS = {
-  yes:    [120, 180, 133],
-  no:     [212, 124, 118],
-  violet: [150, 136, 224]
-};
-function setGlow(kind, k){
-  if (!kind || k <= 0.02){
-    els.faceFront.style.boxShadow = '';
-    els.faceBack.style.boxShadow = '';
-    els.card.style.removeProperty('--tint');
-    return;
-  }
-  var pal = GLOWS[kind];
-  var r = pal[0], g = pal[1], b = pal[2];
-  var backOn = els.card.classList.contains('flipped');
-  var active = backOn ? els.faceBack : els.faceFront;
-  var other = backOn ? els.faceFront : els.faceBack;
-  other.style.boxShadow = '';
-  active.style.boxShadow =
-    '0 0 0 2px rgba(' + r + ',' + g + ',' + b + ',' + (0.22 + 0.62*k).toFixed(3) + '), ' +
-    '0 14px 44px rgba(' + r + ',' + g + ',' + b + ',' + (0.14 + 0.3*k).toFixed(3) + ')';
-  els.card.style.setProperty('--tint', 'rgba(' + r + ',' + g + ',' + b + ',' + (0.05 + 0.11*k).toFixed(3) + ')');
-}
-function setCardTransform(dx, rot){
-  els.card.style.transform = 'translate3d(' + dx + 'px, 0, 0) rotate(' + rot + 'deg)';
-}
-function springBack(){
-  els.card.classList.add('anim');
-  els.card.style.transform = '';
-  setGlow(null);
-  setTimeout(function(){ els.card.classList.remove('anim'); }, dur(230));
-}
-
-var drag = null;
-
-els.card.addEventListener('contextmenu', function(e){ e.preventDefault(); });
-els.card.addEventListener('dragstart', function(e){ e.preventDefault(); });
-
-els.card.addEventListener('pointerdown', function(e){
-  if (e.button !== undefined && e.button > 0) return;
-  if (e.target.closest('button')) return;
-  if (lock || drag) return;
-  if (currentView !== 'card') return;
-  var s = state.session;
-  if (!s || s.status !== 'active') return;
-  if (e.clientX < EDGE_GUARD_PX) return; // системный жест «назад»
-  var mode = s.currentScreen;
-  if (mode !== 'question' && Date.now() - backShownAt < BACK_GUARD_MS) return;
-  drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, dx: 0, dy: 0, downAt: Date.now() };
-  try { els.card.setPointerCapture(e.pointerId); } catch(err){}
-  els.card.classList.add('grabbing');
-  els.card.classList.remove('anim');
-});
-
-els.card.addEventListener('pointermove', function(e){
-  if (!drag || e.pointerId !== drag.id) return;
-  drag.dx = e.clientX - drag.x0;
-  drag.dy = e.clientY - drag.y0;
-  var s = state.session;
-  var mode = s ? s.currentScreen : 'question';
-  var w = Math.max(1, els.card.offsetWidth);
-  if (mode === 'question'){
-    var rot = Math.max(-7.5, Math.min(7.5, drag.dx / w * 14));
-    setCardTransform(drag.dx, rot);
-    setGlow(drag.dx >= 0 ? 'yes' : 'no', Math.min(1, Math.abs(drag.dx) / (w * 0.35)));
   } else {
-    var rot2 = Math.max(-5, Math.min(5, drag.dx / w * 10));
-    setCardTransform(drag.dx, rot2);
-    setGlow('violet', Math.min(1, Math.abs(drag.dx) / (w * 0.4)));
+    elForgotEmpty.hidden=false;
   }
-});
-
-function endDrag(e, cancelled){
-  if (!drag) return;
-  if (e.pointerId !== undefined && e.pointerId !== drag.id) return;
-  var d = drag; drag = null;
-  els.card.classList.remove('grabbing');
-  var s = state.session;
-  if (!s || s.status !== 'active'){ springBack(); return; }
-  var mode = s.currentScreen;
-  var w = Math.max(1, els.card.offsetWidth);
-  var dt = Date.now() - d.downAt;
-  var dist = Math.sqrt(d.dx*d.dx + d.dy*d.dy);
-
-  if (mode === 'question'){
-    if (!cancelled && Math.abs(d.dx) >= w * 0.25){
-      handleAnswer(d.dx > 0, d.dx > 0 ? 1 : -1);
-      return;
-    }
-    springBack();
-    return;
-  }
-  // обратная сторона: только свежие жесты после переворота
-  var fresh = d.downAt >= backShownAt && (Date.now() - backShownAt) >= BACK_GUARD_MS;
-  if (cancelled || !fresh){ springBack(); return; }
-  var scrollable = els.backScroll.scrollHeight > els.backScroll.clientHeight + 4;
-  var isSwipe;
-  if (scrollable){
-    isSwipe = Math.abs(d.dx) > 48 && Math.abs(d.dx) > Math.abs(d.dy) * 1.2;
-  } else {
-    isSwipe = dist > 48;
-  }
-  var isTap = dist < 12 && dt < 400;
-  if (isSwipe || isTap){
-    leaveBackSide(isSwipe ? (d.dx >= 0 ? 1 : -1) : 1);
-    return;
-  }
-  springBack();
-}
-els.card.addEventListener('pointerup', function(e){ endDrag(e, false); });
-els.card.addEventListener('pointercancel', function(e){ endDrag(e, true); });
-
-/* =============== ЛОГИКА ОТВЕТОВ =============== */
-function setLock(v){
-  lock = v;
-  els.answers.classList.toggle('locking', v);
+  elResultMsg.textContent = st.errors===0
+    ? 'Тихая победа вечера: все слова на месте.'
+    : 'Забывать — нормальная часть запоминания. Эти слова вернутся по расписанию, и каждый раз будут чуть роднее.';
 }
 
-function animateExit(dir, kind, cb){
-  els.card.classList.add('anim');
-  setGlow(kind, 1);
-  var w = els.card.offsetWidth;
-  setCardTransform(dir * (w * 1.15 + 60), dir * 8);
-  els.card.style.opacity = '0';
-  setTimeout(cb, dur(250));
-}
-
-function swapToNextCard(){
-  els.card.classList.add('no-anim');
-  els.card.style.transform = '';
-  els.card.style.opacity = '0';
-  setGlow(null);
-  renderCard();
-  els.card.style.transform = 'translate3d(0, 12px, 0)';
-  void els.card.offsetWidth;
-  els.card.classList.remove('no-anim');
-  els.card.classList.add('anim');
-  els.card.style.transform = '';
-  els.card.style.opacity = '';
-  setTimeout(function(){
-    els.card.classList.remove('anim');
-    setGlow(null);
-    setLock(false);
-  }, dur(230));
-}
-
-/* Единая функция обработки ответа — её вызывают и свайпы, и кнопки. */
-function handleAnswer(remembered, dir){
-  var s = state.session;
-  if (lock) return;
-  if (!s || s.status !== 'active' || s.date !== todayStr()) return;
-  if (s.currentScreen !== 'question') return;
-  var id = s.queue[0];
-  if (!id) return;
-  var r = s.results[id];
-  setLock(true);
-
-  if (remembered){
-    r.status = 'completed';
-    r.completedAs = (r.errors === 0) ? 'first' : 'repeat';
-    if (r.errors === 0) r.firstTry = true;
-    s.queue.shift();
-    s.updatedAt = nowIso();
-    persist();
-    haptic('success');
-    animateExit(1, 'yes', advance);
-  } else {
-    var applied = Math.min(r.errors + 1, MAX_ERRORS);
-    var delta = applied - r.errors;
-    r.errors = applied;
-    s.totalErrors += delta;
-    s.currentScreen = 'definition';
-    s.updatedAt = nowIso();
-    persist();
-    haptic('error');
-    els.card.classList.add('anim');
-    setGlow(null);
-    els.card.style.transform = '';
-    flipToBack();
-  }
-}
-
-function flipToBack(){
-  renderCard();
-  focusBackAction();
-  setTimeout(function(){
-    els.card.classList.remove('anim');
-    backShownAt = Date.now();
-    setLock(false);
-  }, dur(270));
-}
-function focusBackAction(){
-  setTimeout(function(){
-    try { els.btnBackAction.focus({ preventScroll: true }); } catch(e){}
-  }, dur(280));
-}
-
-function advance(){
-  var s = state.session;
-  if (!s){ setLock(false); return; }
-  if (s.queue.length === 0){
-    s.status = 'completed';
-    s.completedAt = nowIso();
-    s.updatedAt = nowIso();
-    s.currentScreen = 'question';
-    persist();
-    setLock(false);
-    // вернуть карточку в первоначальный вид без анимации
-    els.card.classList.add('no-anim');
-    els.card.style.transform = '';
-    els.card.style.opacity = '';
-    els.card.classList.remove('flipped');
-    setGlow(null);
-    void els.card.offsetWidth;
-    els.card.classList.remove('no-anim');
-    showView('result');
-    return;
-  }
-  s.currentScreen = 'question';
-  s.updatedAt = nowIso();
-  persist();
-  swapToNextCard();
-}
-
-/* Уход с обратной стороны: тап, свайп или кнопка зовут именно эту функцию. */
-function leaveBackSide(dir){
-  var s = state.session;
-  if (lock) return;
-  if (!s || s.status !== 'active') return;
-  if (Date.now() - backShownAt < BACK_GUARD_MS) return;
-
-  if (s.currentScreen === 'peek'){
-    setLock(true);
-    s.currentScreen = 'question';
-    s.updatedAt = nowIso();
-    persist();
-    haptic('select');
-    setGlow(null);
-    els.card.style.transform = '';
-    renderCard();
-    setTimeout(function(){
-      setLock(false);
-      try { els.btnPeek.focus({ preventScroll: true }); } catch(e){}
-    }, dur(270));
-    return;
-  }
-  if (s.currentScreen !== 'definition') return;
-
-  setLock(true);
-  var id = s.queue[0];
-  var r = s.results[id];
-  s.queue.shift();
-  if (r.errors >= MAX_ERRORS){
-    r.status = 'completed';
-    r.completedAs = 'tomorrow';
-  } else if (s.queue.length >= 2){
-    s.queue.splice(2, 0, id); // минимум через две карточки
-  } else {
-    s.queue.push(id); // меньше двух — в конец
-  }
-  s.currentScreen = 'question';
-  s.updatedAt = nowIso();
-  persist();
-  haptic('light');
-  animateExit(dir || 1, 'violet', advance);
-}
-
-function enterPeek(){
-  var s = state.session;
-  if (lock) return;
-  if (!s || s.status !== 'active') return;
-  if (s.currentScreen !== 'question') return;
-  setLock(true);
-  s.currentScreen = 'peek';
-  s.updatedAt = nowIso();
-  persist();
-  haptic('select');
-  setGlow(null);
-  els.card.style.transform = '';
-  flipToBack();
-}
-
-/* =============== НАЧАЛО / ПРОДОЛЖЕНИЕ =============== */
-function openCardScreen(){
-  els.card.classList.add('no-anim');
-  showView('card');
-  void els.card.offsetWidth;
-  var s = todaySession();
-  if (s && s.status === 'active' && s.currentScreen !== 'question') focusBackAction();
-  requestAnimationFrame(function(){
-    requestAnimationFrame(function(){ els.card.classList.remove('no-anim'); });
+/* ================= Рендер: архив ================= */
+function renderArchive(){
+  var items=[];
+  CARDS.forEach(function(c){
+    var p=state.cards[c.id];
+    if(p && p.status==='graduated') items.push({word:c.stress, date:p.lastReviewedDate});
+  });
+  elArchCount.textContent='Освоено слов: '+items.length;
+  elArchSettingsCount.textContent=String(items.length);
+  elArchList.innerHTML='';
+  elArchEmpty.hidden=items.length>0;
+  items.forEach(function(it){
+    var li=document.createElement('li');
+    var w=document.createElement('span'); w.className='aw'; w.textContent=it.word;
+    var d=document.createElement('span'); d.className='ad'; d.textContent=it.date?('освоено · '+fmtHuman(it.date)):'освоено';
+    li.appendChild(w); li.appendChild(d);
+    elArchList.appendChild(li);
   });
 }
-els.btnStart.addEventListener('click', function(){
-  var mode = els.btnStart.dataset.mode || 'start';
-  if (mode === 'result'){ showView('result'); return; }
-  if (mode === 'continue'){ openCardScreen(); return; }
-  state.session = newSession();
-  persist();
-  haptic('light');
-  openCardScreen();
-});
 
-els.btnNo.addEventListener('click', function(){ handleAnswer(false, -1); });
-els.btnYes.addEventListener('click', function(){ handleAnswer(true, 1); });
-els.btnBackAction.addEventListener('click', function(e){
-  e.stopPropagation();
-  leaveBackSide(1);
-});
-els.btnPeek.addEventListener('click', function(e){
-  e.stopPropagation();
-  enterPeek();
-});
-els.btnPeek.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
-
-els.btnBackHome.addEventListener('click', goHomeWithSave);
-els.btnResultBack.addEventListener('click', goHomeWithSave);
-els.btnResultHome.addEventListener('click', goHomeWithSave);
-
-/* =============== НАСТРОЙКИ =============== */
-function openSettings(){
-  els.setHaptics.checked = !!state.settings.haptics;
-  els.resetConfirm.hidden = true;
-  els.modal.hidden = false;
-  try { els.btnCloseSettings.focus({ preventScroll: true }); } catch(e){}
+/* ================= Навигация ================= */
+function updateTgBack(){
+  if(!tg || !tg.BackButton) return;
+  try{
+    if(state.view==='home'){ if(typeof tg.BackButton.hide==='function') tg.BackButton.hide(); }
+    else { if(typeof tg.BackButton.show==='function') tg.BackButton.show(); }
+  }catch(e){}
 }
-function closeSettings(){
-  els.modal.hidden = true;
-  els.resetConfirm.hidden = true;
-  try { els.btnSettings.focus({ preventScroll: true }); } catch(e){}
+function showView(v){
+  state.view=v; save();
+  Object.keys(elViews).forEach(function(k){ elViews[k].classList.toggle('active', k===v); });
+  if(v==='home') renderHome();
+  else if(v==='session') renderSession({instantFlip:true});
+  else if(v==='result') renderResult();
+  else if(v==='archive') renderArchive();
+  updateTgBack();
 }
-els.btnSettings.addEventListener('click', openSettings);
-els.btnCloseSettings.addEventListener('click', closeSettings);
-els.modal.addEventListener('click', function(e){
-  if (e.target && e.target.getAttribute && e.target.getAttribute('data-close') === '1') closeSettings();
+function goHome(){ showView('home'); }
+function onTgBack(){
+  if(settingsOpen){ closeSettings(); return; }
+  if(state.view==='session' || state.view==='result' || state.view==='archive') goHome();
+}
+try{ if(tg && tg.BackButton && typeof tg.BackButton.onClick==='function') tg.BackButton.onClick(onTgBack); }catch(e){}
+
+/* ================= Логика сессии ================= */
+var lock=false;
+var drag=null;
+var flipAt=0;
+
+function startNewSession(){
+  if(state.status==='active') return;
+  var eff=effDate();
+  var queue=buildDayQueue(eff);
+  if(!queue.length) return; // пустую сессию не создаём
+  state.queue=queue;
+  state.sessionResults={};
+  queue.forEach(function(id){
+    state.sessionResults[id]={errors:0, firstTry:true, done:false, tomorrow:false, advanced:false, graduatedNow:false};
+  });
+  state.sessionTotal=queue.length;
+  state.sessionDate=eff;
+  state.status='active';
+  state.cardScreen='question';
+  state.startedAt=Date.now();
+  state.completedAt=null;
+  if(!state.lastStudyDate || eff>state.lastStudyDate) state.lastStudyDate=eff;
+  save();
+}
+function finishSession(){
+  state.status='completed';
+  state.completedAt=Date.now();
+  save();
+  haptic('done');
+  lock=false;
+  showView('result');
+}
+
+/* Единая функция обработки ответа — вызывается кнопками и свайпом */
+function answer(remembered){
+  if(lock || drag) return;
+  if(state.view!=='session' || state.cardScreen!=='question' || state.status!=='active') return;
+  var c=currentCard(); if(!c) return;
+  var r=state.sessionResults[c.id]; if(!r) return;
+  lock=true;
+  var studyDate=state.sessionDate;
+  if(remembered){
+    haptic('success');
+    var res=applySuccess(c.id, studyDate, r.firstTry);
+    r.advanced=res.advanced;
+    r.graduatedNow=res.graduated;
+    r.done=true;
+    state.queue.shift();
+    state.cardScreen='question';
+    save(); // прогресс зафиксирован до анимации — после перезагрузки этап не применится повторно
+    flyCard(1,function(){
+      if(doneCount()===state.sessionTotal){ finishSession(); }
+      else { renderSession({enter:true,instantFlip:true}); lock=false; }
+    });
+  } else {
+    haptic('error');
+    r.errors+=1;
+    r.firstTry=false;
+    applyForgot(c.id, studyDate);
+    state.cardScreen='definition';
+    flipAt=Date.now();
+    save();
+    returnToCenter(); // вернуть из положения свайпа перед переворотом
+    renderSession();
+    setTimeout(function(){ lock=false; }, D.flip);
+  }
+}
+
+/* Уход с экрана определения — единая функция (тап, свайп, кнопка) */
+function continueFromDefinition(dir){
+  if(lock) return;
+  if(state.view!=='session' || state.cardScreen!=='definition') return;
+  if(Date.now()-flipAt<300) return;
+  lock=true;
+  var c=currentCard(); if(!c){ lock=false; return; }
+  var r=state.sessionResults[c.id];
+  var studyDate=state.sessionDate;
+  state.queue.shift();
+  if(r.errors>=MAX_LAPSES_EVENING){
+    r.done=true;
+    r.tomorrow=true;
+    applyCap(c.id, studyDate); // stage 0, завтра
+  } else if(state.queue.length<2){
+    state.queue.push(c.id);
+  } else {
+    state.queue.splice(2,0,c.id); // минимум через две другие карточки
+  }
+  state.cardScreen='question';
+  save();
+  flyCard(dir||1,function(){
+    if(doneCount()===state.sessionTotal){ finishSession(); }
+    else { renderSession({enter:true,instantFlip:true}); lock=false; }
+  });
+}
+
+/* Режим проверки */
+function enterPeek(){
+  if(lock || drag) return;
+  if(state.view!=='session' || state.cardScreen!=='question') return;
+  lock=true;
+  state.cardScreen='peek';
+  flipAt=Date.now();
+  save();
+  renderSession();
+  setTimeout(function(){ lock=false; }, D.flip);
+}
+function exitPeek(){
+  if(lock) return;
+  if(state.view!=='session' || state.cardScreen!=='peek') return;
+  if(Date.now()-flipAt<300) return;
+  lock=true;
+  state.cardScreen='question';
+  save();
+  renderSession();
+  setTimeout(function(){ lock=false; }, D.flip);
+}
+function backProceed(){
+  if(lock) return;
+  if(Date.now()-flipAt<300) return;
+  if(state.cardScreen==='peek') exitPeek();
+  else if(state.cardScreen==='definition') continueFromDefinition(1);
+}
+
+/* ================= Анимации карточки ================= */
+function threshold(){ return Math.max(48,(elCardDrag.clientWidth||300)*0.25); }
+function clearDragVisual(){
+  elTintFront.style.opacity='0'; elTintFront.className='tint';
+  elTintBack.style.opacity='0';
+  elCardDrag.classList.remove('gl-green','gl-red','gl-violet');
+}
+function setDragVisual(dx){
+  var t=Math.min(Math.abs(dx)/threshold(),1);
+  if(state.cardScreen!=='question'){
+    elTintFront.style.opacity='0';
+    elCardDrag.classList.remove('gl-green','gl-red');
+    elTintBack.style.opacity=(t*0.28).toFixed(3);
+    elCardDrag.classList.toggle('gl-violet', t>0.02);
+    return;
+  }
+  elTintBack.style.opacity='0';
+  elCardDrag.classList.remove('gl-violet');
+  if(dx>4){
+    elTintFront.className='tint green';
+    elTintFront.style.opacity=(t*0.22).toFixed(3);
+    elCardDrag.classList.add('gl-green'); elCardDrag.classList.remove('gl-red');
+  } else if(dx<-4){
+    elTintFront.className='tint red';
+    elTintFront.style.opacity=(t*0.22).toFixed(3);
+    elCardDrag.classList.add('gl-red'); elCardDrag.classList.remove('gl-green');
+  } else {
+    elTintFront.style.opacity='0'; elTintFront.className='tint';
+    elCardDrag.classList.remove('gl-green','gl-red');
+  }
+}
+function springBack(cb){
+  elCardDrag.classList.remove('is-drag');
+  elCardDrag.classList.remove('enter');
+  elCardDrag.classList.add('anim');
+  elCardDrag.style.transform='';
+  clearDragVisual();
+  setTimeout(function(){ elCardDrag.classList.remove('anim'); if(cb) cb(); }, D.spring);
+}
+/* Плавно вернуть карточку в центр из положения свайпа (без засчитывания ответа) */
+function returnToCenter(){
+  elCardDrag.classList.remove('is-drag','enter');
+  clearDragVisual();
+  if(elCardDrag.style.transform){
+    elCardDrag.classList.add('anim');
+    elCardDrag.style.transform='';
+    setTimeout(function(){ elCardDrag.classList.remove('anim'); }, D.spring);
+  }
+}
+function flyCard(dir, cb){
+  elCardDrag.classList.remove('is-drag','enter');
+  elCardDrag.classList.add('anim');
+  var w=(elCardArea.clientWidth||window.innerWidth)+120;
+  elCardDrag.style.transform='translateX('+(dir*w)+'px) rotate('+(dir*9)+'deg)';
+  setTimeout(function(){
+    elCardDrag.classList.remove('anim');
+    elCardDrag.classList.add('no-anim');
+    elCardDrag.style.transform='';
+    clearDragVisual();
+    void elCardDrag.offsetWidth;
+    elCardDrag.classList.remove('no-anim');
+    cb();
+  }, D.fly);
+}
+
+/* ================= Жесты (pointer events) ================= */
+function onDown(e){
+  if(state.view!=='session') return;
+  if(e.isPrimary===false) return;
+  if(e.pointerType==='mouse' && e.button!==0) return;
+  if(e.target && e.target.closest && e.target.closest('button')) return;
+  if(e.clientX<18) return;
+  if(lock) return;
+  drag={id:e.pointerId, x0:e.clientX, y0:e.clientY, dx:0, dy:0, active:false, downAt:Date.now()};
+  try{ elCardDrag.setPointerCapture(e.pointerId); }catch(err){}
+}
+function onMove(e){
+  if(!drag || e.pointerId!==drag.id) return;
+  var dx=e.clientX-drag.x0, dy=e.clientY-drag.y0;
+  drag.dx=dx; drag.dy=dy;
+  if(!drag.active){
+    if(Math.abs(dx)>10 && Math.abs(dx)>Math.abs(dy)*1.15){
+      drag.active=true;
+      elCardDrag.classList.remove('enter');
+      elCardDrag.classList.add('is-drag');
+    } else if(Math.abs(dy)>14 && Math.abs(dy)>Math.abs(dx)){
+      drag=null;
+      return;
+    } else return;
+  }
+  var rot=Math.max(-7, Math.min(7, dx/18));
+  elCardDrag.style.transform='translateX('+dx+'px) rotate('+rot+'deg)';
+  setDragVisual(dx);
+}
+function onUp(e){
+  if(!drag || e.pointerId!==drag.id) return;
+  var g=drag; drag=null;
+  var side=state.cardScreen;
+  if(g.active){
+    var pass=Math.abs(g.dx)>=threshold();
+    if(side==='question'){
+      if(pass && !lock) answer(g.dx>0);
+      else springBack(); // любой свайп без засчитанного ответа — обратно в центр
+    } else {
+      if(pass && Date.now()-flipAt>=300 && g.downAt>flipAt){
+        if(side==='definition') continueFromDefinition(g.dx>0?1:-1);
+        else springBack(function(){ exitPeek(); });
+      } else springBack();
+    }
+  } else {
+    var isTap=(Date.now()-g.downAt<600) && Math.abs(g.dx)<12 && Math.abs(g.dy)<12;
+    if(isTap && side!=='question' && Date.now()-flipAt>=300 && g.downAt>flipAt){
+      backProceed();
+    }
+  }
+}
+function onCancel(e){
+  if(!drag || e.pointerId!==drag.id) return;
+  if(drag.active) springBack();
+  drag=null;
+}
+elCardDrag.addEventListener('pointerdown', onDown);
+elCardDrag.addEventListener('pointermove', onMove);
+elCardDrag.addEventListener('pointerup', onUp);
+elCardDrag.addEventListener('pointercancel', onCancel);
+elCardDrag.addEventListener('lostpointercapture', function(e){
+  // страховка: если отпускание потерялось, карточка не должна зависнуть наклонённой
+  if(!drag || e.pointerId!==drag.id) return;
+  if(drag.active) springBack();
+  drag=null;
 });
-els.setHaptics.addEventListener('change', function(){
-  state.settings.haptics = !!els.setHaptics.checked;
-  persist();
+
+/* ================= Кнопки ================= */
+elBtnYes.addEventListener('click', function(){ answer(true); });
+elBtnNo.addEventListener('click', function(){ answer(false); });
+elBtnPeek.addEventListener('click', function(e){ e.stopPropagation(); enterPeek(); });
+elBtnPeek.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
+elBtnBackAction.addEventListener('click', function(){ backProceed(); });
+elBtnBack.addEventListener('click', function(){ save(); goHome(); });
+elBtnStart.addEventListener('click', function(){
+  if(state.status!=='active') startNewSession();
+  if(state.status==='active') showView('session');
 });
-els.btnReset.addEventListener('click', function(){
-  els.resetConfirm.hidden = false;
-  try { els.btnResetNo.focus({ preventScroll: true }); } catch(e){}
-});
-els.btnResetNo.addEventListener('click', function(){ els.resetConfirm.hidden = true; });
-els.btnResetYes.addEventListener('click', function(){
-  try { localStorage.removeItem(KEY); } catch(e){}
-  var keepHaptics = state.settings.haptics;
-  state = freshState();
-  state.settings.haptics = keepHaptics;
-  persist();
-  drag = null;
-  setLock(false);
-  els.card.classList.add('no-anim');
-  els.card.style.transform = '';
-  els.card.style.opacity = '';
-  els.card.classList.remove('flipped');
-  setGlow(null);
-  closeSettings();
-  showView('home');
-  toast('Прогресс сброшен — можно начать тест заново');
-});
+elBtnShowResult.addEventListener('click', function(){ showView('result'); });
+elBtnResultHome.addEventListener('click', function(){ goHome(); });
+elArchRow.addEventListener('click', function(){ showView('archive'); });
+elBtnArchBack.addEventListener('click', function(){ goHome(); });
+elBtnNearest.addEventListener('click', function(){ jumpToNearest(); });
 
 document.addEventListener('keydown', function(e){
-  if (e.key === 'Escape' && !els.modal.hidden){ closeSettings(); }
+  if(settingsOpen){ if(e.key==='Escape') closeSettings(); return; }
+  if(state.view!=='session' || lock || drag) return;
+  if(state.cardScreen==='question'){
+    if(e.key==='ArrowRight'){ e.preventDefault(); answer(true); }
+    else if(e.key==='ArrowLeft'){ e.preventDefault(); answer(false); }
+  }
 });
 
-/* =============== СОХРАНЕНИЕ ПРИ ЗАКРЫТИИ =============== */
-document.addEventListener('visibilitychange', function(){
-  if (document.visibilityState === 'hidden') persist();
-});
-window.addEventListener('pagehide', persist);
-
-/* =============== РАЗМЕР ОКНА =============== */
-function setAppHeight(){
-  document.documentElement.style.setProperty('--apph', window.innerHeight + 'px');
+/* ================= Настройки: тема ================= */
+var settingsOpen=false, overlayTimer=null;
+var THEME_BG={evening:'#131117', dark:'#0f0f12', light:'#f4f2fa'};
+var segButtons=Array.prototype.slice.call(document.querySelectorAll('[data-theme-btn]'));
+function syncThemeSeg(){
+  var t=(state.settings && state.settings.theme) || 'evening';
+  segButtons.forEach(function(b){
+    var on=b.getAttribute('data-theme-btn')===t;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-checked', String(on));
+  });
 }
-window.addEventListener('resize', setAppHeight);
-window.addEventListener('orientationchange', setAppHeight);
+function applyTheme(){
+  var t=(state.settings && THEME_BG[state.settings.theme]) ? state.settings.theme : 'evening';
+  document.documentElement.setAttribute('data-theme', t);
+  var mc=document.querySelector('meta[name="theme-color"]');
+  if(mc) mc.setAttribute('content', THEME_BG[t]);
+  try{
+    if(tg){
+      if(typeof tg.setHeaderColor==='function') tg.setHeaderColor(THEME_BG[t]);
+      if(typeof tg.setBackgroundColor==='function') tg.setBackgroundColor(THEME_BG[t]);
+      if(typeof tg.setBottomBarColor==='function') tg.setBottomBarColor(THEME_BG[t]);
+    }
+  }catch(e){}
+  syncThemeSeg();
+}
+segButtons.forEach(function(b){
+  b.addEventListener('click', function(){
+    var t=b.getAttribute('data-theme-btn');
+    if(!THEME_BG[t]) return;
+    state.settings.theme=t;
+    save();
+    applyTheme();
+  });
+});
 
-/* =============== СТАРТ =============== */
-loadState();
-persist();
-setAppHeight();
-tgInit();
-renderHome();
-syncBackButton();
+/* ================= Настройки: вибрация, архив ================= */
+function syncSwitch(){
+  elSwHaptic.classList.toggle('on', state.settings.haptics);
+  elSwHaptic.setAttribute('aria-checked', String(state.settings.haptics));
+}
+elSwHaptic.addEventListener('click', function(){
+  state.settings.haptics=!state.settings.haptics;
+  save(); syncSwitch();
+  if(state.settings.haptics) haptic('success');
+});
+elArchOpen.addEventListener('click', function(){
+  closeSettings();
+  showView('archive');
+});
 
-var s0 = todaySession();
-if (s0 && s0.status === 'active'){
-  openCardScreen(); // продолжаем ровно с того места, где остановились
-} else {
+/* ================= Настройки: тестовая дата ================= */
+function syncTestSwitch(){
+  elSwTest.classList.toggle('on', testState.enabled);
+  elSwTest.setAttribute('aria-checked', String(testState.enabled));
+}
+function renderTestBlock(){
+  elTestBlock.hidden=!testState.enabled;
+  if(!testState.enabled) return;
+  elTbReal.textContent=fmtHuman(realToday());
+  elTbEff.textContent=fmtHuman(effDate());
+  var off=testState.offset;
+  elTbShift.textContent=(off>0?'+':'')+off+' '+plural(off,'день','дня','дней');
+  var lockedSess = state.status==='active';
+  elTbLock.hidden=!lockedSess;
+  bumpButtons.forEach(function(b){ b.disabled=lockedSess; });
+  elTbNearest.disabled=lockedSess;
+  elTbRealBtn.disabled=lockedSess;
+}
+function afterDateChange(){
+  ensureDay();
+  renderHome();
+  renderTestBlock();
+}
+function bumpTestDate(n){
+  if(state.status==='active'){ toast('Сначала завершите текущую сессию.'); return; }
+  var candidate=addDaysStr(effDate(), n);
+  if(state.lastStudyDate && candidate<state.lastStudyDate){
+    toast('Нельзя переходить назад во времени: последняя учебная дата — '+fmtHuman(state.lastStudyDate)+'.');
+    return;
+  }
+  testState.offset+=n; // накопительно, от текущей тестовой даты
+  saveTest();
+  afterDateChange();
+}
+function jumpToNearest(){
+  if(state.status==='active'){ toast('Сначала завершите текущую сессию.'); return; }
+  var target=nearestFutureDue();
+  if(!target){ toast('Будущих повторений нет.'); return; }
+  if(state.lastStudyDate && target<state.lastStudyDate){
+    toast('Нельзя уйти назад: последняя учебная дата — '+fmtHuman(state.lastStudyDate)+'.');
+    return;
+  }
+  var off=diffDays(realToday(), target);
+  if(off<0){ toast('Эта дата уже в прошлом.'); return; }
+  testState.offset=off;
+  saveTest();
+  afterDateChange();
+  toast('Учебная дата: '+fmtHuman(target)+'.');
+}
+function returnRealDate(){
+  if(state.status==='active'){ toast('Сначала завершите текущую сессию.'); return; }
+  testState.offset=0;
+  saveTest();
+  afterDateChange();
+  var real=realToday(), hasFuture=false;
+  CARDS.forEach(function(c){
+    var p=state.cards[c.id];
+    if(p && p.status==='learning' && p.dueDate && p.dueDate>real) hasFuture=true;
+  });
+  toast(hasFuture
+    ? 'Вернули реальную дату. Часть повторений запланирована на будущее — до наступления этих дат новых повторений может не быть.'
+    : 'Вернули реальную дату.');
+}
+elSwTest.addEventListener('click', function(){
+  if(state.status==='active'){
+    toast('Сначала завершите текущую сессию.');
+    return;
+  }
+  testState.enabled=!testState.enabled;
+  saveTest();
+  syncTestSwitch();
+  afterDateChange();
+});
+bumpButtons.forEach(function(b){
+  b.addEventListener('click', function(){ bumpTestDate(parseInt(b.getAttribute('data-bump'),10)||0); });
+});
+elTbNearest.addEventListener('click', jumpToNearest);
+elTbRealBtn.addEventListener('click', returnRealDate);
+
+/* ================= Настройки: сбросы ================= */
+function openSettings(){
+  settingsOpen=true;
+  elOverlay.hidden=false;
+  elBtnReset.hidden=false; elResetConfirm.hidden=true;
+  elBtnResetV1.hidden=false; elResetV1Confirm.hidden=true;
+  syncSwitch();
+  syncTestSwitch();
+  renderTestBlock();
+  elArchSettingsCount.textContent=String(graduatedCount());
+  requestAnimationFrame(function(){ elOverlay.classList.add('show'); });
+}
+function closeSettings(){
+  settingsOpen=false;
+  elOverlay.classList.remove('show');
+  clearTimeout(overlayTimer);
+  overlayTimer=setTimeout(function(){ elOverlay.hidden=true; }, 260);
+}
+elBtnSettings.addEventListener('click', openSettings);
+elBtnCloseSettings.addEventListener('click', closeSettings);
+elOverlay.addEventListener('click', function(e){ if(e.target===elOverlay) closeSettings(); });
+elBtnReset.addEventListener('click', function(){
+  elBtnReset.hidden=true; elResetConfirm.hidden=false;
+});
+elBtnResetNo.addEventListener('click', function(){
+  elResetConfirm.hidden=true; elBtnReset.hidden=false;
+});
+elBtnResetYes.addEventListener('click', function(){
+  var keepSettings={haptics:state.settings.haptics, theme:state.settings.theme};
+  try{ localStorage.removeItem(KEY); }catch(e){}
+  try{ localStorage.removeItem(TKEY); }catch(e){}
+  state=freshState();
+  testState={enabled:false, offset:0};
+  state.settings.haptics=keepSettings.haptics;
+  state.settings.theme=keepSettings.theme;
+  save();
+  saveTest();
+  applyTheme();
+  syncSwitch();
+  syncTestSwitch();
+  renderTestBlock();
+  closeSettings();
+  renderSession({instantFlip:true});
   showView('home');
+  toast('Тестовый прогресс сброшен — можно начать заново.');
+});
+elBtnResetV1.addEventListener('click', function(){
+  elBtnResetV1.hidden=true; elResetV1Confirm.hidden=false;
+});
+elBtnResetV1No.addEventListener('click', function(){
+  elResetV1Confirm.hidden=true; elBtnResetV1.hidden=false;
+});
+elBtnResetV1Yes.addEventListener('click', function(){
+  var existed=false;
+  try{
+    existed = localStorage.getItem(V1KEY)!==null;
+    if(existed) localStorage.removeItem(V1KEY);
+  }catch(e){}
+  elResetV1Confirm.hidden=true; elBtnResetV1.hidden=false;
+  toast(existed ? 'Резервная копия версии 1 удалена.' : 'Резервной копии версии 1 уже нет.');
+});
+
+/* ================= Автосохранение ================= */
+document.addEventListener('visibilitychange', function(){ if(document.hidden){ save(); saveTest(); } });
+window.addEventListener('pagehide', function(){ save(); saveTest(); });
+window.addEventListener('beforeunload', function(){ save(); saveTest(); });
+
+/* ================= Инициализация ================= */
+loadState();
+loadTest();
+if(!state.settings || !THEME_BG[state.settings.theme]) state.settings.theme='evening';
+ensureDay();
+if(state.status==='active' && state.queue.length===0){
+  state.status='completed';
+  if(!state.completedAt) state.completedAt=Date.now();
+  save();
 }
-if (storageWasCorrupt){
-  setTimeout(function(){
-    toast('Локальные данные были повреждены, поэтому мы аккуратно начали заново');
-  }, 600);
+if(state.status!=='active' && state.view==='session'){ state.view='home'; save(); }
+if(state.view==='result' && !(state.status==='completed' && state.sessionDate===effDate())){ state.view='home'; save(); }
+save(); // фиксируем созданное состояние, чтобы уведомление об обновлении показалось один раз
+flipAt=Date.now();
+applyTheme();
+syncSwitch();
+syncTestSwitch();
+renderHome();
+renderSession({instantFlip:true});
+renderResult();
+var initialView='home';
+if(state.status==='active' && state.view==='session') initialView='session';
+else if(state.status==='completed' && state.view==='result' && state.sessionDate===effDate()) initialView='result';
+showView(initialView);
+if(hadCorruption){
+  setTimeout(function(){ toast('Локальные данные пришлось восстановить — повреждённая копия сохранена отдельно, начинаем с чистого листа.'); },400);
+} else if(freshInstall){
+  setTimeout(function(){ toast('Планировщик обновлён. Начинаем новый тестовый цикл.'); },400);
 }
 })();
 </script>
-<noscript>
-  <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#16151b;color:#eceaf3;font-family:sans-serif;padding:24px;text-align:center;z-index:999">
-    Для работы No1EqualsMe нужен включённый JavaScript.
-  </div>
-</noscript>
 </body>
 </html>

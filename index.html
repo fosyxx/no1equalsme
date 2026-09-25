@@ -210,6 +210,50 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .act-no{color:var(--red);background:var(--red-soft);border-color:var(--red-line)}
 .act-yes{color:var(--green);background:var(--green-soft);border-color:var(--green-line)}
 
+
+/* ---------- Морзе + Дактиль ---------- */
+.morse-block{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.morse-status{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:2px 2px 10px}
+.ms-main{font-size:15px;font-weight:700}
+.ms-sub{font-size:12px;color:var(--muted)}
+.morse-stage{flex:1;min-height:0;display:flex;flex-direction:column}
+.morse-ex{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px}
+/* Изображения — белые линии на прозрачном фоне: только тёмная подложка,
+   без инверсий, без белого прямоугольника, object-fit: contain */
+.morse-imgwrap{flex:1;min-height:130px;position:relative;border-radius:22px;overflow:hidden;background:#0b0b0f;border:1px solid var(--line);display:grid;place-items:center;padding:10px}
+.morse-imgwrap img{width:100%;height:100%;object-fit:contain;display:block}
+.morse-img-load{color:#7b7490;font-size:13px}
+.morse-img-err{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;color:var(--muted);font-size:13px;padding:14px}
+.morse-codewrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:54px}
+.morse-code{font-size:28px;font-weight:750;letter-spacing:.14em;min-height:34px;color:var(--text)}
+.morse-cue{font-size:13px;color:var(--faint)}
+/* Единственная зона ввода: удержание = точка/тире, кнопки «Проверить» нет */
+.morse-zone{position:relative;width:100%;min-height:120px;border-radius:20px;border:1px solid var(--line);background:var(--card2);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:18px 16px 24px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer;transition:border-color .12s ease,background .12s ease,box-shadow .12s ease;text-align:center;font:inherit}
+.morse-zone .mz-fill{position:absolute;left:0;bottom:0;height:4px;width:0;background:linear-gradient(90deg,var(--violet-deep),var(--violet));transition:width .05s linear;pointer-events:none}
+.mz-idle{display:flex;flex-direction:column;align-items:center;gap:6px}
+.mz-main{font-size:19px;font-weight:750}
+.mz-sub{font-size:13px;color:var(--muted)}
+.morse-zone.press{border-color:var(--violet-line);background:var(--violet-soft)}
+.morse-zone.press .mz-main{color:var(--violet)}
+.morse-zone.ok{border-color:var(--green-line);background:var(--green-soft);box-shadow:0 0 30px rgba(130,185,145,.18)}
+.morse-zone.bad{border-color:var(--red-line);background:var(--red-soft);box-shadow:0 0 30px rgba(214,141,141,.18)}
+.morse-zone.locked{cursor:default}
+.mz-result{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
+.mz-letter{font-size:36px;font-weight:800;line-height:1}
+.mz-codes{font-size:15.5px;font-weight:650;letter-spacing:.04em}
+.mz-verdict{font-size:15px;font-weight:800;letter-spacing:.1em}
+.morse-zone.ok .mz-verdict{color:var(--green)}
+.morse-zone.bad .mz-verdict{color:var(--red)}
+.mz-hint{font-size:12.5px;color:var(--muted);line-height:1.45;max-width:46ch}
+.morse-goal{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:10px 4px}
+.morse-goal-ic{width:64px;height:64px;border-radius:50%;background:var(--green-soft);border:1px solid var(--green-line);display:grid;place-items:center;color:var(--green);margin-bottom:2px}
+.morse-goal-ic svg{width:30px;height:30px}
+.morse-goal h2{font-size:23px;font-weight:750}
+.mg-line{font-size:15px;color:var(--muted)}
+.morse-goal .stats{grid-template-columns:repeat(3,1fr);margin-bottom:6px}
+.morse-goal .btn-primary{width:100%}
+.morse-stats-note{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.45}
+
 /* ---------- Результат ---------- */
 .result-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 2px 14px}
 .result-ic{width:64px;height:64px;border-radius:50%;background:var(--violet-soft);border:1px solid rgba(165,139,255,.35);display:grid;place-items:center;color:var(--violet);margin-bottom:14px;flex:none}
@@ -373,6 +417,19 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         </div>
         <span class="chip" id="catChip">Сегодня</span>
       </div>
+      <div class="morse-block">
+        <div class="cat-card" id="morseCard">
+          <div class="cat-ic" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M8.5 8.5a5 5 0 0 0 0 7"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M5.5 5.5a9 9 0 0 0 0 13"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+          </div>
+          <div class="cat-info">
+            <span class="cat-name">Морзе + Дактиль</span>
+            <span class="cat-sub" id="morseSub">Загружаем карточки…</span>
+          </div>
+          <span class="chip" id="morseChip">Сегодня</span>
+        </div>
+        <button class="btn-ghost" id="btnMorseStart" disabled>Начать</button>
+      </div>
       <button class="arch-row" id="archRow">
         <span>Освоено слов: <span class="cnt" id="archRowCount">0</span></span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
@@ -494,6 +551,66 @@ html.rm .card-drag.flipped .card-front{opacity:0}
       <ul class="arch-list" id="archList"></ul>
       <p class="arch-empty" id="archEmpty" hidden>Пока пусто. Слова появятся здесь после полного цикла повторений 1 · 3 · 7 · 15 · 30 дней.</p>
     </main>
+
+  <!-- Экран 5: Морзе + Дактиль -->
+  <section class="view" id="view-morse" aria-label="Морзе и дактиль">
+    <header class="sess-head">
+      <button class="icon-btn" id="btnMorseBack" aria-label="Сохранить и вернуться на главную">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="sess-mid">
+        <span class="sess-progress">Морзе + Дактиль</span>
+      </div>
+      <div class="head-spacer" aria-hidden="true"></div>
+    </header>
+    <div class="morse-status" id="morseStatus">
+      <span class="ms-main" id="morseStatusMain">Правильно: 0 / 10</span>
+      <span class="ms-sub" id="morseStatusSub">Точность: —</span>
+    </div>
+    <main class="morse-stage">
+      <div class="morse-ex" id="morseEx">
+        <div class="morse-imgwrap" id="morseImgWrap">
+          <img id="morseImg" alt="" hidden>
+          <div class="morse-img-load" id="morseImgLoading">Загружаем жест…</div>
+          <div class="morse-img-err" id="morseImgErr" hidden>
+            <span>Изображение жеста не загрузилось</span>
+            <button class="btn-ghost" id="btnMorseImgRetry" style="min-height:44px;width:auto;padding:0 22px">Повторить</button>
+          </div>
+        </div>
+        <div class="morse-codewrap">
+          <div class="morse-code" id="morseCode" aria-live="polite"></div>
+          <div class="morse-cue" id="morseCue">Коснись и настучи код</div>
+        </div>
+        <button class="morse-zone" id="morseZone" type="button"
+                aria-label="Зона ввода: удерживай, коротко — точка, долго — тире">
+          <span class="mz-fill" id="morseHoldFill" aria-hidden="true"></span>
+          <span class="mz-idle" id="morseZoneIdle">
+            <span class="mz-main" id="morseZoneMain">Удерживай</span>
+            <span class="mz-sub" id="morseZoneHint">коротко — точка · долго — тире —</span>
+          </span>
+          <span class="mz-result" id="morseResult" hidden>
+            <b class="mz-letter" id="morseResLetter"></b>
+            <span class="mz-codes" id="morseResCodes"></span>
+            <span class="mz-verdict" id="morseResVerdict"></span>
+            <span class="mz-hint" id="morseResHint"></span>
+          </span>
+        </button>
+      </div>
+      <div class="morse-goal" id="morseGoal" hidden>
+        <div class="morse-goal-ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <h2>Цель выполнена</h2>
+        <p class="mg-line" id="morseGoalLine">10 из 10 правильных</p>
+        <div class="stats">
+          <div class="stat"><b id="mgAttempts">0</b><span>Попыток</span></div>
+          <div class="stat"><b id="mgErrors">0</b><span>Ошибок</span></div>
+          <div class="stat"><b id="mgAccuracy">—</b><span>Точность</span></div>
+        </div>
+        <button class="btn-primary" id="btnMorseContinue">Продолжить тренировку</button>
+      </div>
+    </main>
+  </section>
   </section>
 
 </div>
@@ -524,6 +641,15 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         <span class="set-sub">Лёгкий отклик при ответах в Telegram</span>
       </div>
       <button class="switch" id="swHaptic" role="switch" aria-checked="true" aria-label="Виброотклик">
+        <span class="track"><span class="knob"></span></span>
+      </button>
+    </div>
+    <div class="set-row">
+      <div class="set-text">
+        <span class="set-name">Звук Морзе</span>
+        <span class="set-sub">Тон при удержании кода (Web Audio, без файлов)</span>
+      </div>
+      <button class="switch" id="swMorseSound" role="switch" aria-checked="true" aria-label="Звук Морзе">
         <span class="track"><span class="knob"></span></span>
       </button>
     </div>
@@ -604,6 +730,26 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         <button class="tb wide" id="tbRealBtn">Вернуть реальную дату</button>
       </div>
       <p class="test-lock" id="tbLock" hidden>Сначала завершите текущую сессию</p>
+    </div>
+    <div class="reset-zone">
+      <h3>СТАТИСТИКА МОРЗЕ</h3>
+      <div class="sync-info" id="morseStatsBox">
+        <div><span>Сегодня правильно</span><b id="msToday">0 / 10</b></div>
+        <div><span>Попыток</span><b id="msAttempts">0</b></div>
+        <div><span>Ошибок</span><b id="msErrors">0</b></div>
+        <div><span>Точность</span><b id="msAccuracy">—</b></div>
+        <div><span>Букв в библиотеке</span><b id="msCount">—</b></div>
+        <div><span>Слабые буквы</span><b id="msWeak">—</b></div>
+      </div>
+      <button class="btn-danger" id="btnMorseReset" style="margin-top:10px">Сбросить статистику морзе</button>
+      <div class="rc-confirm" id="morseResetConfirm" hidden>
+        <p>Сбросить дневную цель, попытки и веса букв морзе? Слова и их облачная синхронизация не пострадают.</p>
+        <div class="rc-btns">
+          <button class="rc-cancel" id="btnMorseResetNo">Отмена</button>
+          <button class="btn-danger-solid" id="btnMorseResetYes">Да, сбросить</button>
+        </div>
+      </div>
+      <p class="morse-stats-note">Прогресс морзе хранится только на этом устройстве и не отправляется в Telegram CloudStorage.</p>
     </div>
     <div class="reset-zone">
       <h3>РЕЗЕРВНАЯ КОПИЯ</h3>
@@ -798,7 +944,7 @@ var D = REDUCED ? {fly:90, spring:60, flip:60} : {fly:250, spring:200, flip:280}
 
 /* ================= DOM ================= */
 function $(id){ return document.getElementById(id); }
-var elViews = {home:$('view-home'), session:$('view-session'), result:$('view-result'), archive:$('view-archive')};
+var elViews = {home:$('view-home'), session:$('view-session'), result:$('view-result'), archive:$('view-archive'), morse:$('view-morse')};
 var elHomeDate=$('homeDate'), elTestPillHome=$('testPillHome'), elHomeTitle=$('homeTitle'), elCatSub=$('catSub'), elCatChip=$('catChip'),
     elArchRow=$('archRow'), elArchRowCount=$('archRowCount'),
     elHomeSummary=$('homeSummary'), elSummaryLine1=$('summaryLine1'), elSummaryLine2=$('summaryLine2'),
@@ -997,7 +1143,7 @@ function isValidState(s, v3){
     if(!s || typeof s!=='object') return false;
     if(v3 ? s.schemaVersion!==3 : s.schemaVersion!==2) return false;
     if(['idle','active','completed'].indexOf(s.status)<0) return false;
-    if(['home','session','result','archive'].indexOf(s.view)<0) return false;
+    if(['home','session','result','archive','morse'].indexOf(s.view)<0) return false;
     if(['question','peek','definition'].indexOf(s.cardScreen)<0) return false;
     if(!(s.sessionDate===null || /^\d{4}-\d{2}-\d{2}$/.test(s.sessionDate))) return false;
     if(!(s.lastStudyDate===null || /^\d{4}-\d{2}-\d{2}$/.test(s.lastStudyDate))) return false;
@@ -1279,6 +1425,7 @@ function haptic(kind){
     var hf=tg.HapticFeedback;
     if(kind==='success' && typeof hf.impactOccurred==='function') hf.impactOccurred('light');
     else if(kind==='error' && typeof hf.notificationOccurred==='function') hf.notificationOccurred('error');
+    else if(kind==='light' && typeof hf.impactOccurred==='function') hf.impactOccurred('light');
     else if(kind==='done' && typeof hf.notificationOccurred==='function') hf.notificationOccurred('success');
   }catch(e){}
 }
@@ -1507,13 +1654,14 @@ function showView(v){
   else if(v==='session'){ renderSession({instantFlip:true}); requestAnimationFrame(function(){ fitBackWord(false); }); }
   else if(v==='result') renderResult();
   else if(v==='archive') renderArchive();
+  else if(v==='morse') renderMorse();
   updateTgBack();
 }
 function goHome(){ showView('home'); }
 function onTgBack(){
   if(detailsOpen){ closeDetails(); return; }
   if(settingsOpen){ closeSettings(); return; }
-  if(state.view==='session' || state.view==='result' || state.view==='archive') goHome();
+  if(state.view==='session' || state.view==='result' || state.view==='archive' || state.view==='morse') goHome();
 }
 try{ if(tg && tg.BackButton && typeof tg.BackButton.onClick==='function') tg.BackButton.onClick(onTgBack); }catch(e){}
 
@@ -2621,6 +2769,7 @@ save = function(){
 var __renderHome = renderHome;
 renderHome = function(){
   __renderHome();
+  renderMorseHome();
   if(!content.ready && !elBtnStart.hidden){
     elBtnStart.disabled=true;
     elBtnStart.textContent='Загружаем словарь…';
@@ -2642,6 +2791,9 @@ openSettings = function(){
   $('importConfirm').hidden=true;
   $('cloudWipe1').hidden=true; $('cloudWipe2').hidden=true; $('cloudAfter').hidden=true;
   $('btnCloudWipe').hidden=false;
+  $('morseResetConfirm').hidden=true;
+  $('btnMorseReset').hidden=false;
+  renderMorseStats();
   renderDictInfo();
   updateSyncUI();
 };
@@ -3303,7 +3455,679 @@ elBtnBootRetry.addEventListener('click', function(){
   loadContentThenStart();
 });
 
-/* ================= Инициализация ================= */
+/* ================= Морзе + Дактиль (второй независимый раздел) =================
+   Ключевые решения:
+   - раздел полностью независим от слов: свой localStorage-ключ, НЕТ интервального
+     планировщика и НЕТ записи в Telegram CloudStorage (buildPayloads его не знает);
+   - дневная цель — 10 ПРАВИЛЬНЫХ ответов в локальный календарный день (не UTC);
+     ошибки счётчик цели не увеличивают;
+   - буквы выбираются взвешенно-случайно (вес = 1 + weaknessScore), без повтора
+     одной буквы дважды подряд при наличии других карточек; новая буква выбирается
+     ТОЛЬКО после окончания экрана результата — готовой очереди не существует;
+   - весь ввод — одно поле удержания: <240 мс — точка, ≥240 мс — тире, <40 мс —
+     случайное касание; автопроверка — debounce 500 мс с единственным таймером;
+   - состояние сохраняется ДО анимации результата, поэтому после перезапуска
+     ответ не засчитывается повторно, а зелёный/красный результат восстанавливается. */
+var MORSE_URL='./data/morse-signs.json';
+var MORSE_CACHE_KEY='nem_morse_cache_v1';
+var MORSE_STATE_KEY='nem_morse_practice_v1';
+var MORSE_GOAL=10;          // дневная цель: количество правильных ответов
+var MORSE_MAX_INPUT=5;      // максимум элементов кода (больше пяти не вводим)
+var MORSE_DOT_MS=240;       // <240 мс — точка, ≥240 мс — тире
+var MORSE_MIN_MS=40;        // короче 40 мс — случайное касание, игнорируем
+var MORSE_CHECK_MS=500;     // пауза покоя перед автопроверкой
+var MORSE_RESULT_MS=1000;   // сколько держим экран результата
+
+var morseContent={ready:false, error:false, contentVersion:null, updatedAt:null, count:0};
+var MORSE_CARDS=[];
+var MORSE_MAP={};
+var morseState=null;
+var morseImgStatus={};      // id → 'loading' | 'ok' | 'fail'
+var morseCheckTimer=null;   // единственный активный таймер автопроверки
+var morseHoldTimer=null;    // таймер показа результата
+var morseHoldInterrupted=false;
+var mz={t0:null, pointerId:null, threshTimer:null, raf:null}; // состояние удержания зоны
+
+/* ---------- Данные: загрузка и проверка ---------- */
+function isRelImagePath(p){
+  if(typeof p!=='string' || !p || p.length>200) return false;
+  if(p.indexOf('://')>=0 || p.indexOf('//')===0) return false;  // без абсолютных URL
+  if(p.charAt(0)==='/' || p.indexOf('./')!==0) return false;    // только относительные './...'
+  if(p.indexOf('..')>=0) return false;
+  return /^\.\/[A-Za-z0-9_\-\/\.]+$/.test(p) && /\.(png|jpg|jpeg|webp)$/i.test(p);
+}
+function validateMorsePackage(root){
+  if(!root || typeof root!=='object' || Array.isArray(root)) return {error:'schema'};
+  if(root.schemaVersion!==1) return {error:'schema'};
+  if(root.language!=='ru') return {error:'language'};
+  if(!(typeof root.contentVersion==='number' && root.contentVersion>0)) return {error:'version'};
+  if(!Array.isArray(root.cards) || !root.cards.length) return {error:'cards'};
+  var seen={}, out=[];
+  for(var i=0;i<root.cards.length;i++){
+    var c=root.cards[i];
+    if(!c || typeof c!=='object') return {error:'card'};
+    if(typeof c.id!=='string' || !c.id || c.id.length>64 || seen[c.id]) return {error:'id'};
+    if(typeof c.letter!=='string' || !/^[А-Яа-яЁё]$/.test(c.letter)) return {error:'letter'};
+    if(typeof c.morse!=='string' || !/^[.\-]{1,12}$/.test(c.morse)) return {error:'code'};
+    if(!isRelImagePath(c.image)) return {error:'image'};
+    seen[c.id]=1;
+    out.push({id:c.id, letter:c.letter, morse:c.morse, image:c.image,
+              imageAlt:(typeof c.imageAlt==='string'?c.imageAlt.slice(0,300):''),
+              handshapeHint:(typeof c.handshapeHint==='string'?c.handshapeHint.slice(0,400):'')});
+  }
+  return {cards:out, contentVersion:root.contentVersion,
+          updatedAt:(typeof root.updatedAt==='string'?root.updatedAt.slice(0,40):null)};
+}
+function setMorseCards(cards, version, updatedAt){
+  MORSE_CARDS=cards;
+  MORSE_MAP={};
+  MORSE_CARDS.forEach(function(c){ MORSE_MAP[c.id]=c; });
+  morseContent.ready=true;
+  morseContent.error=false;
+  morseContent.contentVersion=version;
+  morseContent.updatedAt=updatedAt||null;
+  morseContent.count=cards.length;
+}
+function readMorseCache(){
+  try{
+    var raw=localStorage.getItem(MORSE_CACHE_KEY);
+    if(!raw) return null;
+    var pkg=validateMorsePackage(JSON.parse(raw));
+    return pkg.error?null:pkg;
+  }catch(e){ return null; }
+}
+function writeMorseCache(pkg){
+  try{
+    localStorage.setItem(MORSE_CACHE_KEY, JSON.stringify({
+      schemaVersion:1, contentVersion:pkg.contentVersion, language:'ru',
+      updatedAt:pkg.updatedAt, cards:pkg.cards
+    }));
+  }catch(e){}
+}
+/* Загрузка идёт независимо от words.json: ошибка морзе не блокирует раздел слов */
+function loadMorseContent(){
+  var cached=readMorseCache();
+  if(cached){
+    setMorseCards(cached.cards, cached.contentVersion, cached.updatedAt);
+    renderMorseHome();
+    if(typeof state!=='undefined' && state && state.view==='morse') renderMorse();
+  }
+  if(typeof fetch!=='function'){ if(!morseContent.ready) morseContent.error=true; renderMorseHome(); return; }
+  var ctrl=null, timer=null;
+  try{ if(typeof AbortController==='function') ctrl=new AbortController(); }catch(e){ ctrl=null; }
+  var opts={cache:'no-cache', credentials:'same-origin'};
+  if(ctrl){ opts.signal=ctrl.signal; timer=setTimeout(function(){ try{ctrl.abort();}catch(e){} }, 12000); }
+  fetch(MORSE_URL, opts).then(function(res){
+    if(!res.ok) throw new Error('http '+res.status);
+    return res.text();
+  }).then(function(text){
+    if(timer) clearTimeout(timer);
+    var pkg=validateMorsePackage(JSON.parse(text));
+    if(pkg.error) throw new Error(pkg.error);
+    var older=morseContent.ready && morseContent.contentVersion!=null && pkg.contentVersion<morseContent.contentVersion;
+    if(older){ return; } // в сети версия старее сохранённой — оставляем кэш
+    setMorseCards(pkg.cards, pkg.contentVersion, pkg.updatedAt);
+    writeMorseCache(pkg);
+    renderMorseHome();
+    if(typeof state!=='undefined' && state && state.view==='morse') renderMorse();
+  }).catch(function(){
+    if(timer) clearTimeout(timer);
+    if(!morseContent.ready) morseContent.error=true; // нет и кэша, и сети — раздел слов не страдает
+    renderMorseHome();
+    if(typeof state!=='undefined' && state && state.view==='morse') renderMorse();
+  });
+}
+
+/* ---------- Состояние практики (отдельный localStorage) ---------- */
+function freshMorseState(){
+  return {schemaVersion:1, day:realToday(), dailyCorrect:0, dailyAttempts:0, dailyErrors:0,
+          weaknessScore:{}, currentId:null, sequence:'', mode:'input', freeMode:false,
+          sound:true, updatedAt:Date.now()};
+}
+function clampInt(v, lo, hi){
+  return (typeof v==='number' && isFinite(v)) ? Math.min(hi, Math.max(lo, Math.floor(v))) : lo;
+}
+function normalizeWeakness(obj){
+  var out={};
+  if(obj && typeof obj==='object'){
+    Object.keys(obj).forEach(function(id){
+      if(typeof id==='string' && id.length<=64) out[id]=clampInt(obj[id],0,10);
+    });
+  }
+  return out;
+}
+function loadMorseState(){
+  var raw=null;
+  try{ raw=localStorage.getItem(MORSE_STATE_KEY); }catch(e){}
+  var s=null;
+  try{ if(raw){ var p=JSON.parse(raw); if(p && typeof p==='object' && p.schemaVersion===1) s=p; } }catch(e){}
+  if(!s){ morseState=freshMorseState(); saveMorse(); return; }
+  morseState={
+    schemaVersion:1,
+    day:(typeof s.day==='string' && /^\d{4}-\d{2}-\d{2}$/.test(s.day)) ? s.day : realToday(),
+    dailyCorrect:clampInt(s.dailyCorrect,0,MORSE_GOAL),
+    dailyAttempts:clampInt(s.dailyAttempts,0,1000000),
+    dailyErrors:clampInt(s.dailyErrors,0,1000000),
+    weaknessScore:normalizeWeakness(s.weaknessScore),
+    currentId:(typeof s.currentId==='string' && s.currentId) ? s.currentId : null,
+    sequence:(typeof s.sequence==='string' && /^[.\-]{0,5}$/.test(s.sequence)) ? s.sequence : '',
+    mode:(['input','correct','incorrect','goal'].indexOf(s.mode)>=0) ? s.mode : 'input',
+    freeMode:!!s.freeMode,
+    sound:(typeof s.sound==='boolean') ? s.sound : true,
+    updatedAt:(typeof s.updatedAt==='number') ? s.updatedAt : Date.now()
+  };
+  ensureMorseDay();
+  // цель закрыта, а пользователь остался во вводе — дальше это свободная тренировка
+  if(morseState.dailyCorrect>=MORSE_GOAL && morseState.mode==='input') morseState.freeMode=true;
+}
+function saveMorse(){
+  if(!morseState) return;
+  try{ morseState.updatedAt=Date.now(); localStorage.setItem(MORSE_STATE_KEY, JSON.stringify(morseState)); }catch(e){}
+}
+/* Новая локальная календарная дата: дневные счётчики и сессия сбрасываются,
+   накопленные веса слабых букв (weaknessScore) сохраняются. */
+function ensureMorseDay(){
+  if(!morseState) return;
+  var today=realToday();
+  if(morseState.day!==today){
+    morseState.day=today;
+    morseState.dailyCorrect=0;
+    morseState.dailyAttempts=0;
+    morseState.dailyErrors=0;
+    morseState.freeMode=false;
+    morseState.mode='input';
+    morseState.currentId=null;
+    morseState.sequence='';
+    saveMorse();
+  }
+}
+function morseWeak(id){
+  var w=morseState.weaknessScore[id];
+  return (typeof w==='number' && w>=0) ? w : 0;
+}
+/* Взвешенный случайный выбор: вес = 1 + weaknessScore; прежняя буква исключается,
+   если доступна хотя бы ещё одна карточка (нет повтора дважды подряд). */
+function pickNextMorseId(prevId){
+  if(!MORSE_CARDS.length) return null;
+  var pool=MORSE_CARDS.filter(function(c){ return c.id!==prevId; });
+  if(!pool.length) pool=MORSE_CARDS; // доступна только одна карточка
+  var total=0, i;
+  for(i=0;i<pool.length;i++) total+=1+morseWeak(pool[i].id);
+  var r=Math.random()*total;
+  for(i=0;i<pool.length;i++){
+    r-=(1+morseWeak(pool[i].id));
+    if(r<=0) return pool[i].id;
+  }
+  return pool[pool.length-1].id;
+}
+function currentMorseCard(){
+  return (morseState && morseState.currentId) ? MORSE_MAP[morseState.currentId] : null;
+}
+function morseAccuracyText(){
+  if(!morseState || !morseState.dailyAttempts) return '—';
+  return Math.round(((morseState.dailyAttempts-morseState.dailyErrors)/morseState.dailyAttempts)*100)+'%';
+}
+function prettyCode(seq){
+  var out=[];
+  for(var i=0;i<seq.length;i++) out.push(seq.charAt(i)==='.'?'·':'—');
+  return out.join(' ');
+}
+
+/* ---------- Изображения ---------- */
+function loadMorseImage(card, force){
+  if(!card) return;
+  var st=morseImgStatus[card.id];
+  if(st==='ok' || st==='loading') return;
+  if(st==='fail' && !force) return;
+  morseImgStatus[card.id]='loading';
+  var im;
+  try{ im=new Image(); }catch(e){ morseImgStatus[card.id]='fail'; return; }
+  im.onload=function(){
+    morseImgStatus[card.id]='ok';
+    if(typeof state!=='undefined' && state && state.view==='morse') renderMorse();
+  };
+  im.onerror=function(){
+    morseImgStatus[card.id]='fail';
+    if(typeof state!=='undefined' && state && state.view==='morse') renderMorse();
+  };
+  im.src=card.image;
+}
+function preloadMorseImages(){ MORSE_CARDS.forEach(function(c){ loadMorseImage(c); }); }
+
+/* ---------- Рендер главной карточки ---------- */
+function renderMorseHome(){
+  if(!morseState) return;
+  var sub=$('morseSub'), chip=$('morseChip'), btn=$('btnMorseStart');
+  if(!sub || !chip || !btn) return;
+  ensureMorseDay();
+  if(!morseContent.ready){
+    chip.className='chip';
+    chip.textContent=morseContent.error?'Ошибка':'Загрузка';
+    sub.textContent=morseContent.error?'Карточки морзе не загрузились':'Загружаем карточки…';
+    btn.textContent='Начать';
+    btn.disabled=true;
+    return;
+  }
+  btn.disabled=false;
+  if(morseState.dailyCorrect>=MORSE_GOAL){
+    sub.textContent='Цель выполнена · '+MORSE_GOAL+' из '+MORSE_GOAL;
+    chip.className='chip is-done';
+    chip.textContent='Готово';
+    btn.textContent='Продолжить тренировку';
+    return;
+  }
+  var left=MORSE_GOAL-morseState.dailyCorrect;
+  var mins=Math.max(1, Math.round(left*20/60));
+  sub.textContent=morseState.dailyCorrect+' из '+MORSE_GOAL+' правильных · около '
+                  +mins+' '+plural(mins,'минуты','минут','минут');
+  var started=!!(morseState.currentId || morseState.dailyAttempts>0 || morseState.mode!=='input');
+  chip.className='chip'+(started?' is-active':'');
+  chip.textContent=started?'В процессе':'Сегодня';
+  btn.textContent=started?'Продолжить':'Начать';
+}
+
+/* ---------- Рендер экрана ---------- */
+function renderMorse(){
+  if(!morseState) return;
+  ensureMorseDay();
+  var ex=$('morseEx'), goal=$('morseGoal'), status=$('morseStatus');
+  if(morseState.mode==='goal'){
+    ex.hidden=true;
+    goal.hidden=false;
+    status.hidden=true;
+    $('morseGoalLine').textContent=MORSE_GOAL+' из '+MORSE_GOAL+' правильных';
+    $('mgAttempts').textContent=String(morseState.dailyAttempts);
+    $('mgErrors').textContent=String(morseState.dailyErrors);
+    $('mgAccuracy').textContent=morseAccuracyText();
+    return;
+  }
+  ex.hidden=false;
+  goal.hidden=true;
+  status.hidden=false;
+  $('morseStatusMain').textContent=morseState.freeMode
+    ? 'Свободная тренировка'
+    : ('Правильно: '+morseState.dailyCorrect+' / '+MORSE_GOAL);
+  $('morseStatusSub').textContent='Точность: '+morseAccuracyText();
+  var card=currentMorseCard();
+  /* изображение: до проверки буква нигде не видна */
+  var img=$('morseImg'), imgLoad=$('morseImgLoading'), imgErr=$('morseImgErr');
+  if(card){
+    if(!morseImgStatus[card.id]) loadMorseImage(card);
+    var st=morseImgStatus[card.id]||'loading';
+    if(st==='ok'){
+      if(img.getAttribute('src')!==card.image) img.src=card.image;
+      img.alt=card.imageAlt||'';
+      img.hidden=false; imgLoad.hidden=true; imgErr.hidden=true;
+    } else if(st==='fail'){
+      img.hidden=true; imgLoad.hidden=true; imgErr.hidden=false;
+    } else {
+      img.hidden=true; imgLoad.hidden=false; imgErr.hidden=true;
+    }
+  } else {
+    img.hidden=true; imgLoad.hidden=false; imgErr.hidden=true;
+  }
+  /* строка введённого кода */
+  $('morseCode').textContent=prettyCode(morseState.sequence);
+  $('morseCue').hidden=morseState.sequence.length>0;
+  /* зона ввода / результат */
+  var locked=morseState.mode!=='input';
+  var zone=$('morseZone');
+  zone.classList.toggle('ok', morseState.mode==='correct');
+  zone.classList.toggle('bad', morseState.mode==='incorrect');
+  zone.classList.toggle('locked', locked);
+  $('morseZoneIdle').hidden=locked;
+  $('morseResult').hidden=!locked;
+  if(locked && card){
+    $('morseResLetter').textContent=card.letter;
+    $('morseResVerdict').textContent=(morseState.mode==='correct')?'Верно':'Неверно';
+    if(morseState.mode==='correct'){
+      $('morseResCodes').textContent=prettyCode(card.morse);
+      $('morseResHint').textContent='';
+    } else {
+      $('morseResCodes').textContent='Вы ввели: '+prettyCode(morseState.sequence)+'   ·   Верно: '+prettyCode(card.morse);
+      $('morseResHint').textContent=card.handshapeHint||'';
+    }
+  } else if(!locked){
+    $('morseZoneMain').textContent='Удерживай';
+    $('morseHoldFill').style.width='0';
+  }
+}
+function renderMorseStats(){
+  if(!morseState) return;
+  ensureMorseDay();
+  var set=function(id, txt){ var el=$(id); if(el) el.textContent=txt; };
+  set('msToday', morseState.dailyCorrect+' / '+MORSE_GOAL);
+  set('msAttempts', String(morseState.dailyAttempts));
+  set('msErrors', String(morseState.dailyErrors));
+  set('msAccuracy', morseAccuracyText());
+  set('msCount', morseContent.ready?String(morseContent.count):'—');
+  var weak=[];
+  Object.keys(morseState.weaknessScore).forEach(function(id){
+    var w=morseState.weaknessScore[id];
+    if(w>0 && MORSE_MAP[id]) weak.push({letter:MORSE_MAP[id].letter, w:w});
+  });
+  weak.sort(function(a,b){ return b.w-a.w; });
+  set('msWeak', weak.slice(0,5).map(function(x){ return x.letter+' ('+x.w+')'; }).join(', ')||'—');
+  syncMorseSoundSwitch();
+}
+function syncMorseSoundSwitch(){
+  var sw=$('swMorseSound');
+  if(!sw || !morseState) return;
+  sw.classList.toggle('on', !!morseState.sound);
+  sw.setAttribute('aria-checked', String(!!morseState.sound));
+}
+
+/* ---------- Звук (Web Audio, без файлов) ---------- */
+function morseAudioCtx(){
+  if(!morseState || !morseState.sound) return null;
+  try{
+    var AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC) return null;
+    if(!morseAudioCtx._ctx) morseAudioCtx._ctx=new AC();
+    var ctx=morseAudioCtx._ctx;
+    if(ctx.state==='suspended' && typeof ctx.resume==='function') ctx.resume();
+    return ctx;
+  }catch(e){ return null; } // ошибка аудио не должна ломать ввод
+}
+var morseTone=null;
+function startMorseTone(){
+  try{
+    var ctx=morseAudioCtx();
+    if(!ctx || morseTone) return;
+    var osc=ctx.createOscillator(), g=ctx.createGain();
+    osc.type='sine';
+    osc.frequency.value=650;
+    var t=ctx.currentTime;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.05, t+0.008); // плавное нарастание 5–10 мс
+    osc.connect(g); g.connect(ctx.destination);
+    osc.start();
+    morseTone={osc:osc, gain:g, ctx:ctx};
+  }catch(e){}
+}
+function stopMorseTone(){
+  try{
+    if(!morseTone) return;
+    var m=morseTone; morseTone=null;
+    var t=m.ctx.currentTime;
+    m.gain.gain.cancelScheduledValues(t);
+    m.gain.gain.setValueAtTime(m.gain.gain.value, t);
+    m.gain.gain.linearRampToValueAtTime(0, t+0.008); // затухание 5–10 мс
+    m.osc.stop(t+0.02);
+  }catch(e){}
+}
+function morseErrorBeep(){
+  try{
+    var ctx=morseAudioCtx();
+    if(!ctx) return;
+    var osc=ctx.createOscillator(), g=ctx.createGain();
+    osc.type='sine';
+    osc.frequency.value=720;
+    var t=ctx.currentTime;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.05, t+0.008);
+    g.gain.linearRampToValueAtTime(0, t+0.09);
+    osc.connect(g); g.connect(ctx.destination);
+    osc.start(); osc.stop(t+0.11);
+  }catch(e){}
+}
+
+/* ---------- Ввод: pointer events ---------- */
+function morseLocked(){
+  return !morseState || !morseContent.ready || morseState.mode!=='input';
+}
+function cancelMorseCheck(){
+  if(morseCheckTimer){ clearTimeout(morseCheckTimer); morseCheckTimer=null; }
+}
+function scheduleMorseCheck(){
+  cancelMorseCheck();
+  morseCheckTimer=setTimeout(function(){
+    morseCheckTimer=null;
+    runMorseCheck();   // проверка запускается ровно один раз
+  }, MORSE_CHECK_MS);
+}
+function startHoldFill(){
+  var fill=$('morseHoldFill');
+  if(fill) fill.style.width='0';
+  if(mz.raf) cancelAnimationFrame(mz.raf);
+  var step=function(){
+    if(mz.t0===null){ if(fill) fill.style.width='0'; return; }
+    var el=Date.now()-mz.t0;
+    if(fill) fill.style.width=(Math.min(1, el/MORSE_DOT_MS)*100)+'%';
+    mz.raf=requestAnimationFrame(step);
+  };
+  mz.raf=requestAnimationFrame(step);
+}
+function endHoldVisual(){
+  if(mz.threshTimer){ clearTimeout(mz.threshTimer); mz.threshTimer=null; }
+  if(mz.raf){ cancelAnimationFrame(mz.raf); mz.raf=null; }
+  stopMorseTone();
+  mz.t0=null;
+  mz.pointerId=null;
+  var zone=$('morseZone');
+  if(zone){
+    zone.classList.remove('press');
+    var fill=$('morseHoldFill');
+    if(fill) fill.style.width='0';
+    if(morseState && morseState.mode==='input') $('morseZoneMain').textContent='Удерживай';
+  }
+}
+function onMorseDown(e){
+  if(typeof state==='undefined' || !state || state.view!=='morse') return;
+  if(e.isPrimary===false) return;
+  if(e.pointerType==='mouse' && e.button!==0) return;
+  if(morseLocked()) return;
+  if(typeof e.preventDefault==='function') e.preventDefault();
+  cancelMorseCheck();                     // новый pointerdown отменяет ожидание автопроверки
+  mz.t0=Date.now();
+  mz.pointerId=e.pointerId;
+  try{ if(e.target && typeof e.target.setPointerCapture==='function') e.target.setPointerCapture(e.pointerId); }catch(_){}
+  $('morseZone').classList.add('press');  // визуальная реакция на нажатие
+  $('morseZoneMain').textContent='Точка'; // до порога нажатие читается как точка
+  startHoldFill();
+  startMorseTone();                       // тон звучит, пока пользователь держит поле
+  if(mz.threshTimer) clearTimeout(mz.threshTimer);
+  mz.threshTimer=setTimeout(function(){
+    if(mz.t0===null) return;
+    $('morseZoneMain').textContent='Тире'; // точка превратилась в тире
+    haptic('light');                       // лёгкий отклик в момент пересечения порога
+  }, MORSE_DOT_MS);
+}
+function onMorseUp(e){
+  if(mz.t0===null || e.pointerId!==mz.pointerId) return;
+  var dur=Date.now()-mz.t0;
+  endHoldVisual();
+  try{ if(e.target && typeof e.target.releasePointerCapture==='function') e.target.releasePointerCapture(e.pointerId); }catch(_){}
+  if(morseLocked()) return;
+  if(dur<MORSE_MIN_MS){
+    // случайное касание — игнорируем, но накопленный ввод не должен остаться без проверки
+    if(morseState.sequence) scheduleMorseCheck();
+    return;
+  }
+  if(morseState.sequence.length>=MORSE_MAX_INPUT){
+    // шестой элемент не влезает: короткий сигнал ошибки и сразу проверяем имеющееся
+    haptic('error');
+    morseErrorBeep();
+    runMorseCheck();
+    return;
+  }
+  morseState.sequence += (dur<MORSE_DOT_MS ? '.' : '-'); // ровно один символ за нажатие
+  saveMorse();
+  renderMorse();
+  scheduleMorseCheck();
+}
+function onMorseCancel(e){
+  if(mz.t0===null || e.pointerId!==mz.pointerId) return;
+  endHoldVisual(); // без символа и без запуска проверки
+}
+function onMorseLostCapture(){
+  if(mz.t0!==null) endHoldVisual(); // страховка: поле не должно зависнуть в состоянии удержания
+}
+
+/* ---------- Автоматическая проверка ---------- */
+function runMorseCheck(){
+  cancelMorseCheck();
+  if(!morseState || morseState.mode!=='input') return; // результат не срабатывает повторно
+  if(!morseContent.ready) return;
+  var card=currentMorseCard();
+  if(!card){
+    // карточка исчезла — аккуратно переходим к следующей без засчёта
+    morseState.currentId=pickNextMorseId(morseState.currentId);
+    morseState.sequence='';
+    saveMorse(); renderMorse();
+    return;
+  }
+  if(!morseState.sequence) return;
+  var ok=(morseState.sequence===card.morse);
+  var wasBelow=morseState.dailyCorrect<MORSE_GOAL;
+  morseState.dailyAttempts++;
+  var w=morseWeak(card.id);
+  if(ok){
+    if(wasBelow) morseState.dailyCorrect=Math.min(MORSE_GOAL, morseState.dailyCorrect+1); // ошибки цель не двигают
+    morseState.weaknessScore[card.id]=Math.max(0, w-1);   // −1, минимум 0
+    morseState.mode='correct';
+    haptic('success');
+  } else {
+    morseState.dailyErrors++;
+    morseState.weaknessScore[card.id]=Math.min(10, w+2);  // +2, максимум 10
+    morseState.mode='incorrect';
+    haptic('error');
+  }
+  saveMorse();  // сохраняем ДО анимации: после перезапуска ответ не зачтётся повторно
+  renderMorse();
+  var toGoal=ok && wasBelow && morseState.dailyCorrect>=MORSE_GOAL; // десятый правильный → экран цели
+  armResultHold(toGoal);
+}
+function armResultHold(toGoal){
+  if(morseHoldTimer){ clearTimeout(morseHoldTimer); morseHoldTimer=null; }
+  if(typeof toGoal!=='boolean'){
+    // восстановление после перезапуска/возврата: цель определяем по сохранённому состоянию
+    toGoal=(morseState.mode==='correct' && !morseState.freeMode && morseState.dailyCorrect>=MORSE_GOAL);
+  }
+  morseHoldInterrupted=false;
+  morseHoldTimer=setTimeout(function(){
+    morseHoldTimer=null;
+    finishMorseResult(toGoal);
+  }, MORSE_RESULT_MS);
+}
+function finishMorseResult(toGoal){
+  if(!morseState || (morseState.mode!=='correct' && morseState.mode!=='incorrect')) return;
+  if(toGoal){
+    morseState.mode='goal';          // отдельный экран завершения цели
+    saveMorse();
+    renderMorse();
+    return;
+  }
+  // следующая буква выбирается только теперь — после окончания экрана результата
+  morseState.currentId=pickNextMorseId(morseState.currentId);
+  morseState.sequence='';
+  morseState.mode='input';
+  saveMorse();
+  renderMorse();
+}
+
+/* ---------- Открытие раздела ---------- */
+function openMorse(){
+  if(!morseContent.ready){
+    toast(morseContent.error ? 'Не удалось загрузить карточки морзе.' : 'Карточки морзе ещё загружаются, подожди секунду.');
+    return;
+  }
+  ensureMorseDay();
+  if(morseState.mode==='goal'){
+    // цель уже показана ранее — кнопка «Продолжить тренировку» ведёт в свободный режим
+    morseState.freeMode=true;
+    morseState.mode='input';
+    morseState.sequence='';
+    morseState.currentId=pickNextMorseId(morseState.currentId); // как и на экране цели — новая буква
+    saveMorse();
+  }
+  if(!currentMorseCard()){
+    morseState.currentId=pickNextMorseId(morseState.currentId);
+    morseState.sequence='';
+    if(morseState.mode==='correct'||morseState.mode==='incorrect') morseState.mode='input';
+    saveMorse();
+  }
+  preloadMorseImages(); // предзагрузка изображений перед упражнением
+  if(morseState.mode==='correct'||morseState.mode==='incorrect') armResultHold();
+  showView('morse');
+}
+
+/* ---------- События ---------- */
+$('btnMorseStart').addEventListener('click', openMorse);
+$('btnMorseBack').addEventListener('click', function(){ saveMorse(); goHome(); });
+$('btnMorseImgRetry').addEventListener('click', function(e){
+  e.stopPropagation();
+  loadMorseImage(currentMorseCard(), true);
+});
+$('btnMorseContinue').addEventListener('click', function(){
+  morseState.freeMode=true;
+  morseState.mode='input';
+  morseState.sequence='';
+  morseState.currentId=pickNextMorseId(morseState.currentId);
+  saveMorse();
+  renderMorse();
+});
+$('swMorseSound').addEventListener('click', function(){
+  morseState.sound=!morseState.sound;
+  saveMorse();
+  syncMorseSoundSwitch();
+});
+$('btnMorseReset').addEventListener('click', function(){
+  $('btnMorseReset').hidden=true;
+  $('morseResetConfirm').hidden=false;
+});
+$('btnMorseResetNo').addEventListener('click', function(){
+  $('morseResetConfirm').hidden=true;
+  $('btnMorseReset').hidden=false;
+});
+$('btnMorseResetYes').addEventListener('click', function(){
+  var snd=morseState.sound;                       // звук — настройка модуля, сбрасываем статистику
+  morseState=freshMorseState();
+  morseState.sound=snd;
+  cancelMorseCheck();
+  if(morseHoldTimer){ clearTimeout(morseHoldTimer); morseHoldTimer=null; }
+  saveMorse();
+  $('morseResetConfirm').hidden=true;
+  $('btnMorseReset').hidden=false;
+  renderMorseStats();
+  renderMorseHome();
+  if(typeof state!=='undefined' && state && state.view==='morse') renderMorse();
+  toast('Статистика морзе сброшена. Слова и их синхронизация не затронуты.');
+});
+var elMorseZone=$('morseZone');
+elMorseZone.addEventListener('pointerdown', onMorseDown);
+elMorseZone.addEventListener('pointerup', onMorseUp);
+elMorseZone.addEventListener('pointercancel', onMorseCancel);
+elMorseZone.addEventListener('lostpointercapture', onMorseLostCapture);
+
+/* Скрытие приложения: сохраняем ввод; таймеры не должны «стрельнуть» фоном
+   дважды. При возврате — безопасное новое ожидание 500 мс либо доводим
+   остаток показа результата. */
+document.addEventListener('visibilitychange', function(){
+  if(!morseState) return;
+  if(document.hidden){
+    saveMorse();
+    cancelMorseCheck();
+    if(morseHoldTimer){ clearTimeout(morseHoldTimer); morseHoldTimer=null; morseHoldInterrupted=true; }
+  } else {
+    ensureMorseDay();
+    if(morseState.mode==='input' && morseState.sequence){
+      scheduleMorseCheck();
+    } else if((morseState.mode==='correct'||morseState.mode==='incorrect') && morseHoldInterrupted){
+      armResultHold();
+    }
+    morseHoldInterrupted=false;
+    if(typeof state!=='undefined' && state && state.view==='morse') renderMorse();
+  }
+});
+window.addEventListener('pagehide', saveMorse);
+window.addEventListener('beforeunload', saveMorse);
+
+/* ---------- Старт модуля (независимо от слов) ---------- */
+loadMorseState();
+loadMorseContent();
+
+
 var appStarted=false;
 function startApp(){
   if(appStarted) return;
@@ -3333,10 +4157,12 @@ function startApp(){
   renderSession({instantFlip:true});
   renderResult();
   renderArchive();
+  if(state.view==='morse' && !morseContent.ready){ state.view='home'; save(); }
   var initialView='home';
   if(state.status==='active' && state.view==='session') initialView='session';
   else if(state.status==='completed' && state.view==='result' && state.sessionDate===effDate()) initialView='result';
   showView(initialView);
+  if(initialView==='morse' && morseState && (morseState.mode==='correct'||morseState.mode==='incorrect')) armResultHold();
   hideBoot();
   bootSync();
   if(hadCorruption){
@@ -3345,6 +4171,7 @@ function startApp(){
     setTimeout(function(){ toast('Планировщик обновлён. Начинаем новый тестовый цикл.'); },400);
   }
 }
+/* ================= Инициализация ================= */
 function loadContentThenStart(){
   var cached=readContentCache();
   if(cached) applyPackage(cached, 'cache');   // мгновенно показываем последнюю исправную копию
@@ -3377,5 +4204,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a40affcf4a418d83',t:'MTc5MDM0OTQ4Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a40b573d78afb148',t:'MTc5MDM1MzA2NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

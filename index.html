@@ -102,6 +102,10 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .test-pill{display:inline-flex;align-items:center;font-size:10px;font-weight:800;letter-spacing:.12em;color:#fff;background:var(--violet-deep);border-radius:999px;padding:5px 10px;margin-left:8px}
 .test-pill.mini{font-size:9px;padding:3px 8px;margin-left:6px;letter-spacing:.08em}
 .home-title{font-size:27px;font-weight:750;letter-spacing:-.01em;margin:6px 0 16px}
+/* Счётчики дня интервального повторения: «Сегодня: X / 15 слов» и разбивка */
+.day-counters{display:flex;flex-direction:column;gap:3px;margin:-8px 0 14px}
+.dc-main{font-size:14.5px;font-weight:650;color:var(--text)}
+.dc-sub{font-size:13px;color:var(--muted)}
 .cat-card{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow-soft)}
 .cat-ic{width:46px;height:46px;flex:none;border-radius:14px;background:var(--violet-soft);display:grid;place-items:center;color:var(--violet)}
 .cat-ic svg{width:22px;height:22px}
@@ -133,7 +137,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .bar-fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--violet-deep),var(--violet));transition:width .25s ease}
 .stage{flex:1;display:flex;flex-direction:column;min-height:0;padding-top:12px}
 .card-area{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center}
-.card-drag{flex:1;min-height:0;max-height:476px;width:85%;max-width:374px;margin-left:auto;margin-right:auto;position:relative;will-change:transform;user-select:none;-webkit-user-select:none;cursor:grab}
+.card-drag{flex:1;min-height:0;max-height:476px;width:100%;max-width:440px;margin-left:auto;margin-right:auto;position:relative;will-change:transform;user-select:none;-webkit-user-select:none;cursor:grab}
 .card-drag.is-drag{cursor:grabbing}
 .card-drag.anim{transition:transform var(--flydur) cubic-bezier(.25,.7,.3,1)}
 .card-drag.no-anim{transition:none!important}
@@ -355,6 +359,10 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         <span class="test-pill" id="testPillHome" hidden>ТЕСТОВАЯ ДАТА</span>
       </div>
       <h1 class="home-title" id="homeTitle">Вечерняя сессия</h1>
+      <div class="day-counters" aria-live="polite">
+        <span class="dc-main" id="cntToday">Сегодня: 0 / 15 слов</span>
+        <span class="dc-sub" id="cntBreak">Повторений: 0, Новых: 0</span>
+      </div>
       <div class="cat-card">
         <div class="cat-ic" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
@@ -376,7 +384,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
           <p id="summaryLine2"></p>
         </div>
         <div class="empty-day" id="emptyDay" hidden>
-          <h2>На сегодня повторений нет</h2>
+          <h2 id="emptyDayTitle">На сегодня повторений нет</h2>
           <p id="emptyDayText"></p>
           <button class="btn-ghost" id="btnNearest" hidden>К ближайшему повторению</button>
         </div>
@@ -746,10 +754,15 @@ var KEY = 'no1equalsme_state_v2';
 var TKEY = 'no1equalsme_testdate_v1';
 var V1KEY = 'no1equalsme_state_v1';
 var BACKUP_PREFIX = 'no1equalsme_state_v2_backup_';
-var INTERVALS = [1,3,7,15,30];
-var MAX_SESSION = 15;
-var MAX_NEW = 5;
-var MAX_LAPSES_EVENING = 5;
+/* ═══════════ Интервальное повторение ═══════════
+   Правила (менять нельзя):
+   - интервалы по шагам: 1 → +1 день, 2 → +3 дня, 3 → +7 дней, 4 → +30 дней;
+   - слово проходит 4 успешные проверки (1→2→3→4) и становится "learned";
+   - жёсткий лимит — 15 слов в день, никогда больше;
+   - повторения всегда имеют приоритет над новыми словами. */
+var STEP_INTERVAL = {1:1, 2:3, 3:7, 4:30};
+var MAX_DAILY = 15;   // дневной лимит: план дня и очередь сессии больше не бывают
+var MAX_SESSION = 15; // (используется также для обрезки очередей из облака/бэкапа)
 
 /* Словарь загружается только из ./data/words.json, в HTML он не встроен */
 var CONTENT_URL = './data/words.json';
@@ -760,10 +773,22 @@ var CARDS = [];
 var CARD_MAP = {};
 var content = {ready:false, source:null, contentVersion:null, schemaVersion:null, updatedAt:null, count:0, skipped:0, checking:false};
 
+/* Базовый словарь из words.json; к нему подмешиваются тестовые слова из state.customWords,
+   поэтому тестовые 50 переживают обновление словаря по сети. */
+var baseCards = [];
 function setCards(list){
   CARDS = list;
   CARD_MAP = {};
-  CARDS.forEach(function(c){ CARD_MAP[c.id]=c; });
+  CARDS.forEach(function(c){
+    // translation — поле из правил (перевод); в словаре его нет, приравниваем к краткому определению
+    if(typeof c.translation !== 'string' || !c.translation) c.translation = c.definitionShort || c.definitionFull || c.word;
+    CARD_MAP[c.id]=c;
+  });
+}
+function refreshCards(){
+  var list = baseCards.slice();
+  try{ if(typeof state!=='undefined' && state && Array.isArray(state.customWords)) list = list.concat(state.customWords); }catch(e){}
+  setCards(list);
 }
 
 var REDUCED = false;
@@ -777,7 +802,8 @@ var elViews = {home:$('view-home'), session:$('view-session'), result:$('view-re
 var elHomeDate=$('homeDate'), elTestPillHome=$('testPillHome'), elHomeTitle=$('homeTitle'), elCatSub=$('catSub'), elCatChip=$('catChip'),
     elArchRow=$('archRow'), elArchRowCount=$('archRowCount'),
     elHomeSummary=$('homeSummary'), elSummaryLine1=$('summaryLine1'), elSummaryLine2=$('summaryLine2'),
-    elEmptyDay=$('emptyDay'), elEmptyDayText=$('emptyDayText'), elBtnNearest=$('btnNearest'),
+    elEmptyDay=$('emptyDay'), elEmptyDayTitle=$('emptyDayTitle'), elEmptyDayText=$('emptyDayText'), elBtnNearest=$('btnNearest'),
+    elCntToday=$('cntToday'), elCntBreak=$('cntBreak'),
     elBtnStart=$('btnStart'), elBtnShowResult=$('btnShowResult'), elBtnSettings=$('btnSettings');
 var elBtnBack=$('btnBack'), elSessProgress=$('sessProgress'), elTestPillSession=$('testPillSession'), elBar=$('bar'), elBarFill=$('barFill'),
     elCardArea=$('cardArea'), elCardDrag=$('cardDrag'), elCardInner=$('cardInner'),
@@ -844,27 +870,117 @@ function shuffle(arr){
 }
 
 /* ================= Состояние ================= */
+/* Прогресс одного слова по правилам интервального повторения:
+   status: "new" | "learning" | "learned";
+   currentStep: 0..4 (ожидающие слова) и 5 — признак «шаг 4 пройден» у learned;
+   nextReviewDate: дата следующего показа (только дата, ISO YYYY-MM-DD);
+   createdAt: день, когда слово впервые попало в систему.
+   updatedAt — служебная метка для разрешения конфликтов синхронизации (как раньше). */
 function defaultProg(){
-  return {status:'new', stage:null, dueDate:null, firstSeenDate:null, lastReviewedDate:null,
-          lapses:0, successfulReviews:0, updatedAt:null, history:[]};
+  return {status:'new', currentStep:0, nextReviewDate:null, createdAt:null, updatedAt:0};
 }
+
+/* ═══ Тестовые 50 слов ═══
+   Автоматически добавляются ТОЛЬКО при первом запуске (сохранённого состояния нет).
+   Хранятся в state.customWords и подмешиваются к словарю, поэтому не пропадают
+   при обновлении words.json. translation — перевод пары слово→перевод. */
+var TEST_PAIRS = [
+  ['дом','house'],['книга','book'],['вода','water'],['город','city'],['время','time'],
+  ['человек','person'],['год','year'],['работа','work'],['друг','friend'],['жизнь','life'],
+  ['глаз','eye'],['день','day'],['рука','hand'],['слово','word'],['место','place'],
+  ['ребёнок','child'],['сила','strength'],['конец','end'],['голова','head'],['вопрос','question'],
+  ['нога','leg'],['случай','case'],['земля','earth'],['область','area'],['история','history'],
+  ['страна','country'],['мир','world'],['машина','car'],['звук','sound'],['воздух','air'],
+  ['дерево','tree'],['огонь','fire'],['река','river'],['деревня','village'],['небо','sky'],
+  ['солнце','sun'],['луна','moon'],['звезда','star'],['море','sea'],['гора','mountain'],
+  ['лес','forest'],['поле','field'],['дорога','road'],['хлеб','bread'],['молоко','milk'],
+  ['мясо','meat'],['стол','table'],['стул','chair'],['окно','window'],['дверь','door']
+];
+function makeTestCards(){
+  return TEST_PAIRS.map(function(pr, i){
+    var num=String(i+1).padStart(2,'0');
+    // формат карточки совпадает со словарём, чтобы UI работал без изменений
+    return {id:'n1test_'+num, word:pr[0], stress:pr[0], translation:pr[1],
+            partOfSpeech:'тест.', definitionShort:pr[1], definitionFull:pr[1],
+            synonyms:[], example:'Тестовое слово: '+pr[0]+' — '+pr[1]+'.',
+            relatedWords:[], register:'нейтр.', contentVersion:1};
+  });
+}
+
 function freshState(){
   return {
-    schemaVersion:2,
+    schemaVersion:3,        // 3 = интервальное повторение (было 2)
     status:'idle',           // idle | active | completed
     sessionDate:null,        // учебная дата текущей сессии
     view:'home',             // home | session | result | archive
     cardScreen:'question',   // question | peek | definition
-    queue:[],
+    queue:[],                // очередь ТЕКУЩЕЙ сессии (уменьшается по мере ответов)
     sessionTotal:0,
     sessionResults:{},
-    cards:{},                // прогресс по стабильным id
+    cards:{},                // прогресс по стабильным id (новая схема)
+    dayPlanDate:null,        // учебная дата, на которую построен план дня
+    dayQueue:[],             // полный план на сегодня (≤15 слов), строится 1 раз в день
+    dayPlan:{total:0, reviews:0, news:0}, // счётчики для экрана «Сегодня: X / 15»
+    customWords:[],          // тестовые слова (только первый запуск)
     lastStudyDate:null,      // последняя использованная учебная дата
     startedAt:null, updatedAt:Date.now(), completedAt:null,
     settings:{haptics:true, theme:'evening', swipeSens:50}
   };
 }
+
+/* Миграция ПРОГРЕССА одной карточки из старой схемы (stage/dueDate/graduated)
+   в новую. Правила соответствия:
+   - graduated/suspended → learned (currentStep=5, показываться больше никогда);
+   - старый stage k (ожидание 1/3/7/15/30 дней) → новый шаг;
+     в старой системе до выпуска было 5 проверок, в новой 4, поэтому «лишняя»
+     проверка снимается на 15-дневном этапе: stage 3 → шаг 3, stage 4 → шаг 4;
+   - dueDate переносится в nextReviewDate без изменений — время следующего
+     показа сохраняется, интервалы применятся к следующему ответу. */
+function normalizeProgV2(o){
+  if(!o || typeof o!=='object') return null;
+  var dateOk=function(v){ return (typeof v==='string' && /^\d{4}-\d{2}-\d{2}$/.test(v)) ? v : null; };
+  var out;
+  var st=String(o.status||'new');
+  if(st==='graduated' || st==='suspended'){
+    out={status:'learned', currentStep:5, nextReviewDate:null, createdAt:dateOk(o.firstSeenDate)};
+  } else if(st==='learning'){
+    var stage=(typeof o.stage==='number' && o.stage>=0) ? o.stage : null;
+    var step = (stage===null) ? 1 : (stage<=2 ? stage+1 : stage);
+    out={status:'learning', currentStep:Math.min(4, Math.max(1, step)),
+         nextReviewDate:dateOk(o.dueDate), createdAt:dateOk(o.firstSeenDate)};
+  } else {
+    out={status:'new', currentStep:0, nextReviewDate:null, createdAt:null};
+  }
+  out.updatedAt=(typeof o.updatedAt==='number' && isFinite(o.updatedAt) && o.updatedAt>=0) ? o.updatedAt : 0;
+  return out;
+}
+/* Прогресс из бэкапа: принимает и новую схему (exportVersion 4),
+   и старую (exportVersion ≤ 3) — старые копии остаются совместимыми. */
+function normalizeAnyProg(p){
+  if(!p || typeof p!=='object') return null;
+  if(p.currentStep!==undefined){
+    var dateOk=function(v){ return (typeof v==='string' && /^\d{4}-\d{2}-\d{2}$/.test(v)) ? v : null; };
+    return {
+      status:(['new','learning','learned'].indexOf(p.status)>=0) ? p.status : 'new',
+      currentStep:(typeof p.currentStep==='number' && p.currentStep>=0 && p.currentStep<=5 && Math.floor(p.currentStep)===p.currentStep) ? p.currentStep : 0,
+      nextReviewDate:dateOk(p.nextReviewDate),
+      createdAt:(typeof p.createdAt==='string') ? p.createdAt : null,
+      updatedAt:(typeof p.updatedAt==='number' && p.updatedAt>=0) ? p.updatedAt : 0
+    };
+  }
+  return normalizeProgV2(p);
+}
+
 function isValidProg(p){
+  if(!p || typeof p!=='object') return false;
+  if(['new','learning','learned'].indexOf(p.status)<0) return false;
+  if(!(typeof p.currentStep==='number' && p.currentStep>=0 && p.currentStep<=5 && Math.floor(p.currentStep)===p.currentStep)) return false;
+  if(!(p.nextReviewDate===null || (typeof p.nextReviewDate==='string' && /^\d{4}-\d{2}-\d{2}$/.test(p.nextReviewDate)))) return false;
+  if(!(p.createdAt===null || typeof p.createdAt==='string')) return false;
+  return true;
+}
+/* Валидатор старой схемы — нужен только чтобы распознать её и выполнить миграцию */
+function isValidProgV2(p){
   if(!p || typeof p!=='object') return false;
   if(['new','learning','graduated','suspended'].indexOf(p.status)<0) return false;
   if(!(p.stage===null || (typeof p.stage==='number' && p.stage>=0 && p.stage<=4 && Math.floor(p.stage)===p.stage))) return false;
@@ -875,10 +991,11 @@ function isValidProg(p){
   if(!Array.isArray(p.history) || p.history.length>50) return false;
   return true;
 }
-function isValidState(s){
+/* v3=true → новая схема (schemaVersion 3), v3=false → старая (2) */
+function isValidState(s, v3){
   try{
     if(!s || typeof s!=='object') return false;
-    if(s.schemaVersion!==2) return false;
+    if(v3 ? s.schemaVersion!==3 : s.schemaVersion!==2) return false;
     if(['idle','active','completed'].indexOf(s.status)<0) return false;
     if(['home','session','result','archive'].indexOf(s.view)<0) return false;
     if(['question','peek','definition'].indexOf(s.cardScreen)<0) return false;
@@ -896,22 +1013,67 @@ function isValidState(s){
       if(typeof r.done!=='boolean' || typeof r.firstTry!=='boolean' || typeof r.tomorrow!=='boolean') return false;
     }
     if(!s.cards || typeof s.cards!=='object') return false;
+    var progOk = v3 ? isValidProg : isValidProgV2;
     var keys=Object.keys(s.cards);
-    for(var k=0;k<keys.length;k++){ if(!isValidProg(s.cards[keys[k]])) return false; }
+    for(var k=0;k<keys.length;k++){ if(!progOk(s.cards[keys[k]])) return false; }
     if(!s.settings || typeof s.settings.haptics!=='boolean') return false;
+    if(v3){
+      // поля плана дня необязательны, но если есть — должны быть корректны
+      if(s.dayPlanDate!==undefined && s.dayPlanDate!==null && !(typeof s.dayPlanDate==='string' && /^\d{4}-\d{2}-\d{2}$/.test(s.dayPlanDate))) return false;
+      if(s.dayQueue!==undefined && s.dayQueue!==null && !Array.isArray(s.dayQueue)) return false;
+      if(s.customWords!==undefined && s.customWords!==null && !Array.isArray(s.customWords)) return false;
+    }
     return true;
   }catch(e){ return false; }
+}
+/* Полная миграция состояния старой версии: ни один завершённый прогресс не теряется */
+function migrateStateV2(s){
+  var out=freshState();       // у мигрирующего пользователя тестовых 50 слов НЕТ — они только при первом запуске
+  out.status=s.status;
+  out.sessionDate=s.sessionDate||null;
+  out.view=s.view;
+  out.cardScreen=s.cardScreen;
+  out.queue=Array.isArray(s.queue)?s.queue.slice(0,MAX_SESSION*6):[];
+  out.sessionTotal=(typeof s.sessionTotal==='number')?s.sessionTotal:0;
+  out.sessionResults=(s.sessionResults && typeof s.sessionResults==='object')?s.sessionResults:{};
+  out.lastStudyDate=s.lastStudyDate||null;
+  out.startedAt=s.startedAt||null;
+  out.completedAt=s.completedAt||null;
+  out.updatedAt=(typeof s.updatedAt==='number')?s.updatedAt:Date.now();
+  if(s.settings && typeof s.settings==='object'){
+    if(typeof s.settings.haptics==='boolean') out.settings.haptics=s.settings.haptics;
+    if(s.settings.theme==='evening'||s.settings.theme==='dark'||s.settings.theme==='light') out.settings.theme=s.settings.theme;
+    if(typeof s.settings.swipeSens==='number' && s.settings.swipeSens>=0 && s.settings.swipeSens<=100) out.settings.swipeSens=s.settings.swipeSens;
+    out.settings.updatedAt=(typeof s.settings.updatedAt==='number')?s.settings.updatedAt:0;
+  }
+  if(s.stats && typeof s.stats==='object' && !Array.isArray(s.stats)) out.stats=s.stats;
+  var cards={};
+  Object.keys(s.cards||{}).forEach(function(id){
+    if(typeof id!=='string' || id.length>64) return;
+    var np=normalizeProgV2(s.cards[id]);
+    if(np) cards[id]=np;
+  });
+  out.cards=cards;
+  return out;
 }
 
 var state, testState={enabled:false, offset:0}, hadCorruption=false, freshInstall=false;
 function loadState(){
   var raw=null;
   try{ raw=localStorage.getItem(KEY); }catch(e){}
-  if(!raw){ state=freshState(); freshInstall=true; return; }
+  if(!raw){
+    // Первый запуск: чистое состояние + 50 тестовых слов в пуле новых
+    state=freshState();
+    state.customWords=makeTestCards();
+    freshInstall=true;
+    return;
+  }
   try{
     var s=JSON.parse(raw);
-    if(!isValidState(s)) throw new Error('incompatible');
-    state=s;
+    if(isValidState(s, true)){ state=s; return; }
+    // старая схема (schemaVersion 2) — мигрируем, прогресс не теряем
+    if(isValidState(s, false)){ state=migrateStateV2(s); save(); return; }
+    throw new Error('incompatible');
   }catch(e){
     try{ localStorage.setItem(BACKUP_PREFIX+Date.now(), raw); }catch(err){}
     state=freshState();
@@ -938,120 +1100,136 @@ function effDate(){
   return testState.enabled ? addDaysStr(realToday(), testState.offset) : realToday();
 }
 
-/* ================= Прогресс карточек ================= */
+/* ================= Правила ответов ================= */
 function cardProg(id){
   var p=state.cards[id];
   if(!p){ p=defaultProg(); state.cards[id]=p; }
   return p;
 }
-function pushHistory(p, studyDate, action, from, to){
-  p.history.push({d:studyDate, a:action, f:from, t:to});
-  if(p.history.length>50) p.history.splice(0, p.history.length-50);
-}
-/* Успешный ответ: первая встреча, чистое междневное повторение или успех после вечерней ошибки */
-function applySuccess(id, studyDate, firstTry){
+/* ═══ «ЗНАЮ» ═══
+   Увеличиваем currentStep на 1 и назначаем повтор по интервалу НОВОГО шага
+   (1→+1, 2→+3, 3→+7, 4→+30 дней).
+   Слово должно пройти 4 успешные проверки: 1→2→3→4, затем 4-е «ЗНАЮ»
+   даёт currentStep=5 — это признак «шаг 4 пройден» → status="learned",
+   nextReviewDate=null, слово больше никогда не показывается. */
+function applyKnow(id, studyDate){
   var p=cardProg(id);
-  var from=p.stage;
-  var advanced=false, graduated=false;
-  if(!p.firstSeenDate) p.firstSeenDate=studyDate;
-  if(p.status==='new'){
-    p.status='learning';
-    p.stage=0;
-    p.dueDate=addDaysStr(studyDate, INTERVALS[0]);
-    pushHistory(p, studyDate, 'ok', null, 0);
-  } else if(firstTry){
-    if(p.stage>=4){
-      p.status='graduated';
-      p.stage=null;
-      p.dueDate=null;
-      graduated=true; advanced=true;
-      pushHistory(p, studyDate, 'ok', 4, 'grad');
-    } else {
-      var to=p.stage+1;
-      p.dueDate=addDaysStr(studyDate, INTERVALS[to]);
-      p.stage=to;
-      advanced=true;
-      pushHistory(p, studyDate, 'ok', from, to);
-    }
-    p.successfulReviews++;
-  } else {
-    p.status='learning';
-    p.stage=0;
-    p.dueDate=addDaysStr(studyDate, INTERVALS[0]);
-    pushHistory(p, studyDate, 'ok', from, 0);
-  }
-  p.lastReviewedDate=studyDate;
-  p.updatedAt=Date.now();
-  return {advanced:advanced, graduated:graduated};
-}
-/* Ошибка вечером: только фиксация, дата не назначается */
-function applyForgot(id, studyDate){
-  var p=cardProg(id);
-  p.lapses++;
-  p.updatedAt=Date.now();
-  pushHistory(p, studyDate, 'no', p.stage, p.stage);
-}
-/* Защитный лимит ошибок: завершение вечера со stage 0 и датой +1 день */
-function applyCap(id, studyDate){
-  var p=cardProg(id);
-  var from=p.stage;
-  if(!p.firstSeenDate) p.firstSeenDate=studyDate;
+  if(p.status==='learned') return {advanced:false, graduated:false};
   p.status='learning';
-  p.stage=0;
-  p.dueDate=addDaysStr(studyDate, INTERVALS[0]);
-  p.lastReviewedDate=studyDate;
+  if(!p.createdAt) p.createdAt=studyDate;
+  if(!p.currentStep){
+    // страховка: слово показано, но ещё не проинициализировано (например, очередь пришла из синхронизации)
+    p.currentStep=1;
+    p.nextReviewDate=addDaysStr(studyDate,1);
+  }
+  var ns=p.currentStep+1;
+  if(ns>=5){ // 4-я успешная проверка пройдена
+    p.status='learned';
+    p.currentStep=5;
+    p.nextReviewDate=null;      // слово уходит из показа навсегда
+    p.updatedAt=Date.now();
+    return {advanced:true, graduated:true};
+  }
+  p.currentStep=ns;
+  p.nextReviewDate=addDaysStr(studyDate, STEP_INTERVAL[ns]||1);
   p.updatedAt=Date.now();
-  pushHistory(p, studyDate, 'cap', from, 0);
+  return {advanced:true, graduated:false};
 }
-function graduatedCount(){
+/* ═══ «НЕ ЗНАЮ» ═══
+   Сброс на шаг 1 и повтор завтра — цикл начинается заново: 1 → 3 → 7 → 30.
+   Сегодня слово повторно не показывается (правило «не показывать дважды в день»):
+   nextReviewDate = завтра, а в сегодняшней очереди оно остаётся только до ухода
+   с экрана определения. */
+function applyForget(id, studyDate){
+  var p=cardProg(id);
+  p.status='learning';
+  if(!p.createdAt) p.createdAt=studyDate;
+  p.currentStep=1;
+  p.nextReviewDate=addDaysStr(studyDate,1);
+  p.updatedAt=Date.now();
+}
+function learnedCount(){
   var n=0;
-  CARDS.forEach(function(c){ var p=state.cards[c.id]; if(p && p.status==='graduated') n++; });
+  CARDS.forEach(function(c){ var p=state.cards[c.id]; if(p && p.status==='learned') n++; });
   return n;
 }
 
-/* ================= Планировщик очереди ================= */
-function buildDayQueue(eff){
-  var overdue=[], dueToday=[], fresh=[];
-  CARDS.forEach(function(c){
-    var p=state.cards[c.id] || defaultProg();
-    if(p.status==='graduated' || p.status==='suspended') return;
-    if(p.status==='new'){ fresh.push(c.id); return; }
-    if(p.status==='learning' && p.dueDate){
-      if(p.dueDate<eff) overdue.push({id:c.id, due:p.dueDate});
-      else if(p.dueDate===eff) dueToday.push(c.id);
-    }
+/* ================= Планировщик дня (алгоритм из правил) ================= */
+/* Слово, которое сегодня войдёт в план как новое, получает по правилу ШАГа 4:
+   status="learning", currentStep=1, nextReviewDate=сегодня+1 день. */
+function initNewWord(id, eff){
+  var p=cardProg(id);
+  p.status='learning';
+  p.currentStep=1;
+  if(!p.createdAt) p.createdAt=eff;
+  p.nextReviewDate=addDaysStr(eff,1);
+  p.updatedAt=Date.now();
+}
+/* Свободные слоты под новые слова: сначала уже загруженные «новые» (status="new"),
+   затем слова словаря, которых ещё нет в системе. Порядок среди новых правилами
+   не задан — перемешиваем, чтобы новые шли в случайном порядке. */
+function takeNewWords(n, eff){
+  if(n<=0) return [];
+  var persisted=[], fresh=[];
+  Object.keys(state.cards).forEach(function(id){
+    if(state.cards[id].status==='new' && CARD_MAP[id]) persisted.push(id);
   });
-  overdue.sort(function(a,b){ return a.due<b.due ? -1 : (a.due>b.due ? 1 : 0); });
-  shuffle(dueToday); // назначенные с одинаковой датой перемешиваем один раз
-  var queue = overdue.map(function(o){return o.id;}).concat(dueToday).slice(0, MAX_SESSION);
-  if(queue.length < MAX_SESSION){
-    var cap = Math.min(MAX_NEW, MAX_SESSION - queue.length, fresh.length);
-    if(cap>0){ shuffle(fresh); queue = queue.concat(fresh.slice(0, cap)); }
+  CARDS.forEach(function(c){
+    if(!state.cards[c.id]) fresh.push(c.id);   // ещё не в системе = общий пул новых
+  });
+  var pool=persisted.concat(shuffle(fresh));
+  var picked=[];
+  for(var i=0;i<pool.length && picked.length<n;i++){
+    var id=pool[i];
+    if(picked.indexOf(id)>=0) continue;
+    picked.push(id);
+    initNewWord(id, eff);                      // ШАГ 4: поля нового слова
   }
-  return queue;
+  return picked;
 }
-function previewDay(eff){
-  var overdueN=0, dueN=0, freshN=0;
-  CARDS.forEach(function(c){
-    var p=state.cards[c.id] || defaultProg();
-    if(p.status==='graduated' || p.status==='suspended') return;
-    if(p.status==='new'){ freshN++; return; }
-    if(p.status==='learning' && p.dueDate){
-      if(p.dueDate<eff) overdueN++;
-      else if(p.dueDate===eff) dueN++;
-    }
+/* ШАГИ 1–5. Строится при загрузке (ensureDay) ровно один раз за учебный день:
+   - ШАГ 2: все learning-слова с nextReviewDate <= сегодня, старые — первыми
+     (сравнение «<=», чтобы просроченные не терялись);
+   - ШАГ 3: slotsForNew = max(0, 15 − повторения);
+   - ШАГ 4a: повторений ≥ 15 → показываем ровно 15 самых старых, новых 0;
+     остальные повторения НЕ переносятся — их дата уже в прошлом, и они сами
+     снова попадут в завтрашнюю выборку;
+   - ШАГ 4b: повторений < 15 → все повторения + новые в свободные слоты;
+   - ШАГ 5: итого от 1 до 15 слов.
+   Один прогон в день гарантирует, что слово не покажут дважды и лимит
+   «никогда больше 15» не переигрывается в течение дня. */
+function buildDayPlan(eff){
+  var reviews=[];
+  Object.keys(state.cards).forEach(function(id){
+    var p=state.cards[id];
+    if(!p || p.status!=='learning' || !p.nextReviewDate) return; // learned и new не участвуют
+    if(!CARD_MAP[id]) return;                 // временно нет в словаре — прогресс сохраняем, не показываем
+    if(p.nextReviewDate<=eff) reviews.push({id:id, due:p.nextReviewDate});
   });
-  var assigned = overdueN + dueN;
-  var capped = Math.min(assigned, MAX_SESSION);
-  var newAllowed = capped>=MAX_SESSION ? 0 : Math.min(MAX_NEW, MAX_SESSION-capped, freshN);
-  return {overdue:overdueN, dueToday:dueN, assigned:capped, newAllowed:newAllowed, total:capped+newAllowed};
+  reviews.sort(function(a,b){ return a.due<b.due ? -1 : (a.due>b.due ? 1 : 0); }); // самые просроченные первыми
+  var reviewCount=reviews.length;
+  var slotsForNew=Math.max(0, MAX_DAILY-reviewCount); // ШАГ 3
+  var queue, news;
+  if(reviewCount>=MAX_DAILY){                 // ШАГ 4a
+    queue=reviews.slice(0,MAX_DAILY).map(function(o){ return o.id; });
+    news=[];
+  } else {                                    // ШАГ 4b
+    queue=reviews.map(function(o){ return o.id; });
+    news=takeNewWords(slotsForNew, eff);
+    queue=queue.concat(news);
+  }
+  state.dayQueue=queue;
+  state.dayPlanDate=eff;
+  state.dayPlan={total:queue.length, reviews:Math.min(reviewCount,MAX_DAILY), news:news.length};
+  save();
 }
+/* Ближайшее будущее повторение — поле даты теперь называется nextReviewDate */
 function nearestFutureDue(){
   var eff=effDate(), best=null;
   CARDS.forEach(function(c){
     var p=state.cards[c.id];
-    if(p && p.status==='learning' && p.dueDate && p.dueDate>eff){
-      if(!best || p.dueDate<best) best=p.dueDate;
+    if(p && p.status==='learning' && p.nextReviewDate && p.nextReviewDate>eff){
+      if(!best || p.nextReviewDate<best) best=p.nextReviewDate;
     }
   });
   return best;
@@ -1064,6 +1242,13 @@ function ensureDay(){
   } else if(state.status==='active' && state.sessionDate!==eff){
     state.status='idle'; state.queue=[]; state.sessionResults={}; state.sessionTotal=0; state.cardScreen='question';
     if(state.view==='session' || state.view==='result') state.view='home';
+    save();
+  }
+  // План дня (ШАГИ 1–5) строится при загрузке ровно один раз за учебную дату:
+  // повторно пересчитывать в течение дня нельзя — иначе можно было бы
+  // «переиграть» лимит 15 слов и показать слово дважды.
+  if(state.dayPlanDate!==eff){
+    buildDayPlan(eff);
     save();
   }
 }
@@ -1114,7 +1299,11 @@ function renderHome(){
   var eff=effDate();
   elHomeDate.textContent=rusDateStr(eff);
   elTestPillHome.hidden=!testState.enabled;
-  elArchRowCount.textContent=String(graduatedCount());
+  elArchRowCount.textContent=String(learnedCount());
+  // Счётчики дня: план строится при загрузке, показываем его состав
+  var plan=(state.dayPlanDate===eff && state.dayPlan) ? state.dayPlan : {total:0, reviews:0, news:0};
+  elCntToday.textContent='Сегодня: '+plan.total+' / '+MAX_DAILY+' слов';
+  elCntBreak.textContent='Повторений: '+plan.reviews+', Новых: '+plan.news;
   elCatChip.className='chip';
   if(state.status==='completed' && state.sessionDate===eff){
     var st=computeStats();
@@ -1147,25 +1336,26 @@ function renderHome(){
     elBtnStart.textContent='Продолжить';
     return;
   }
-  var pv=previewDay(eff);
-  if(pv.total===0){
+  if(plan.total===0){
+    // Ограничение 3 из правил — точный текст сообщения
     elCatSub.textContent='Сегодня свободно';
     elCatChip.textContent='Нет карточек';
     elBtnStart.hidden=true;
     elEmptyDay.hidden=false;
+    elEmptyDayTitle.textContent='На сегодня всё! Повторения завтра.';
     var nd=nearestFutureDue();
     if(nd){ elEmptyDayText.textContent='Ближайшее повторение: '+fmtHuman(nd)+'.'; }
-    else if(graduatedCount()>0){ elEmptyDayText.textContent='Все слова освоены — новых назначений нет.'; }
+    else if(learnedCount()>0){ elEmptyDayText.textContent='Все слова освоены — новых назначений нет.'; }
     else { elEmptyDayText.textContent='Назначенных и новых карточек на сегодня нет.'; }
     elBtnNearest.hidden = !(testState.enabled && nd);
   } else {
     elEmptyDay.hidden=true;
     elCatChip.textContent='Сегодня';
-    var mins=Math.max(1, Math.round(pv.total*24/60));
+    var mins=Math.max(1, Math.round(plan.total*24/60));
     elCatSub.textContent =
-      pv.total+' '+plural(pv.total,'карточка','карточки','карточек') +
-      (pv.overdue ? ' · просрочено: '+pv.overdue : '') +
-      (pv.newAllowed ? ' · новых: '+pv.newAllowed : '') +
+      plan.total+' '+plural(plan.total,'карточка','карточки','карточек') +
+      ' · повторений: '+plan.reviews +
+      ' · новых: '+plan.news +
       ' · около '+mins+' '+plural(mins,'минуты','минут','минут');
     elBtnStart.hidden=false;
     elBtnStart.textContent='Начать';
@@ -1198,7 +1388,7 @@ function fitBackWord(retry){
   if(avail<=0){
     // карточка ещё не получила размеры — повторяем после отрисовки
     if(retry!==false) requestAnimationFrame(function(){ fitBackWord(false); });
-    avail=Math.min(374, Math.round((window.innerWidth||360)*0.85)-64);
+    avail=Math.min(440, (window.innerWidth||360)-64);
   }
   elWordBack.style.fontSize=max+'px';
   var size=max;
@@ -1233,7 +1423,8 @@ function renderSession(opts){
   elBadgePeek.hidden=!peek;
   elReturnNote.hidden=peek;
   if(!peek && r){
-    elReturnNote.textContent = (r.errors>=MAX_LAPSES_EVENING) ? 'Это слово вернётся завтра' : 'Это слово вернётся ещё раз сегодня';
+    // «НЕ ЗНАЮ» по правилам всегда переносит повтор на завтра — сегодня слово не показывается
+    elReturnNote.textContent='Это слово вернётся завтра';
   }
   elBtnBackAction.textContent = peek ? 'Вернуться к слову' : 'Понятно, повторить позже';
   elActions.classList.toggle('hidden', back);
@@ -1282,7 +1473,11 @@ function renderArchive(){
   var items=[];
   CARDS.forEach(function(c){
     var p=state.cards[c.id];
-    if(p && p.status==='graduated') items.push({word:c.stress, date:p.lastReviewedDate});
+    // Архив = все слова со status "learned" (правило 1: они больше не показываются)
+    if(p && p.status==='learned'){
+      // дата «освоено» — момент последнего изменения прогресса; 0 (старые данные) не показываем
+      items.push({word:c.stress, date:(p.updatedAt ? dateToYMD(new Date(p.updatedAt)) : null)});
+    }
   });
   elArchCount.textContent='Освоено слов: '+items.length;
   elArchSettingsCount.textContent=String(items.length);
@@ -1331,7 +1526,21 @@ function startNewSession(){
   if(state.status==='active') return;
   if(!content.ready || !CARDS.length) return; // пустую сессию из незагруженного словаря не создаём
   var eff=effDate();
-  var queue=buildDayQueue(eff);
+  if(state.dayPlanDate!==eff) buildDayPlan(eff); // страховка: плана на сегодня ещё нет
+  // Очередь сессии = план дня (≤15 слов). Фильтр защищает от устаревших id:
+  // в показе участвуют только слова, всё ещё находящиеся в изучении.
+  var queue=(state.dayQueue||[]).filter(function(id){
+    var p=state.cards[id];
+    return !!(CARD_MAP[id] && p && p.status==='learning');
+  });
+  // крайний случай: план устарел (например, после синхронизации) — пересобираем один раз
+  if(!queue.length && (state.dayQueue||[]).length){
+    buildDayPlan(eff);
+    queue=(state.dayQueue||[]).filter(function(id){
+      var p=state.cards[id];
+      return !!(CARD_MAP[id] && p && p.status==='learning');
+    });
+  }
   if(!queue.length) return; // пустую сессию не создаём
   state.queue=queue;
   state.sessionResults={};
@@ -1366,23 +1575,27 @@ function answer(remembered){
   lock=true;
   var studyDate=state.sessionDate;
   if(remembered){
+    // «ЗНАЮ»: шаг вперёд + повтор по интервалу нового шага (4 шага = изучено)
     haptic('success');
-    var res=applySuccess(c.id, studyDate, r.firstTry);
+    var res=applyKnow(c.id, studyDate);
     r.advanced=res.advanced;
     r.graduatedNow=res.graduated;
     r.done=true;
     state.queue.shift();
     state.cardScreen='question';
-    save(); // прогресс зафиксирован до анимации — после перезагрузки этап не применится повторно
+    save(); // прогресс зафиксирован до анимации — после перезагрузки шаг не применится повторно
     flyCard(1,function(){
       if(doneCount()===state.sessionTotal){ finishSession(); }
       else { renderSession({enter:true,instantFlip:true}); lock=false; }
     });
   } else {
+    // «НЕ ЗНАЮ»: currentStep=1, повтор завтра; сегодня слово больше не показываем.
+    // Определение показываем как обратную связь — выход из него уводит слово из очереди.
     haptic('error');
     r.errors+=1;
     r.firstTry=false;
-    applyForgot(c.id, studyDate);
+    r.tomorrow=true;                 // для статистики: уходит на завтра
+    applyForget(c.id, studyDate);
     state.cardScreen='definition';
     flipAt=Date.now();
     save();
@@ -1400,17 +1613,10 @@ function continueFromDefinition(dir){
   lock=true;
   var c=currentCard(); if(!c){ lock=false; return; }
   var r=state.sessionResults[c.id];
-  var studyDate=state.sessionDate;
+  // Правило 5 «не показывать дважды в день»: nextReviewDate уже перенесён на завтра,
+  // поэтому слово просто уходит из очереди — без повторного показа сегодня.
+  if(r && !r.done){ r.done=true; r.tomorrow=true; }
   state.queue.shift();
-  if(r.errors>=MAX_LAPSES_EVENING){
-    r.done=true;
-    r.tomorrow=true;
-    applyCap(c.id, studyDate); // stage 0, завтра
-  } else if(state.queue.length<2){
-    state.queue.push(c.id);
-  } else {
-    state.queue.splice(2,0,c.id); // минимум через две другие карточки
-  }
   state.cardScreen='question';
   save();
   flyCard(dir||1,function(){
@@ -1744,7 +1950,7 @@ function returnRealDate(){
   var real=realToday(), hasFuture=false;
   CARDS.forEach(function(c){
     var p=state.cards[c.id];
-    if(p && p.status==='learning' && p.dueDate && p.dueDate>real) hasFuture=true;
+    if(p && p.status==='learning' && p.nextReviewDate && p.nextReviewDate>real) hasFuture=true;
   });
   toast(hasFuture
     ? 'Вернули реальную дату. Часть повторений запланирована на будущее — до наступления этих дат новых повторений может не быть.'
@@ -1775,7 +1981,7 @@ function openSettings(){
   syncSwitch();
   syncTestSwitch();
   renderTestBlock();
-  elArchSettingsCount.textContent=String(graduatedCount());
+  elArchSettingsCount.textContent=String(learnedCount());
   requestAnimationFrame(function(){ elOverlay.classList.add('show'); });
 }
 function closeSettings(){
@@ -1852,7 +2058,7 @@ function recordDayStats(){
 
 /* ================= CloudAdapter ================= */
 var CLOUD_PREFIX='nem_';
-var CLOUD_SCHEMA=1;
+var CLOUD_SCHEMA=2; // 2 = интервальное повторение; блоки со значением 1 читаются через миграцию
 var CLOUD_BLOCKS=128;
 var CLOUD_MAX_VALUE=4096;
 var CK={meta:'nem_meta_v1', settings:'nem_settings_v1', session:'nem_session_v1', stats:'nem_stats_v1'};
@@ -2028,25 +2234,36 @@ function markCloudConnected(){
 }
 
 /* ================= Сериализация для облака ================= */
-var ST2C={'new':'n', learning:'l', graduated:'g', suspended:'s'};
-var C2ST={n:'new', l:'learning', g:'graduated', s:'suspended'};
+var ST2C={'new':'n', learning:'l', learned:'g'};
+var C2ST={n:'new', l:'learning', g:'learned'};
 
+/* Компактный формат новой схемы (v2):
+   [статус, currentStep, nextReviewDate, createdAt, updatedAt, 0, 0, 0] */
 function progToCompact(p){
-  return [ST2C[p.status]||'n', (p.stage===null?-1:p.stage), p.dueDate||0, p.firstSeenDate||0, p.lastReviewedDate||0,
-          p.lapses||0, p.successfulReviews||0, p.updatedAt||0];
+  return [ST2C[p.status]||'n', (p.currentStep|0), p.nextReviewDate||0, p.createdAt||0,
+          p.updatedAt||0, 0, 0, 0];
 }
-function compactToProg(a, localProg){
+/* ver=1 — старый формат [статус, stage, dueDate, firstSeen, lastRev, ...]: мигрируем
+   общей функцией миграции, чтобы старые облачные данные не терялись.
+   ver=2 (и по умолчанию для новых блоков) — новая схема. */
+function compactToProg(a, localProg, ver){
   if(!Array.isArray(a) || a.length<8) return null;
-  var status=C2ST[a[0]];
-  var stage=(typeof a[1]==='number' && a[1]>=0 && a[1]<=4) ? a[1] : null;
   var dateOk=function(v){ return (typeof v==='string' && /^\d{4}-\d{2}-\d{2}$/.test(v)) ? v : null; };
-  if(!status) return null;
   var num=function(v){ return (typeof v==='number' && isFinite(v) && v>=0) ? v : 0; };
-  return {
-    status:status, stage:stage, dueDate:dateOk(a[2]), firstSeenDate:dateOk(a[3]), lastReviewedDate:dateOk(a[4]),
-    lapses:num(a[5]), successfulReviews:num(a[6]), updatedAt:num(a[7]),
-    history:(localProg && Array.isArray(localProg.history)) ? localProg.history : [] // локальная история не теряется
-  };
+  if(ver===1){
+    return normalizeProgV2({
+      status:{n:'new', l:'learning', g:'graduated', s:'suspended'}[a[0]],
+      stage:(typeof a[1]==='number' && a[1]>=0 && a[1]<=4) ? a[1] : null,
+      dueDate:dateOk(a[2]), firstSeenDate:dateOk(a[3]), updatedAt:num(a[7])
+    });
+  }
+  var status=C2ST[a[0]];
+  if(!status) return null;
+  return {status:status,
+          currentStep:(typeof a[1]==='number') ? (a[1]|0) : 0,
+          nextReviewDate:dateOk(a[2]),
+          createdAt:dateOk(a[3]),
+          updatedAt:num(a[4])};
 }
 function buildPayloads(){
   var out={};
@@ -2097,16 +2314,16 @@ function safeParse(raw){
 }
 function mergeCloudProgress(obj){
   if(!obj || !obj.c || typeof obj.c!=='object') return 0;
+  var ver=(typeof obj.v==='number')?obj.v:1; // блок без версии читаем как старый
   var applied=0;
   Object.keys(obj.c).forEach(function(id){
     if(typeof id!=='string' || id.length>LIMITS.id) return;
-    var remote=compactToProg(obj.c[id], state.cards[id]); // прогресс хранится по id, даже если слова сейчас нет
+    var remote=compactToProg(obj.c[id], state.cards[id], ver); // прогресс хранится по id, даже если слова сейчас нет
     if(!remote) return;
     var local=state.cards[id];
     if(!local){ state.cards[id]=remote; applied++; return; }
-    // конфликт решается по updatedAt; при равенстве остаётся локальная запись (без max(stage))
+    // конфликт решается по updatedAt; при равенстве остаётся локальная запись
     if((remote.updatedAt||0) > (local.updatedAt||0)){
-      remote.history=Array.isArray(local.history)?local.history:[];
       state.cards[id]=remote;
       applied++;
     }
@@ -2536,8 +2753,8 @@ $('btnFreshStart').addEventListener('click', function(){
 function buildBackupText(){
   var data={
     app:'no1equalsme',
-    exportVersion:3,
-    schemaVersion:2,
+    exportVersion:4,
+    schemaVersion:3,
     createdAt:new Date().toISOString(),
     cards:state.cards,
     settings:{haptics:!!state.settings.haptics, theme:state.settings.theme||'evening', swipeSens:swipeSens(), updatedAt:state.settings.updatedAt||0},
@@ -2676,18 +2893,13 @@ function copyBackupText(){
 function sanitizeImport(obj){
   if(!obj || typeof obj!=='object') return null;
   if(obj.app!=='no1equalsme') return null;
-  if(typeof obj.exportVersion!=='number' || obj.exportVersion>3) return null;
+  // принимаем и старые копии (exportVersion ≤ 3, прошлая схема), и новые (4)
+  if(typeof obj.exportVersion!=='number' || obj.exportVersion>4) return null;
   var out={cards:{}, settings:null, stats:{days:{}}, session:null};
   var ids=Object.keys(obj.cards||{}).slice(0,5000);
   ids.forEach(function(id){
     if(typeof id!=='string' || id.length>64 || !CARD_MAP[id]) return;
-    var p=obj.cards[id];
-    if(!p || typeof p!=='object') return;
-    var compact=progToCompact({
-      status:p.status, stage:(typeof p.stage==='number')?p.stage:null, dueDate:p.dueDate, firstSeenDate:p.firstSeenDate,
-      lastReviewedDate:p.lastReviewedDate, lapses:p.lapses, successfulReviews:p.successfulReviews, updatedAt:p.updatedAt
-    });
-    var norm=compactToProg(compact, null);
+    var norm=normalizeAnyProg(obj.cards[id]); // мигрирует и старую, и новую схему
     if(norm) out.cards[id]=norm;
   });
   if(obj.settings && typeof obj.settings==='object'){
@@ -2757,7 +2969,7 @@ elFileVerify.addEventListener('change', function(){
     var clean=sanitizeImport(parsed);
     if(!clean){ toast('Это не резервная копия No1EqualsMe или её версия не поддерживается.'); return; }
     var grad=0;
-    Object.keys(clean.cards).forEach(function(id){ if(clean.cards[id].status==='graduated') grad++; });
+    Object.keys(clean.cards).forEach(function(id){ if(clean.cards[id].status==='learned') grad++; });
     var dateTxt=clean.createdAt?clean.createdAt.slice(0,10):'дата неизвестна';
     toast('Резервная копия исправна · '+dateTxt+' · карточек: '+Object.keys(clean.cards).length+' · освоено: '+grad);
   };
@@ -2777,7 +2989,7 @@ elFileImport.addEventListener('change', function(){
     if(!clean){ toast('Файл повреждён или это не резервная копия No1EqualsMe.'); return; }
     pendingImport=clean;
     var grad=0;
-    Object.keys(clean.cards).forEach(function(id){ if(clean.cards[id].status==='graduated') grad++; });
+    Object.keys(clean.cards).forEach(function(id){ if(clean.cards[id].status==='learned') grad++; });
     var dateTxt=clean.createdAt?clean.createdAt.slice(0,10):'дата неизвестна';
     elImportInfo.textContent='Копия от '+dateTxt+' · карточек с прогрессом: '+Object.keys(clean.cards).length+' · освоено: '+grad+'. Применить и заменить текущий прогресс?';
     elImportConfirm.hidden=false;
@@ -3000,7 +3212,8 @@ function writeContentCache(pkg){
   }catch(e){}
 }
 function applyPackage(pkg, source){
-  setCards(pkg.cards);
+  baseCards=pkg.cards;
+  refreshCards();               // подмешиваем тестовые слова из state.customWords
   content.ready=true;
   content.source=source;
   content.contentVersion=pkg.contentVersion;
@@ -3097,6 +3310,7 @@ function startApp(){
   appStarted=true;
   loadState();
   loadTest();
+  refreshCards();               // подключить тестовые слова к словарю после загрузки состояния
   if(!state.settings || !THEME_BG[state.settings.theme]) state.settings.theme='evening';
   if(typeof state.settings.swipeSens!=='number' || state.settings.swipeSens<0 || state.settings.swipeSens>100) state.settings.swipeSens=50;
   // слова, отсутствующие в текущем словаре, не показываем, но их прогресс сохраняем
@@ -3163,5 +3377,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a40affcf4a418d83',t:'MTc5MDM0OTQ4Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

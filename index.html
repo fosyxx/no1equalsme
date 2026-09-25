@@ -132,7 +132,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .bar{height:3px;flex:none;border-radius:99px;background:var(--track);overflow:hidden}
 .bar-fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--violet-deep),var(--violet));transition:width .25s ease}
 .stage{flex:1;display:flex;flex-direction:column;min-height:0;padding-top:12px}
-.card-area{flex:0 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:flex-start}
+.card-area{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center}
 .card-drag{flex:1;min-height:0;max-height:476px;width:85%;max-width:374px;margin-left:auto;margin-right:auto;position:relative;will-change:transform;user-select:none;-webkit-user-select:none;cursor:grab}
 .card-drag.is-drag{cursor:grabbing}
 .card-drag.anim{transition:transform var(--flydur) cubic-bezier(.25,.7,.3,1)}
@@ -149,19 +149,14 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .card-drag:not(.flipped) .card-back{pointer-events:none}
 .card-drag.gl-green .card-front{border-color:var(--green-line);box-shadow:var(--shadow-card),0 0 30px rgba(130,185,145,.22)}
 .card-drag.gl-red .card-front{border-color:var(--red-line);box-shadow:var(--shadow-card),0 0 30px rgba(214,141,141,.22)}
+.card-drag.gl-red-back .card-back{border-color:var(--red-line);box-shadow:var(--shadow-card),0 0 30px rgba(214,141,141,.2)}
 .card-drag.gl-violet .card-back{border-color:var(--violet-line);box-shadow:var(--shadow-card),0 0 30px rgba(165,139,255,.22)}
-/* Оборот после «Не помню» — мягкая красная подсветка */
-.card-drag.miss .card-back{border-color:var(--red-line);box-shadow:var(--shadow-card),0 0 34px rgba(214,141,141,.26);
-  background:linear-gradient(180deg,rgba(214,141,141,.14),rgba(214,141,141,.06)),linear-gradient(180deg,var(--card-hi),var(--card))}
-.card-drag.miss.gl-violet .card-back{border-color:var(--violet-line);box-shadow:var(--shadow-card),0 0 30px rgba(165,139,255,.22)}
-.card-drag.miss .btn-back{background:var(--red-soft);border-color:var(--red-line);color:var(--red)}
-.card-drag.miss .return-note{color:var(--red)}
 .tint{position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;z-index:4;transition:opacity .1s linear}
 .tint.green{background:linear-gradient(180deg,rgba(130,185,145,.2),rgba(130,185,145,.1))}
 .tint.red{background:linear-gradient(180deg,rgba(214,141,141,.2),rgba(214,141,141,.1))}
 .tint.violet{background:linear-gradient(180deg,rgba(165,139,255,.2),rgba(165,139,255,.1))}
 .front-label{position:absolute;top:24px;left:52px;right:52px;text-align:center;color:var(--muted);font-size:13px;font-weight:600;letter-spacing:.06em}
-.front-word{font-size:36px;font-weight:700;letter-spacing:-.01em;line-height:1.14;overflow-wrap:anywhere;max-width:100%}
+.front-word{font-size:clamp(29px,8.8vw,40px);font-weight:700;letter-spacing:-.01em;line-height:1.12;overflow-wrap:anywhere}
 .front-hint{position:absolute;bottom:20px;left:0;right:0;text-align:center;color:var(--faint);font-size:13px}
 .badge{position:absolute;top:16px;left:16px;z-index:6;font-size:12px;font-weight:650;color:var(--violet);background:var(--violet-soft);border:1px solid rgba(165,139,255,.35);border-radius:999px;padding:5px 11px}
 .peek-btn{position:absolute;right:12px;top:12px;z-index:7;width:48px;height:48px;border-radius:50%;background:var(--card2);border:1px solid var(--line);color:var(--violet);display:grid;place-items:center;transition:border-color .15s,background .15s}
@@ -203,7 +198,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .boot-title{font-size:18px;font-weight:700}
 .boot-text{font-size:13.5px;color:var(--muted);line-height:1.5}
 #btnBootRetry{width:100%;margin-top:8px}
-.actions{display:flex;gap:12px;padding-top:14px;margin-bottom:auto;width:85%;max-width:374px;margin-left:auto;margin-right:auto;transition:opacity .18s ease,visibility .18s}
+.actions{display:flex;gap:12px;padding-top:14px;transition:opacity .18s ease,visibility .18s}
 .actions.hidden{opacity:0;visibility:hidden;pointer-events:none}
 .act{flex:1;min-height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;gap:9px;font-weight:700;font-size:15.5px;border:1px solid;transition:transform .14s ease}
 .act:active{transform:scale(.975)}
@@ -434,16 +429,16 @@ html.rm .card-drag.flipped .card-front{opacity:0}
             </div>
           </div>
         </div>
-      </div>
-      <div class="actions" id="actionsBar">
-        <button class="act act-no" id="btnNo">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-          <span>Не помню</span>
-        </button>
-        <button class="act act-yes" id="btnYes">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-          <span>Помню</span>
-        </button>
+        <div class="actions" id="actionsBar">
+          <button class="act act-no" id="btnNo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            <span>Не помню</span>
+          </button>
+          <button class="act act-yes" id="btnYes">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+            <span>Помню</span>
+          </button>
+        </div>
       </div>
     </main>
   </section>
@@ -1177,14 +1172,33 @@ function renderHome(){
   }
 }
 
+/* Длинные слова, которые не умещаются на карточке, показываем чуть меньшим шрифтом */
+function fitFrontWord(retry){
+  var avail=(elCardDrag.clientWidth||0)-64; /* поля карточки: 30px + рамка */
+  if(avail<=0){
+    if(retry!==false) requestAnimationFrame(function(){ fitFrontWord(false); });
+    return;
+  }
+  var min=20;
+  elWordFront.style.whiteSpace='nowrap';
+  elWordFront.style.fontSize='';
+  var size=Math.round(parseFloat(getComputedStyle(elWordFront).fontSize)||34);
+  while(size>min && elWordFront.scrollWidth>avail){
+    size-=1;
+    elWordFront.style.fontSize=size+'px';
+  }
+  /* не влезает даже минимально — возвращаем обычный размер и перенос, как раньше */
+  if(elWordFront.scrollWidth>avail) elWordFront.style.fontSize='';
+  elWordFront.style.whiteSpace='';
+}
 /* Подбираем размер слова так, чтобы оно поместилось в одну строку без переносов */
 function fitBackWord(retry){
-  var max=32, min=15;
+  var max=34, min=16;
   var avail=(elBackScroll.clientWidth||elCardDrag.clientWidth||0)-12;
   if(avail<=0){
     // карточка ещё не получила размеры — повторяем после отрисовки
     if(retry!==false) requestAnimationFrame(function(){ fitBackWord(false); });
-    avail=Math.min(374, (window.innerWidth||360)-64);
+    avail=Math.min(374, Math.round((window.innerWidth||360)*0.85)-64);
   }
   elWordBack.style.fontSize=max+'px';
   var size=max;
@@ -1193,26 +1207,7 @@ function fitBackWord(retry){
     elWordBack.style.fontSize=size+'px';
   }
 }
-/* Длинные слова на лицевой стороне показываем мельче, чтобы они умещались */
-function fitFrontWord(retry){
-  var max=36, min=20;
-  var box=elCardFront.clientWidth||elCardDrag.clientWidth||0;
-  var availW=box-60;   // поля карточки
-  var availH=(elCardFront.clientHeight||0)-150; // место под меткой и подсказкой
-  if(box<=0){
-    if(retry!==false) requestAnimationFrame(function(){ fitFrontWord(false); });
-    availW=Math.min(314, (window.innerWidth||360)-100);
-    availH=220;
-  }
-  elWordFront.style.fontSize=max+'px';
-  var size=max;
-  while(size>min && (elWordFront.scrollWidth>availW || (availH>0 && elWordFront.scrollHeight>availH))){
-    size-=1;
-    elWordFront.style.fontSize=size+'px';
-  }
-}
-function fitWords(retry){ fitFrontWord(retry); fitBackWord(retry); }
-window.addEventListener('resize', function(){ if(state && state.view==='session') fitWords(); });
+window.addEventListener('resize', function(){ if(state && state.view==='session'){ fitFrontWord(); fitBackWord(); } });
 
 /* ================= Рендер: сессия ================= */
 function renderSession(opts){
@@ -1227,9 +1222,10 @@ function renderSession(opts){
   var c=currentCard();
   if(!c) return;
   elWordFront.textContent=c.word;              // лицевая сторона — слово без ударения
+  fitFrontWord();
   elWordBack.textContent=c.stress;
   elDefBack.textContent=c.definitionFull;      // оборот — развёрнутое определение
-  fitWords();
+  fitBackWord();
   var r=state.sessionResults[c.id];
   elBadgeRepeat.hidden=!(r && r.errors>0 && !r.done);
   var back = state.cardScreen!=='question';
@@ -1246,9 +1242,9 @@ function renderSession(opts){
   if(back) elBackScroll.scrollTop=0;
   if(opts.instantFlip) elCardInner.classList.add('no-anim');
   elCardDrag.classList.toggle('flipped', back);
-  // красная подсветка оборота только после ответа «Не помню», но не в режиме проверки
-  elCardDrag.classList.toggle('miss', state.cardScreen==='definition');
   if(opts.instantFlip){ void elCardInner.offsetWidth; elCardInner.classList.remove('no-anim'); }
+  // после свайпа влево (ответ «Не помню») перевёрнутая карточка слегка светится красным
+  elCardDrag.classList.toggle('gl-red-back', state.cardScreen==='definition');
   if(opts.enter){
     elCardDrag.classList.remove('enter');
     void elCardDrag.offsetWidth;
@@ -1313,7 +1309,7 @@ function showView(v){
   state.view=v; save();
   Object.keys(elViews).forEach(function(k){ elViews[k].classList.toggle('active', k===v); });
   if(v==='home') renderHome();
-  else if(v==='session'){ renderSession({instantFlip:true}); requestAnimationFrame(function(){ fitWords(false); }); }
+  else if(v==='session'){ renderSession({instantFlip:true}); requestAnimationFrame(function(){ fitBackWord(false); }); }
   else if(v==='result') renderResult();
   else if(v==='archive') renderArchive();
   updateTgBack();

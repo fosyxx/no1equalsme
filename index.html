@@ -4101,20 +4101,23 @@ function softBell(ctx, freq, durMs, vol, attackMs){
     osc.start(t); osc.stop(t+dur+0.06);
   }catch(e){}
 }
-/* Мягкий нисходящий тон для «неверно»: заметен даже на телефонном динамике,
-   но звучит спокойно — без резкого щелчка и без рова низкочастотного buzzing */
+/* Мягкий нисходящий тон для «неверно». Синус с УДЕРЖАНИЕМ тона (60% длительности)
+   на заметной громкости: раньше тон был тихим и мгновенно затухал — на динамике
+   телефона его просто не было слышно. Удержание + амплитуда 0.14 дают отчётливый,
+   но спокойный сигнал — без щелчка и без «пилы». */
 function softDrop(ctx, f0, f1, durMs, vol){
   try{
     if(!ctx) return;
-    var t=ctx.currentTime, dur=Math.max(0.06, durMs/1000);
-    var v=Math.max(0.0002, ((typeof vol==='number')?vol:0.055)*sndVolF());
+    var t=ctx.currentTime, dur=Math.max(0.08, durMs/1000);
+    var v=Math.max(0.0002, ((typeof vol==='number')?vol:0.14)*sndVolF());
     var osc=ctx.createOscillator(), g=ctx.createGain();
     osc.type='sine';
     osc.frequency.setValueAtTime(f0, t);
     osc.frequency.exponentialRampToValueAtTime(f1, t+dur);
     g.gain.setValueAtTime(0.0002, t);
-    g.gain.exponentialRampToValueAtTime(v, t+0.025);
-    g.gain.exponentialRampToValueAtTime(0.0002, t+dur);
+    g.gain.exponentialRampToValueAtTime(v, t+0.015);    // плавный вход без щелчка
+    g.gain.setValueAtTime(v, t+dur*0.6);                // держим тон — иначе не слышно
+    g.gain.exponentialRampToValueAtTime(0.0002, t+dur); // мягкое затухание
     osc.connect(g); g.connect(ctx.destination);
     osc.start(t); osc.stop(t+dur+0.06);
   }catch(e){}
@@ -4125,7 +4128,7 @@ function sfxWord(ok){ // звуковое сопровождение ответ�
     softBell(ctx, 523.25, 260, 0.05, 0.018);  // спокойный «да»: мягкий C5…
     setTimeout(function(){ softBell(audioCtx(), 784, 360, 0.05, 0.018); }, 95); // …и выше G5
   } else {
-    softDrop(ctx, 392, 311, 320, 0.06);       // тихий нисходящий — «неверно» слышен, но не резок
+    softDrop(ctx, 440, 350, 420, 0.14);       // отчётливо слышный, но спокойный нисходящий
   }
 }
 var morseTone=null;
@@ -4156,7 +4159,7 @@ function stopMorseTone(){
   }catch(e){}
 }
 function morseErrorBeep(){ // 6-й элемент: короткий, но мягкий сигнал переполнения
-  softDrop(morseAudioCtx(), 392, 311, 180, 0.055);
+  softDrop(morseAudioCtx(), 440, 350, 200, 0.10);
 }
 
 /* ---------- Ввод: pointer events ---------- */
@@ -4851,33 +4854,68 @@ attachSwipeClose($('detailsSheet'), $('detailsScroll'), function(){ closeDetails
 
 /* ============ Вибрация при удержании поля морзе (своя настройка) ============ */
 var morseVibeTimer=null;
-var morseVibeCont=false; // флаг непрерывного гудения через Vibration API
+var morseVibeCont=false;   // флаг сплошного вибросигнала (запасной путь через Vibration API)
+var morseVibePulses=0;     // счётчик ударов — предохранитель от «вечного» цикла
+var morseSub=null;         // активный саб-бас 60 Гц (живёт ровно столько же, сколько вибрация)
+
+/* Саб-бас: чистый 60 Гц синус на полную шкалу (× ползунок «Громкость»).
+   Динамик работает «поршнем» — корпус и опора получают реальную механическую
+   отдачу в дополнение к мотору; это тактильный слой, поэтому гейт у него —
+   переключатель «Вибрация при вводе Морзе», а не «Звук Морзе». */
+function startMorseSub(){
+  try{
+    if(morseSub) return;
+    var ctx=audioCtx();
+    if(!ctx) return;
+    var osc=ctx.createOscillator(), g=ctx.createGain();
+    osc.type='sine';
+    osc.frequency.value=60;
+    var t=ctx.currentTime, v=Math.max(0.0002, sndVolF()); // максимум × ползунок
+    g.gain.setValueAtTime(0.0002, t);
+    g.gain.exponentialRampToValueAtTime(v, t+0.02); // включение без щелчка
+    osc.connect(g); g.connect(ctx.destination);
+    osc.start(t);
+    morseSub={osc:osc, gain:g, ctx:ctx};
+  }catch(e){}
+}
+function stopMorseSub(){
+  try{
+    if(!morseSub) return;
+    var m=morseSub; morseSub=null;
+    var t=m.ctx.currentTime;
+    m.gain.gain.cancelScheduledValues(t);
+    m.gain.gain.setValueAtTime(Math.max(0.0002, m.gain.gain.value), t);
+    m.gain.gain.exponentialRampToValueAtTime(0.0002, t+0.03); // стоп вместе с вибрацией
+    m.osc.stop(t+0.05);
+  }catch(e){}
+}
 function startMorseVibe(){
   if(!morseState || !morseState.vibeInput || morseVibeTimer || morseVibeCont) return;
-  /* 1) Прямое гудение: один сплошной вибросигнал на всё время удержания.
-     Паттерн «вибрация, пауза 0, вибрация…» не останавливает мотор между
-     отрезками — получается ровное гудение, а не серия отдельных толчков. */
+  /* 1) Основной путь (Telegram на Android): тяжёлые удары каждые 65 мс.
+     Микро-пауза сливают отдельные щелчки моторчика в единый плотный тактильный
+     поток; такой интервал обходит системную защиту Android от «спама» ударами —
+     одиночные вызовы дают лишь короткие клики. */
   try{
-    if(typeof navigator!=='undefined' && typeof navigator.vibrate==='function'){
+    if(tg && tg.HapticFeedback && typeof tg.HapticFeedback.impactOccurred==='function'){
+      morseVibePulses=0;
+      var pulse=function(){
+        try{ tg.HapticFeedback.impactOccurred('heavy'); }catch(e){}
+        if(++morseVibePulses<700) morseVibeTimer=setTimeout(pulse, 65); // ~45 с — предохранитель
+      };
+      pulse();
+    } else if(typeof navigator!=='undefined' && typeof navigator.vibrate==='function'){
+      /* 2) Запасной путь (браузер без Telegram HapticFeedback): сплошной
+            вибросигнал одним длинным паттерном «вибрация без пауз». */
       var pat=[];
       for(var i=0;i<30;i++){ pat.push(4000); pat.push(0); } // ~2 минуты удержания
-      if(navigator.vibrate(pat)){ morseVibeCont=true; return; }
+      if(navigator.vibrate(pat)) morseVibeCont=true;
     }
   }catch(e){}
-  /* 2) Фолбэк (iOS и браузеры без Vibration API): цепочка максимально
-        тяжёлых импульсов — единственный доступный там вариант. */
-  var pulse=function(){
-    try{
-      if(tg && tg.HapticFeedback && typeof tg.HapticFeedback.impactOccurred==='function'){
-        tg.HapticFeedback.impactOccurred('heavy'); // максимальный уровень
-      }
-    }catch(e){}
-    morseVibeTimer=setTimeout(pulse, 110); // цепочка setTimeout — не интервальный планировщик
-  };
-  pulse();
+  startMorseSub(); // одновременно с циклом: акустический «мотор» на 60 Гц
 }
 function stopMorseVibe(){
-  if(morseVibeCont){ // остановить сплошное гудение
+  stopMorseSub();  // синхронный стоп: цикл и саб-бас заканчиваются одним вызовом
+  if(morseVibeCont){
     try{ if(typeof navigator!=='undefined' && typeof navigator.vibrate==='function') navigator.vibrate(0); }catch(e){}
     morseVibeCont=false;
   }
@@ -4891,7 +4929,7 @@ function morseSoundResult(ok){
     softBell(morseAudioCtx(), 523.25, 260, 0.05, 0.018);  // мягкий «да»: C5…
     setTimeout(function(){ softBell(morseAudioCtx(), 784, 360, 0.05, 0.018); }, 95); // …и выше G5
   } else {
-    softDrop(morseAudioCtx(), 392, 311, 320, 0.06);       // спокойный нисходящий вместо тишины/резкости
+    softDrop(morseAudioCtx(), 440, 350, 420, 0.14);       // отчётливо слышный, но спокойный нисходящий
   }
 }
 function morseTick(isDash){ softBell(morseAudioCtx(), isDash?698.46:880, 75, 0.03, 0.006); } // мягкий щелчок ввода
@@ -4929,5 +4967,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a41450090b73d0e1',t:'MTc5MDQ0NzE0MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4148aa20d6349cd',t:'MTc5MDQ0OTU0MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

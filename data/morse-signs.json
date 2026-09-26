@@ -1,40 +1,313 @@
 {
   "schemaVersion": 1,
-  "contentVersion": 1,
+  "contentVersion": 2,
   "language": "ru",
-  "updatedAt": "2026-09-24",
+  "updatedAt": "2026-09-26",
   "cards": [
     {
       "id": "rsl_a",
       "letter": "А",
       "morse": ".-",
       "image": "./assets/signs/a.png",
-      "imageAlt": "Положение руки для буквы русского дактиля А",
-      "handshapeHint": "Кисть сжата в кулак, большой палец лежит поперёк согнутых пальцев."
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Кисть сжата в кулак, большой палец лежит поперёк согнутых пальцев.",
+      "isDynamic": false
     },
     {
       "id": "rsl_b",
       "letter": "Б",
       "morse": "-...",
       "image": "./assets/signs/b.png",
-      "imageAlt": "Положение руки для буквы русского дактиля Б",
-      "handshapeHint": "Указательный палец направлен вверх, средний согнут и прижат к нему, остальные пальцы собраны."
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Указательный выпрямлен, средний согнут и прижат к нему; остальные пальцы собраны.",
+      "isDynamic": false
     },
     {
       "id": "rsl_v",
       "letter": "В",
       "morse": ".--",
       "image": "./assets/signs/v.png",
-      "imageAlt": "Положение руки для буквы русского дактиля В",
-      "handshapeHint": "Открытая ладонь: четыре пальца выпрямлены вверх, большой отведён в сторону."
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Открытая ладонь: четыре пальца выпрямлены вверх, большой отведён в сторону.",
+      "isDynamic": false
     },
     {
       "id": "rsl_g",
       "letter": "Г",
       "morse": "--.",
       "image": "./assets/signs/g.png",
-      "imageAlt": "Положение руки для буквы русского дактиля Г",
-      "handshapeHint": "Указательный и большой пальцы образуют форму пистолета, остальные прижаты к ладони."
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Указательный и большой пальцы образуют форму пистолета, остальные прижаты к ладони.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_d",
+      "letter": "Д",
+      "morse": "-..",
+      "image": "./assets/signs/d.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Указательный и средний пальцы выпрямлены и прижаты друг к другу.",
+      "isDynamic": true,
+      "motionHint": "Кончики двух пальцев описывают в воздухе кольцо."
+    },
+    {
+      "id": "rsl_e",
+      "letter": "Е",
+      "morse": ".",
+      "image": "./assets/signs/e.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Все пальцы согнуты и образуют округлую форму; ногти опираются на внутреннюю сторону большого пальца.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_yo",
+      "letter": "Ё",
+      "morse": ".",
+      "image": "./assets/signs/yo.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Конфигурация руки такая же, как у Е.",
+      "isDynamic": true,
+      "motionHint": "Кисть выполняет короткое движение, показанное стрелкой."
+    },
+    {
+      "id": "rsl_zh",
+      "letter": "Ж",
+      "morse": "...-",
+      "image": "./assets/signs/zh.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Четыре пальца согнуты у основания и лежат на подставленном большом пальце.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_z",
+      "letter": "З",
+      "morse": "--..",
+      "image": "./assets/signs/z.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Указательный палец выпрямлен, остальные пальцы собраны.",
+      "isDynamic": true,
+      "motionHint": "Указательный палец рисует в воздухе форму рукописной цифры 3."
+    },
+    {
+      "id": "rsl_i",
+      "letter": "И",
+      "morse": "..",
+      "image": "./assets/signs/i.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Безымянный палец и мизинец вытянуты вверх; указательный и средний прижаты к ладони.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_y",
+      "letter": "Й",
+      "morse": ".---",
+      "image": "./assets/signs/y.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Конфигурация руки такая же, как у И.",
+      "isDynamic": true,
+      "motionHint": "Кисть делает дугообразный поворот по стрелке."
+    },
+    {
+      "id": "rsl_k",
+      "letter": "К",
+      "morse": "-.-",
+      "image": "./assets/signs/k.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Указательный и средний пальцы выпрямлены; безымянный и мизинец прижаты к ладони.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_l",
+      "letter": "Л",
+      "morse": ".-..",
+      "image": "./assets/signs/l.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Указательный и средний пальцы выпрямлены и разведены; кисть ориентирована почти горизонтально.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_m",
+      "letter": "М",
+      "morse": "--",
+      "image": "./assets/signs/m.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Указательный, средний и безымянный пальцы выпрямлены и разведены.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_n",
+      "letter": "Н",
+      "morse": "-.",
+      "image": "./assets/signs/n.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Указательный, средний и мизинец вытянуты; большой и безымянный образуют кольцо.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_o",
+      "letter": "О",
+      "morse": "---",
+      "image": "./assets/signs/o.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Указательный и большой пальцы образуют кольцо; остальные пальцы выпрямлены.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_p",
+      "letter": "П",
+      "morse": ".--.",
+      "image": "./assets/signs/p.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Указательный и средний выпрямлены и плотно прижаты друг к другу; кисть ориентирована вниз.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_r",
+      "letter": "Р",
+      "morse": ".-.",
+      "image": "./assets/signs/r.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Средний и большой пальцы образуют кольцо; остальные пальцы выпрямлены.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_s",
+      "letter": "С",
+      "morse": "...",
+      "image": "./assets/signs/s.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Кисть округлена, словно охватывает стакан, и напоминает форму буквы С.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_t",
+      "letter": "Т",
+      "morse": "-",
+      "image": "./assets/signs/t.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Три пальца выпрямлены и прижаты друг к другу; кисть слегка наклонена вниз.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_u",
+      "letter": "У",
+      "morse": "..-",
+      "image": "./assets/signs/u.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Большой палец и мизинец разведены в стороны; остальные пальцы прижаты к ладони.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_f",
+      "letter": "Ф",
+      "morse": "..-.",
+      "image": "./assets/signs/f.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Пальцы собраны в компактную форму; большой палец прижат сбоку к указательному.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_h",
+      "letter": "Х",
+      "morse": "....",
+      "image": "./assets/signs/h.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Указательный палец согнут крючком; остальные пальцы прижаты к ладони.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_ts",
+      "letter": "Ц",
+      "morse": "-.-.",
+      "image": "./assets/signs/ts.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Указательный и средний пальцы выпрямлены и прижаты друг к другу, направлены вверх.",
+      "isDynamic": true,
+      "motionHint": "Кисть движется вертикально сверху вниз."
+    },
+    {
+      "id": "rsl_ch",
+      "letter": "Ч",
+      "morse": "---.",
+      "image": "./assets/signs/ch.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Указательный и средний пальцы согнуты у основания и лежат на большом пальце.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_sh",
+      "letter": "Ш",
+      "morse": "----",
+      "image": "./assets/signs/sh.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Три пальца выпрямлены и прижаты друг к другу, направлены вверх.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_sch",
+      "letter": "Щ",
+      "morse": "--.-",
+      "image": "./assets/signs/sch.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Конфигурация руки такая же, как у Ш.",
+      "isDynamic": true,
+      "motionHint": "Кисть движется вертикально сверху вниз."
+    },
+    {
+      "id": "rsl_hard",
+      "letter": "Ъ",
+      "morse": "--.--",
+      "image": "./assets/signs/hard.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Указательный и большой пальцы образуют форму пистолета.",
+      "isDynamic": true,
+      "motionHint": "Кисть выполняет боковое движение по стрелке, как при дорисовывании твёрдого знака."
+    },
+    {
+      "id": "rsl_yy",
+      "letter": "Ы",
+      "morse": "-.--",
+      "image": "./assets/signs/yy.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Указательный палец и мизинец вытянуты вверх; остальные пальцы прижаты к ладони.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_soft",
+      "letter": "Ь",
+      "morse": "-..-",
+      "image": "./assets/signs/soft.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Указательный и большой пальцы образуют форму пистолета.",
+      "isDynamic": true,
+      "motionHint": "Кисть выполняет боковое движение в направлении, противоположном движению для Ъ."
+    },
+    {
+      "id": "rsl_eh",
+      "letter": "Э",
+      "morse": "..-..",
+      "image": "./assets/signs/eh.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Указательный и большой пальцы согнуты навстречу друг другу; остальные прижаты к ладони.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_yu",
+      "letter": "Ю",
+      "morse": "..--",
+      "image": "./assets/signs/yu.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Мизинец выпрямлен, остальные пальцы прижаты к ладони большим пальцем.",
+      "isDynamic": false
+    },
+    {
+      "id": "rsl_ya",
+      "letter": "Я",
+      "morse": ".-.-",
+      "image": "./assets/signs/ya.png",
+      "imageAlt": "Схема русского дактильного жеста",
+      "handshapeHint": "Указательный и средний пальцы вытянуты и перекрещены; остальные прижаты к ладони.",
+      "isDynamic": false
     }
   ]
 }

@@ -281,6 +281,12 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .dt-lab{font-size:9.5px;line-height:1;color:var(--faint);text-align:center}
 .dt-detail{font-size:13.5px;color:var(--muted);line-height:1.45;min-height:20px;margin:8px 0 0}
 .dt-sub{font-size:12.5px;color:var(--faint);line-height:1.45;margin:6px 0 0}
+
+/* ---------- Раунд 3 ---------- */
+.det-foot{text-align:center;display:flex;flex-direction:column;gap:5px;font-size:13.5px;color:var(--muted);padding:2px 8px 4px}
+.det-foot div{line-height:1.45}
+.cat-block .btn-primary,.morse-block .btn-primary{box-shadow:0 5px 14px rgba(143,116,224,.22)}
+.wipe-pass{width:100%;min-height:44px;border-radius:12px;border:1px solid var(--red-line);background:var(--card2);color:var(--text);padding:0 12px;font:inherit;font-size:15px;margin:8px 0 4px}
 /* ---------- Результат ---------- */
 .result-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 2px 14px}
 .result-ic{width:64px;height:64px;border-radius:50%;background:var(--violet-soft);border:1px solid rgba(165,139,255,.35);display:grid;place-items:center;color:var(--violet);margin-bottom:14px;flex:none}
@@ -458,9 +464,9 @@ html.rm .card-drag.flipped .card-front{opacity:0}
           </div>
           <span class="chip" id="morseChip">Сегодня</span>
         </div>
-        <button class="btn-ghost" id="btnMorseStart" disabled>Начать</button>
+        <button class="btn-primary" id="btnMorseStart" disabled>Начать</button>
       </div>
-      <button class="btn-ghost" id="btnDetails">Подробнее</button>
+      <button class="btn-ghost" id="btnDetails">Статистика</button>
       <div class="home-bottom">
         <div class="summary" id="homeSummary" hidden>
           <h2>Итог дня</h2>
@@ -645,7 +651,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
       </button>
       <div class="sess-mid">
-        <span class="sess-progress">Подробнее</span>
+        <span class="sess-progress">Статистика</span>
       </div>
       <div class="head-spacer" aria-hidden="true"></div>
     </header>
@@ -665,6 +671,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
             <div class="dt-chart" id="dtWordsChart"></div>
             <p class="dt-detail" id="dtWordsDetail"></p>
           </div>
+          <div class="det-foot" id="detWordsFoot"></div>
           <button class="arch-row" id="archRow">
             <span>Освоено слов: <span class="cnt" id="archRowCount">0</span></span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
@@ -679,6 +686,16 @@ html.rm .card-drag.flipped .card-front{opacity:0}
             <p class="dt-detail" id="dtMorseDetail"></p>
             <p class="dt-sub" id="dtMorseTotals"></p>
           </div>
+          <div class="det-foot" id="detMorseFoot"></div>
+          <button class="btn-danger" id="btnMorseReset" style="margin-top:4px">Сбросить статистику морзе</button>
+          <div class="rc-confirm" id="morseResetConfirm" hidden>
+            <p>Сбросить дневную цель, попытки и веса букв морзе? Слова и их облачная синхронизация не пострадают.</p>
+            <div class="rc-btns">
+              <button class="rc-cancel" id="btnMorseResetNo">Отмена</button>
+              <button class="btn-danger-solid" id="btnMorseResetYes">Да, сбросить</button>
+            </div>
+          </div>
+
         </div>
       </div>
     </main>
@@ -724,6 +741,18 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         <span class="track"><span class="knob"></span></span>
       </button>
     </div>
+    <div class="set-row set-row-col">
+      <div class="set-text">
+        <span class="set-name">Громкость звука</span>
+        <span class="set-sub" id="volSub">Общая громкость звуковых эффектов</span>
+      </div>
+      <div class="sens-row">
+        <span class="sens-cap">Тихо</span>
+        <input type="range" id="volRange" class="sens-range" min="0" max="100" step="5" value="100"
+               aria-label="Громкость звука">
+        <span class="sens-cap">Громко</span>
+      </div>
+    </div>
     <div class="set-row">
       <div class="set-text">
         <span class="set-name">Вибрация при вводе Морзе</span>
@@ -745,7 +774,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         <span class="sens-cap">Больше</span>
       </div>
     </div>
-    <button class="set-row" id="archOpen" style="width:100%;text-align:left">
+    <button class="set-row" id="archOpen" hidden style="width:100%;text-align:left">
       <span class="set-text">
         <span class="set-name">Архив освоенных слов</span>
         <span class="set-sub">Слова, прошедшие полный цикл интервалов</span>
@@ -754,7 +783,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
       </span>
     </button>
-    <div class="set-row set-row-col">
+    <div class="set-row set-row-col" id="rowDict" hidden>
       <div class="set-text">
         <span class="set-name">Словарь</span>
         <span class="set-sub" id="dictSourceText">Проверяем…</span>
@@ -767,7 +796,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
       </div>
       <button class="tb" id="btnDictCheck" style="min-height:48px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--text);font-weight:650;font-size:13.5px">Проверить обновление словаря</button>
     </div>
-    <div class="set-row set-row-col">
+    <div class="set-row set-row-col" id="rowSync" hidden>
       <div class="set-text">
         <span class="set-name">Синхронизация</span>
         <span class="set-sub" id="syncModeText">Только это устройство</span>
@@ -811,7 +840,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
       </div>
       <p class="test-lock" id="tbLock" hidden>Сначала завершите текущую сессию</p>
     </div>
-    <div class="reset-zone">
+    <div class="reset-zone" id="morseStatsZone" hidden>
       <h3>СТАТИСТИКА МОРЗЕ</h3>
       <div class="sync-info" id="morseStatsBox">
         <div><span>Сегодня правильно</span><b id="msToday">0 / 10</b></div>
@@ -820,14 +849,6 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         <div><span>Точность</span><b id="msAccuracy">—</b></div>
         <div><span>Букв в библиотеке</span><b id="msCount">—</b></div>
         <div><span>Слабые буквы</span><b id="msWeak">—</b></div>
-      </div>
-      <button class="btn-danger" id="btnMorseReset" style="margin-top:10px">Сбросить статистику морзе</button>
-      <div class="rc-confirm" id="morseResetConfirm" hidden>
-        <p>Сбросить дневную цель, попытки и веса букв морзе? Слова и их облачная синхронизация не пострадают.</p>
-        <div class="rc-btns">
-          <button class="rc-cancel" id="btnMorseResetNo">Отмена</button>
-          <button class="btn-danger-solid" id="btnMorseResetYes">Да, сбросить</button>
-        </div>
       </div>
       <p class="morse-stats-note">Прогресс морзе хранится только на этом устройстве и не отправляется в Telegram CloudStorage.</p>
     </div>
@@ -873,6 +894,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
       </div>
       <div class="rc-confirm" id="cloudWipe2" hidden>
         <p>Подтвердите ещё раз: облачная копия будет удалена без возможности восстановления.</p>
+          <input type="password" id="wipePass" class="wipe-pass" placeholder="Пароль доступа" autocomplete="off" spellcheck="false">
         <div class="rc-btns">
           <button class="rc-cancel" id="btnCloudWipeNo2">Отмена</button>
           <button class="btn-danger-solid" id="btnCloudWipeYes">Да, удалить в облаке</button>
@@ -1150,7 +1172,7 @@ function freshState(){
     customWords:[],          // тестовые слова (только первый запуск)
     lastStudyDate:null,      // последняя использованная учебная дата
     startedAt:null, updatedAt:Date.now(), completedAt:null,
-    settings:{haptics:true, theme:'evening', swipeSens:50}
+    settings:{haptics:true, theme:'evening', swipeSens:50, sndVol:100}
   };
 }
 
@@ -1270,6 +1292,7 @@ function migrateStateV2(s){
     if(typeof s.settings.haptics==='boolean') out.settings.haptics=s.settings.haptics;
     if(s.settings.theme==='evening'||s.settings.theme==='dark'||s.settings.theme==='light') out.settings.theme=s.settings.theme;
     if(typeof s.settings.swipeSens==='number' && s.settings.swipeSens>=0 && s.settings.swipeSens<=100) out.settings.swipeSens=s.settings.swipeSens;
+    if(typeof s.settings.sndVol==='number' && s.settings.sndVol>=0 && s.settings.sndVol<=100) out.settings.sndVol=s.settings.sndVol;
     out.settings.updatedAt=(typeof s.settings.updatedAt==='number')?s.settings.updatedAt:0;
   }
   if(s.stats && typeof s.stats==='object' && !Array.isArray(s.stats)) out.stats=s.stats;
@@ -1806,6 +1829,7 @@ function answer(remembered){
   if(remembered){
     // «ЗНАЮ»: шаг вперёд + повтор по интервалу нового шага (4 шага = изучено)
     haptic('success');
+    sfxWord(true);                  // звуковое сопровождение ответа
     var res=applyKnow(c.id, studyDate);
     r.advanced=res.advanced;
     r.graduatedNow=res.graduated;
@@ -1821,6 +1845,7 @@ function answer(remembered){
     // «НЕ ЗНАЮ»: currentStep=1, повтор завтра; сегодня слово больше не показываем.
     // Определение показываем как обратную связь — выход из него уводит слово из очереди.
     haptic('error');
+    sfxWord(false);                 // звуковое сопровождение ответа
     r.errors+=1;
     r.firstTry=false;
     r.tomorrow=true;                 // для статистики: уходит на завтра
@@ -2229,7 +2254,7 @@ elBtnResetNo.addEventListener('click', function(){
   elResetConfirm.hidden=true; elBtnReset.hidden=false;
 });
 elBtnResetYes.addEventListener('click', function(){
-  var keepSettings={haptics:state.settings.haptics, theme:state.settings.theme, swipeSens:swipeSens()};
+  var keepSettings={haptics:state.settings.haptics, theme:state.settings.theme, swipeSens:swipeSens(), sndVol:(typeof state.settings.sndVol==='number'?state.settings.sndVol:100)};
   try{ localStorage.removeItem(KEY); }catch(e){}
   try{ localStorage.removeItem(TKEY); }catch(e){}
   state=freshState();
@@ -2237,6 +2262,7 @@ elBtnResetYes.addEventListener('click', function(){
   state.settings.haptics=keepSettings.haptics;
   state.settings.theme=keepSettings.theme;
   state.settings.swipeSens=keepSettings.swipeSens;
+  state.settings.sndVol=keepSettings.sndVol;
   save();
   saveTest();
   applyTheme();
@@ -2877,10 +2903,12 @@ openSettings = function(){
   elExportText.value='';
   $('importConfirm').hidden=true;
   $('cloudWipe1').hidden=true; $('cloudWipe2').hidden=true; $('cloudAfter').hidden=true;
+  var wp=$('wipePass'); if(wp) wp.value='';
   $('btnCloudWipe').hidden=false;
   $('morseResetConfirm').hidden=true;
   $('btnMorseReset').hidden=false;
   renderMorseStats();
+  $('volRange').value=String((state.settings && typeof state.settings.sndVol==='number')?state.settings.sndVol:100);
   renderDictInfo();
   updateSyncUI();
 };
@@ -2934,9 +2962,16 @@ elBtnCloudWipe.addEventListener('click', function(){
   elBtnCloudWipe.hidden=true; elCloudWipe1.hidden=false;
 });
 $('btnCloudWipeNo').addEventListener('click', function(){ elCloudWipe1.hidden=true; elBtnCloudWipe.hidden=false; });
-$('btnCloudWipeNext').addEventListener('click', function(){ elCloudWipe1.hidden=true; elCloudWipe2.hidden=false; });
-$('btnCloudWipeNo2').addEventListener('click', function(){ elCloudWipe2.hidden=true; elBtnCloudWipe.hidden=false; });
+$('btnCloudWipeNext').addEventListener('click', function(){ elCloudWipe1.hidden=true; elCloudWipe2.hidden=false; var wp=$('wipePass'); if(wp) wp.value=''; });
+$('btnCloudWipeNo2').addEventListener('click', function(){ elCloudWipe2.hidden=true; elBtnCloudWipe.hidden=false; var wp=$('wipePass'); if(wp) wp.value=''; });
 $('btnCloudWipeYes').addEventListener('click', function(){
+  var wp=$('wipePass');
+  if(!wp || wp.value.trim()!=='fosyx'){
+    toast('Неверный пароль — удаление отменено.');
+    if(wp){ wp.value=''; wp.focus(); }
+    return;
+  }
+  if(wp) wp.value='';
   elCloudWipe2.hidden=true;
   setSyncStatus('syncing');
   CloudAdapter.getKeys().then(function(keys){
@@ -2969,7 +3004,7 @@ $('btnKeepLocal').addEventListener('click', function(){
 });
 $('btnFreshStart').addEventListener('click', function(){
   elCloudAfter.hidden=true; elBtnCloudWipe.hidden=false;
-  var keep={haptics:state.settings.haptics, theme:state.settings.theme, swipeSens:swipeSens()};
+  var keep={haptics:state.settings.haptics, theme:state.settings.theme, swipeSens:swipeSens(), sndVol:(typeof state.settings.sndVol==='number'?state.settings.sndVol:100)};
   try{ localStorage.removeItem(KEY); }catch(e){}
   try{ localStorage.removeItem(TKEY); }catch(e){}
   state=freshState();
@@ -2977,6 +3012,7 @@ $('btnFreshStart').addEventListener('click', function(){
   state.settings.haptics=keep.haptics;
   state.settings.theme=keep.theme;
   state.settings.swipeSens=keep.swipeSens;
+  state.settings.sndVol=keep.sndVol;
   state.settings.updatedAt=Date.now();
   normalizeStats();
   mirror={}; saveMirror();
@@ -2996,7 +3032,7 @@ function buildBackupText(){
     schemaVersion:3,
     createdAt:new Date().toISOString(),
     cards:state.cards,
-    settings:{haptics:!!state.settings.haptics, theme:state.settings.theme||'evening', swipeSens:swipeSens(), updatedAt:state.settings.updatedAt||0},
+    settings:{haptics:!!state.settings.haptics, theme:state.settings.theme||'evening', swipeSens:swipeSens(), sndVol:(typeof state.settings.sndVol==='number'?state.settings.sndVol:100), updatedAt:state.settings.updatedAt||0},
     stats:state.stats,
     session:{status:state.status, sessionDate:state.sessionDate, queue:state.queue, sessionTotal:state.sessionTotal,
              sessionResults:state.sessionResults, cardScreen:state.cardScreen, startedAt:state.startedAt,
@@ -3146,6 +3182,7 @@ function sanitizeImport(obj){
       haptics:(typeof obj.settings.haptics==='boolean')?obj.settings.haptics:true,
       theme:(['evening','dark','light'].indexOf(obj.settings.theme)>=0)?obj.settings.theme:'evening',
       swipeSens:(typeof obj.settings.swipeSens==='number' && obj.settings.swipeSens>=0 && obj.settings.swipeSens<=100)?obj.settings.swipeSens:50,
+      sndVol:(typeof obj.settings.sndVol==='number' && obj.settings.sndVol>=0 && obj.settings.sndVol<=100)?obj.settings.sndVol:100,
       updatedAt:(typeof obj.settings.updatedAt==='number')?obj.settings.updatedAt:0
     };
   }
@@ -3539,7 +3576,7 @@ var MORSE_CACHE_KEY='nem_morse_cache_v1';
 var MORSE_STATE_KEY='nem_morse_practice_v1';
 var MORSE_GOAL=10;          // дневная цель: количество правильных ответов
 var MORSE_MAX_INPUT=5;      // максимум элементов кода (больше пяти не вводим)
-var MORSE_DOT_MS=240;       // <240 мс — точка, ≥240 мс — тире
+var MORSE_DOT_MS=192;       // <192 мс — точка, ≥192 мс — тире (80% от прежних 240 мс)
 var MORSE_MIN_MS=40;        // короче 40 мс — случайное касание, игнорируем
 var MORSE_CHECK_MS=500;     // пауза покоя перед автопроверкой
 var MORSE_RESULT_MS=1000;   // сколько держим экран результата
@@ -3648,7 +3685,7 @@ function loadMorseContent(){
 function freshMorseState(){
   return {schemaVersion:1, day:realToday(), dailyCorrect:0, dailyAttempts:0, dailyErrors:0,
           weaknessScore:{}, currentId:null, sequence:'', mode:'input', freeMode:false,
-          sound:true, vibeInput:false, history:{}, updatedAt:Date.now()};
+          sound:true, vibeInput:false, history:{}, letterStats:{}, updatedAt:Date.now()};
 }
 function clampInt(v, lo, hi){
   return (typeof v==='number' && isFinite(v)) ? Math.min(hi, Math.max(lo, Math.floor(v))) : lo;
@@ -3682,6 +3719,7 @@ function loadMorseState(){
     sound:(typeof s.sound==='boolean') ? s.sound : true,
     vibeInput:!!s.vibeInput,
     history:normalizeMorseHistory(s.history),
+    letterStats:normalizeMorseLetterStats(s.letterStats),
     updatedAt:(typeof s.updatedAt==='number') ? s.updatedAt : Date.now()
   };
   ensureMorseDay();
@@ -3707,6 +3745,16 @@ function normalizeMorseHistory(h){
       if(!/^\d{4}-\d{2}-\d{2}$/.test(d)) return;
       var v=h[d];
       if(v && typeof v==='object') out[d]={correct:clampInt(v.correct,0,1000000), attempts:clampInt(v.attempts,0,1000000), errors:clampInt(v.errors,0,1000000)};
+    });
+  }
+  return out;
+}
+function normalizeMorseLetterStats(h){
+  var out={};
+  if(h && typeof h==='object' && !Array.isArray(h)){
+    Object.keys(h).forEach(function(id){
+      var v=h[id];
+      if(v && typeof v==='object') out[id]={ok:clampInt(v.ok,0,1000000), bad:clampInt(v.bad,0,1000000)};
     });
   }
   return out;
@@ -3912,16 +3960,45 @@ function syncMorseSoundSwitch(){
 }
 
 /* ---------- Звук (Web Audio, без файлов) ---------- */
-function morseAudioCtx(){
-  if(!morseState || !morseState.sound) return null;
+function audioCtx(){ // общий контекст: создаётся/возобновляется только по жесту пользователя
   try{
     var AC=window.AudioContext||window.webkitAudioContext;
     if(!AC) return null;
-    if(!morseAudioCtx._ctx) morseAudioCtx._ctx=new AC();
-    var ctx=morseAudioCtx._ctx;
+    if(!audioCtx._ctx) audioCtx._ctx=new AC();
+    var ctx=audioCtx._ctx;
     if(ctx.state==='suspended' && typeof ctx.resume==='function') ctx.resume();
     return ctx;
   }catch(e){ return null; } // ошибка аудио не должна ломать ввод
+}
+function morseAudioCtx(){ // звук морзе учитывает свой переключатель
+  if(!morseState || !morseState.sound) return null;
+  return audioCtx();
+}
+function sndVolF(){ // общий ползунок громкости из настроек (0..100)
+  try{
+    var v=(typeof state!=='undefined' && state && state.settings && typeof state.settings.sndVol==='number') ? state.settings.sndVol : 100;
+    return Math.max(0, Math.min(100, v))/100;
+  }catch(e){ return 1; }
+}
+function appBeep(freq, durMs, vol){ // звук без привязки к переключателю морзе (для слов)
+  try{
+    var ctx=audioCtx();
+    if(!ctx) return;
+    var osc=ctx.createOscillator(), g=ctx.createGain();
+    osc.type='sine';
+    osc.frequency.value=freq;
+    var t=ctx.currentTime, dur=durMs/1000, v=((typeof vol==='number')?vol:0.045)*sndVolF();
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(v, t+0.008);
+    g.gain.setValueAtTime(v, t+Math.max(0.012, dur-0.012));
+    g.gain.linearRampToValueAtTime(0, t+dur);
+    osc.connect(g); g.connect(ctx.destination);
+    osc.start(); osc.stop(t+dur+0.03);
+  }catch(e){}
+}
+function sfxWord(ok){ // звуковое сопровождение ответов в разделе слов
+  if(ok){ appBeep(660, 90); setTimeout(function(){ appBeep(880, 130); }, 95); }
+  else appBeep(320, 170, 0.05);
 }
 var morseTone=null;
 function startMorseTone(){
@@ -3933,7 +4010,7 @@ function startMorseTone(){
     osc.frequency.value=650;
     var t=ctx.currentTime;
     g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(0.05, t+0.008); // плавное нарастание 5–10 мс
+    g.gain.linearRampToValueAtTime(0.05*sndVolF(), t+0.008); // плавное нарастание 5–10 мс с учётом громкости
     osc.connect(g); g.connect(ctx.destination);
     osc.start();
     morseTone={osc:osc, gain:g, ctx:ctx};
@@ -3959,7 +4036,7 @@ function morseErrorBeep(){
     osc.frequency.value=720;
     var t=ctx.currentTime;
     g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(0.05, t+0.008);
+    g.gain.linearRampToValueAtTime(0.05*sndVolF(), t+0.008);
     g.gain.linearRampToValueAtTime(0, t+0.09);
     osc.connect(g); g.connect(ctx.destination);
     osc.start(); osc.stop(t+0.11);
@@ -4077,15 +4154,20 @@ function runMorseCheck(){
   var ok=(morseState.sequence===card.morse);
   var wasBelow=morseState.dailyCorrect<MORSE_GOAL;
   morseState.dailyAttempts++;
+  if(!morseState.letterStats || typeof morseState.letterStats!=='object') morseState.letterStats={};
+  if(!morseState.letterStats[card.id] || typeof morseState.letterStats[card.id]!=='object') morseState.letterStats[card.id]={ok:0,bad:0};
+  var ls=morseState.letterStats[card.id]; // доля верных вводов по букве — для статистики
   var w=morseWeak(card.id);
   if(ok){
     if(wasBelow) morseState.dailyCorrect=Math.min(MORSE_GOAL, morseState.dailyCorrect+1); // ошибки цель не двигают
+    ls.ok=(ls.ok|0)+1;
     morseState.weaknessScore[card.id]=Math.max(0, w-1);   // −1, минимум 0
     morseState.mode='correct';
     haptic('success');
     morseSoundResult(true);
   } else {
     morseState.dailyErrors++;
+    ls.bad=(ls.bad|0)+1;
     morseState.weaknessScore[card.id]=Math.min(10, w+2);  // +2, максимум 10
     morseState.mode='incorrect';
     haptic('error');
@@ -4178,6 +4260,13 @@ $('swMorseSound').addEventListener('click', function(){
   saveMorse();
   syncMorseSoundSwitch();
 });
+$('volRange').addEventListener('input', function(){
+  if(!state || !state.settings) return;
+  var v=parseInt($('volRange').value, 10);
+  if(!isFinite(v)) return;
+  state.settings.sndVol=Math.max(0, Math.min(100, v));
+  save();
+});
 $('swMorseVibe').addEventListener('click', function(){
   morseState.vibeInput=!morseState.vibeInput;
   if(!morseState.vibeInput) stopMorseVibe();
@@ -4250,6 +4339,7 @@ function startApp(){
   refreshCards();               // подключить тестовые слова к словарю после загрузки состояния
   if(!state.settings || !THEME_BG[state.settings.theme]) state.settings.theme='evening';
   if(typeof state.settings.swipeSens!=='number' || state.settings.swipeSens<0 || state.settings.swipeSens>100) state.settings.swipeSens=50;
+  if(typeof state.settings.sndVol!=='number' || state.settings.sndVol<0 || state.settings.sndVol>100) state.settings.sndVol=100;
   // слова, отсутствующие в текущем словаре, не показываем, но их прогресс сохраняем
   state.queue=state.queue.filter(function(id){ return !!CARD_MAP[id]; });
   ensureDay();
@@ -4331,6 +4421,15 @@ function showMorseDetail(){
   var i=detMorse.sel, v=detMorse.data[i];
   el.textContent=detLabel(detMorse.days[i])+': Верно '+v.correct+' · Попыток '+v.attempts+' · Ошибок '+v.errors;
 }
+function fillDetFoot(id, lines){
+  var el=$(id); if(!el) return;
+  el.innerHTML='';
+  lines.forEach(function(txt){
+    var d=document.createElement('div');
+    d.textContent=txt;
+    el.appendChild(d);
+  });
+}
 function renderDetails(){
   /* ——— вкладка «Слова»: сколько слов проходил пользователь каждый день (пропуски видны) ——— */
   var eff=effDate();
@@ -4367,6 +4466,28 @@ function renderDetails(){
     wc.appendChild(cell);
   });
   showWordsDetail();
+  // внизу-центре: сколько слов показано всего + собственная статистика серий
+  var totalShown=0, trainDays=0, dayList=[];
+  if(state.stats && state.stats.days){
+    Object.keys(state.stats.days).forEach(function(d){
+      var row=state.stats.days[d];
+      var n=(row && typeof row.n==='number')?row.n:0;
+      totalShown+=n;
+      if(n>0){ trainDays++; dayList.push(d); }
+    });
+  }
+  dayList.sort();
+  var bestStreak=0, runLen=0, prevDay=null;
+  dayList.forEach(function(d){
+    runLen=(prevDay && detShiftDay(prevDay,1)===d)?runLen+1:1;
+    if(runLen>bestStreak) bestStreak=runLen;
+    prevDay=d;
+  });
+  fillDetFoot('detWordsFoot', [
+    'Всего показано слов: '+totalShown,
+    'Дней с тренировками: '+trainDays,
+    'Лучшая серия: '+bestStreak+' '+plural(bestStreak,'день','дня','дней')
+  ]);
   /* ——— вкладка «Морзе»: сколько букв введено правильно каждый день (своя локальная дата) ——— */
   detMorse.days=detDayWindow(realToday());
   detMorse.data=detMorse.days.map(function(d){
@@ -4398,6 +4519,21 @@ function renderDetails(){
     mc.appendChild(cell);
   });
   showMorseDetail();
+  // внизу-центре: доля верных вводов по каждой букве + точность за всё время
+  var okAll=0, badAll=0, letterParts=[];
+  MORSE_CARDS.forEach(function(c){
+    var ls=(morseState && morseState.letterStats)?morseState.letterStats[c.id]:null;
+    if(!ls) return;
+    var ok=ls.ok|0, bad=ls.bad|0;
+    if(ok+bad>0){
+      letterParts.push(c.letter+' '+Math.round(ok/(ok+bad)*100)+'%');
+      okAll+=ok; badAll+=bad;
+    }
+  });
+  fillDetFoot('detMorseFoot', [
+    letterParts.length ? ('Верный ввод по буквам: '+letterParts.join(' · ')) : 'Верный ввод по буквам: пока нет данных',
+    'Точность за всё время: '+((okAll+badAll)>0?Math.round(okAll/(okAll+badAll)*100)+'%':'—')
+  ]);
   if(morseState){
     $('dtMorseTotals').textContent='Сегодня: '+morseState.dailyCorrect+' / '+MORSE_GOAL+
       ' · Попыток '+morseState.dailyAttempts+' · Ошибок '+morseState.dailyErrors+
@@ -4446,8 +4582,8 @@ function setDetTab(i, animate){
     eng=false;
     try{ el.releasePointerCapture(pid); }catch(_){}
     el.style.transition='';
-    if(dx<=-60) setDetTab(detTab+1, true);
-    else if(dx>=60) setDetTab(detTab-1, true);
+    if(dx<=-30) setDetTab(detTab+1, true);   // лёгкий свайп перелистывает вкладку
+    else if(dx>=30) setDetTab(detTab-1, true);
     else setDetTab(detTab, true);
   };
   el.addEventListener('pointerup', end);
@@ -4499,7 +4635,7 @@ function attachSwipeClose(sheet, scrollEl, onClose){
     try{ sheet.releasePointerCapture(pid); }catch(_){}
     sheet.style.transition='';
     sheet.style.transform='';
-    if(dy>90) onClose();
+    if(dy>20) onClose();   // закрывает даже короткий свайп вниз
   };
   sheet.addEventListener('pointerup', end);
   sheet.addEventListener('pointercancel', end);
@@ -4514,7 +4650,7 @@ function startMorseVibe(){
   var pulse=function(){
     try{
       if(tg && tg.HapticFeedback && typeof tg.HapticFeedback.impactOccurred==='function'){
-        tg.HapticFeedback.impactOccurred('light'); // «стабильная» пульсация, пока поле нажато
+        tg.HapticFeedback.impactOccurred('heavy'); // максимальный уровень: пульсация при нажатии/удержании
       }
     }catch(e){}
     morseVibeTimer=setTimeout(pulse, 110); // цепочка setTimeout — не интервальный планировщик
@@ -4531,7 +4667,7 @@ function morseBeep(freq, durMs, vol){
     var osc=ctx.createOscillator(), g=ctx.createGain();
     osc.type='sine';
     osc.frequency.value=freq;
-    var t=ctx.currentTime, dur=durMs/1000, v=(typeof vol==='number')?vol:0.045;
+    var t=ctx.currentTime, dur=durMs/1000, v=((typeof vol==='number')?vol:0.045)*sndVolF();
     g.gain.setValueAtTime(0, t);
     g.gain.linearRampToValueAtTime(v, t+0.008);
     g.gain.setValueAtTime(v, t+Math.max(0.012, dur-0.012));
@@ -4579,5 +4715,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a41346cdcf6ea665',t:'MTc5MDQzNjI3Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a413c813cdfe8055',t:'MTc5MDQ0MTU3Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

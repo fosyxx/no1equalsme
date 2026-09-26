@@ -212,7 +212,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 
 
 /* ---------- Морзе + Дактиль ---------- */
-.morse-block{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.morse-block{margin-top:14px;display:flex;flex-direction:column;gap:14px}
 .morse-status{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:2px 2px 10px}
 .ms-main{font-size:15px;font-weight:700}
 .ms-sub{font-size:12px;color:var(--muted)}
@@ -255,7 +255,9 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 
 
 /* ---------- Главная: две категории ---------- */
-.cat-block{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.cat-block{margin-top:14px;display:flex;flex-direction:column;gap:14px}
+/* «Статистика» не прилипает к кнопке «Продолжить» выше */
+#btnDetails{margin-top:14px}
 /* ---------- Подробнее: две вкладки со свайпом + графики ---------- */
 .det-tabs{display:flex;gap:8px;padding:10px 2px 6px}
 .det-tab{flex:1;min-height:44px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--muted);font:inherit;font-weight:650;font-size:14px;transition:background .15s ease,border-color .15s ease,color .15s ease}
@@ -283,9 +285,9 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .dt-sub{font-size:12.5px;color:var(--faint);line-height:1.45;margin:6px 0 0}
 
 /* ---------- Раунд 3 ---------- */
-.det-foot{text-align:center;display:flex;flex-direction:column;gap:5px;font-size:13.5px;color:var(--muted);padding:2px 8px 4px}
-.det-foot div{line-height:1.45}
-.cat-block .btn-primary,.morse-block .btn-primary{box-shadow:0 5px 14px rgba(143,116,224,.22)}
+.det-foot{text-align:center;display:flex;flex-direction:column;gap:7px;font-size:15.5px;color:var(--muted);padding:4px 8px 6px}
+.det-foot div{line-height:1.5}
+.cat-block .btn-primary,.morse-block .btn-primary{box-shadow:0 4px 11px rgba(143,116,224,.18)}
 .wipe-pass{width:100%;min-height:44px;border-radius:12px;border:1px solid var(--red-line);background:var(--card2);color:var(--text);padding:0 12px;font:inherit;font-size:15px;margin:8px 0 4px}
 /* ---------- Результат ---------- */
 .result-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 2px 14px}
@@ -316,7 +318,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 /* ---------- Настройки ---------- */
 .overlay{position:fixed;inset:0;z-index:50;background:rgba(9,7,13,.6);display:flex;align-items:flex-end;justify-content:center;opacity:0;transition:opacity var(--dur) ease}
 .overlay.show{opacity:1}
-.sheet{width:100%;max-width:480px;max-height:88%;overflow-y:auto;overscroll-behavior:contain;background:var(--sheet);border:1px solid var(--line);border-bottom:0;border-radius:24px 24px 0 0;padding:8px 16px calc(env(safe-area-inset-bottom,0px) + 16px);transform:translateY(102%);transition:transform var(--dur) cubic-bezier(.3,.8,.3,1)}
+.sheet{width:100%;max-width:480px;max-height:88%;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;background:var(--sheet);border:1px solid var(--line);border-bottom:0;border-radius:24px 24px 0 0;padding:8px 16px calc(env(safe-area-inset-bottom,0px) + 16px);transform:translateY(102%);transition:transform var(--dur) cubic-bezier(.3,.8,.3,1)}
 .overlay.show .sheet{transform:none}
 .sheet-head{display:flex;align-items:center;justify-content:space-between;padding:6px 0 10px}
 .sheet-head h2{font-size:18px;font-weight:750}
@@ -687,14 +689,6 @@ html.rm .card-drag.flipped .card-front{opacity:0}
             <p class="dt-sub" id="dtMorseTotals"></p>
           </div>
           <div class="det-foot" id="detMorseFoot"></div>
-          <button class="btn-danger" id="btnMorseReset" style="margin-top:4px">Сбросить статистику морзе</button>
-          <div class="rc-confirm" id="morseResetConfirm" hidden>
-            <p>Сбросить дневную цель, попытки и веса букв морзе? Слова и их облачная синхронизация не пострадают.</p>
-            <div class="rc-btns">
-              <button class="rc-cancel" id="btnMorseResetNo">Отмена</button>
-              <button class="btn-danger-solid" id="btnMorseResetYes">Да, сбросить</button>
-            </div>
-          </div>
 
         </div>
       </div>
@@ -851,6 +845,17 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         <div><span>Слабые буквы</span><b id="msWeak">—</b></div>
       </div>
       <p class="morse-stats-note">Прогресс морзе хранится только на этом устройстве и не отправляется в Telegram CloudStorage.</p>
+    </div>
+    <div class="reset-zone" id="morseResetZone">
+      <h3>СБРОС СТАТИСТИКИ МОРЗЕ</h3>
+      <button class="btn-danger" id="btnMorseReset" style="margin-top:4px">Сбросить статистику морзе</button>
+      <div class="rc-confirm" id="morseResetConfirm" hidden>
+        <p>Сбросить дневную цель, попытки и веса букв морзе? Слова и их облачная синхронизация не пострадают.</p>
+        <div class="rc-btns">
+          <button class="rc-cancel" id="btnMorseResetNo">Отмена</button>
+          <button class="btn-danger-solid" id="btnMorseResetYes">Да, сбросить</button>
+        </div>
+      </div>
     </div>
     <div class="reset-zone">
       <h3>РЕЗЕРВНАЯ КОПИЯ</h3>
@@ -1160,6 +1165,8 @@ function freshState(){
     schemaVersion:3,        // 3 = интервальное повторение (было 2)
     status:'idle',           // idle | active | completed
     sessionDate:null,        // учебная дата текущей сессии
+    practice:false,          // свободная тренировка после нормы дня (интервалы слов не меняет)
+    practiceBackup:null,     // итоги дня, отложенные на время тренировки
     view:'home',             // home | session | result | archive
     cardScreen:'question',   // question | peek | definition
     queue:[],                // очередь ТЕКУЩЕЙ сессии (уменьшается по мере ответов)
@@ -1487,9 +1494,10 @@ function nearestFutureDue(){
 function ensureDay(){
   var eff=effDate();
   if(state.status==='completed' && state.sessionDate!==eff){
-    state.status='idle'; save();
+    state.status='idle'; state.practice=false; state.practiceBackup=null; save();
   } else if(state.status==='active' && state.sessionDate!==eff){
     state.status='idle'; state.queue=[]; state.sessionResults={}; state.sessionTotal=0; state.cardScreen='question';
+    state.practice=false; state.practiceBackup=null; // хвост тренировки чужой даты не нужен
     if(state.view==='session' || state.view==='result') state.view='home';
     save();
   }
@@ -1570,7 +1578,8 @@ function renderHome(){
     elSummaryLine2.appendChild(document.createTextNode(' · Освоено: ')); elSummaryLine2.appendChild(strong(String(st.graduated)));
     elHomeSummary.hidden=false;
     elEmptyDay.hidden=true;
-    elBtnStart.hidden=true;
+    elBtnStart.hidden=false;
+    elBtnStart.textContent='Продолжить тренировку'; // норма закрыта — тренируемся дальше, как в «Морзе»
     elBtnShowResult.hidden=false;
     return;
   }
@@ -1809,6 +1818,8 @@ function startNewSession(){
   save();
 }
 function finishSession(){
+  // Тренировка после нормы завершается на главной: итоги дня не переписываем
+  if(state.practice){ finishPractice(); return; }
   state.status='completed';
   state.completedAt=Date.now();
   recordDayStats();
@@ -1816,6 +1827,53 @@ function finishSession(){
   haptic('done');
   lock=false;
   showView('result');
+}
+/* Свободная тренировка после выполнения дневной нормы — аналог «Продолжить
+   тренировку» у морзе. Берём случайные уже начатые слова (learning/graduated/
+   learned, не новые), но ответы НЕ вызывают applyKnow/applyForget: шаги,
+   интервалы, план дня и статистика дня остаются нетронутыми. Прежние итоги дня
+   кладём в practiceBackup и возвращаем по завершении — поэтому «Итог дня» на
+   главной после тренировки показывает реальный день, а не практику. */
+function startPracticeSession(){
+  if(state.status==='active' || state.practice) return;
+  if(!content.ready || !CARDS.length) return;
+  var pool=[];
+  CARDS.forEach(function(c){
+    var p=state.cards[c.id];
+    if(p && (p.status==='learning' || p.status==='graduated' || p.status==='learned')) pool.push(c.id);
+  });
+  if(!pool.length){ toast('Нет слов для повторения — все карточки ещё новые.'); return; }
+  shuffle(pool);
+  pool=pool.slice(0, MAX_DAILY); // та же длина, что у плана дня
+  state.practiceBackup={q:state.queue.slice(),
+                        r:JSON.parse(JSON.stringify(state.sessionResults||{})),
+                        t:state.sessionTotal};
+  state.queue=pool;
+  state.sessionResults={};
+  pool.forEach(function(id){
+    state.sessionResults[id]={errors:0, firstTry:true, done:false, tomorrow:false, advanced:false, graduatedNow:false};
+  });
+  state.sessionTotal=pool.length;
+  state.practice=true;
+  state.status='active';
+  state.sessionDate=effDate();
+  state.cardScreen='question';
+  save();
+}
+function finishPractice(){
+  var b=state.practiceBackup;
+  state.practice=false;
+  state.practiceBackup=null;
+  if(b){ // возвращаем очередь и итоги дня, которые были до тренировки
+    state.queue=b.q; state.sessionResults=b.r; state.sessionTotal=b.t;
+  }
+  state.status='completed';
+  if(!state.completedAt) state.completedAt=Date.now();
+  save();
+  haptic('done');
+  lock=false;
+  goHome();
+  toast('Тренировка завершена');
 }
 
 /* Единая функция обработки ответа — вызывается кнопками и свайпом */
@@ -1830,10 +1888,14 @@ function answer(remembered){
     // «ЗНАЮ»: шаг вперёд + повтор по интервалу нового шага (4 шага = изучено)
     haptic('success');
     sfxWord(true);                  // звуковое сопровождение ответа
-    var res=applyKnow(c.id, studyDate);
-    r.advanced=res.advanced;
-    r.graduatedNow=res.graduated;
-    r.done=true;
+    if(state.practice){
+      r.done=true; // тренировка: шаг и интервалы слова не двигаем
+    } else {
+      var res=applyKnow(c.id, studyDate);
+      r.advanced=res.advanced;
+      r.graduatedNow=res.graduated;
+      r.done=true;
+    }
     state.queue.shift();
     state.cardScreen='question';
     save(); // прогресс зафиксирован до анимации — после перезагрузки шаг не применится повторно
@@ -1848,8 +1910,10 @@ function answer(remembered){
     sfxWord(false);                 // звуковое сопровождение ответа
     r.errors+=1;
     r.firstTry=false;
-    r.tomorrow=true;                 // для статистики: уходит на завтра
-    applyForget(c.id, studyDate);
+    if(!state.practice){
+      r.tomorrow=true;               // для статистики: уходит на завтра
+      applyForget(c.id, studyDate);  // в тренировке слово не уводим и шаги не сбрасываем
+    }
     state.cardScreen='definition';
     flipAt=Date.now();
     save();
@@ -1869,7 +1933,7 @@ function continueFromDefinition(dir){
   var r=state.sessionResults[c.id];
   // Правило 5 «не показывать дважды в день»: nextReviewDate уже перенесён на завтра,
   // поэтому слово просто уходит из очереди — без повторного показа сегодня.
-  if(r && !r.done){ r.done=true; r.tomorrow=true; }
+  if(r && !r.done){ r.done=true; if(!state.practice) r.tomorrow=true; }
   state.queue.shift();
   state.cardScreen='question';
   save();
@@ -2053,7 +2117,8 @@ elBtnPeek.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
 elBtnBackAction.addEventListener('click', function(){ backProceed(); });
 elBtnBack.addEventListener('click', function(){ save(); goHome(); });
 elBtnStart.addEventListener('click', function(){
-  if(state.status!=='active') startNewSession();
+  if(state.status==='completed') startPracticeSession(); // норма дня закрыта — свободная тренировка
+  else if(state.status!=='active') startNewSession();
   if(state.status==='active') showView('session');
 });
 elBtnShowResult.addEventListener('click', function(){ showView('result'); });
@@ -2546,7 +2611,8 @@ function buildPayloads(){
     sr[id]=[r.errors|0, r.done?1:0, r.firstTry?1:0, r.tomorrow?1:0, r.advanced?1:0, r.graduatedNow?1:0];
   });
   out[CK.session]=JSON.stringify({v:CLOUD_SCHEMA, status:state.status, date:state.sessionDate, q:state.queue,
-    n:state.sessionTotal, cs:state.cardScreen, r:sr, startedAt:state.startedAt||0, completedAt:state.completedAt||0,
+    n:state.sessionTotal, cs:state.cardScreen, r:sr, pr:state.practice?1:0,
+    startedAt:state.startedAt||0, completedAt:state.completedAt||0,
     lastStudyDate:state.lastStudyDate, updatedAt:state.sessionTs||0});
   // статистика по дням
   normalizeStats();
@@ -2619,6 +2685,8 @@ function mergeCloudSession(obj){
     if(!results[id]) results[id]={errors:0, firstTry:true, done:false, tomorrow:false, advanced:false, graduatedNow:false};
   });
   state.status=obj.status;
+  state.practice=!!obj.pr;       // pr:1 — чужая активная тренировка; старый payload без pr = обычная сессия
+  state.practiceBackup=null;     // локальные итоги дня к чужой сессии не применимы
   state.sessionDate=(typeof obj.date==='string' && /^\d{4}-\d{2}-\d{2}$/.test(obj.date))?obj.date:null;
   state.queue=q;
   state.sessionResults=results;
@@ -2861,7 +2929,8 @@ function bootSync(){
 var lastSessionSig=null;
 function sessionSig(){
   return JSON.stringify([state.status, state.sessionDate, state.queue, state.sessionTotal,
-                         state.cardScreen, state.sessionResults, state.completedAt||0]);
+                         state.cardScreen, state.sessionResults, state.completedAt||0,
+                         state.practice?1:0, state.practiceBackup||null]);
 }
 function touchSessionTs(){
   var sig=sessionSig();
@@ -3036,7 +3105,8 @@ function buildBackupText(){
     stats:state.stats,
     session:{status:state.status, sessionDate:state.sessionDate, queue:state.queue, sessionTotal:state.sessionTotal,
              sessionResults:state.sessionResults, cardScreen:state.cardScreen, startedAt:state.startedAt,
-             completedAt:state.completedAt, lastStudyDate:state.lastStudyDate, updatedAt:state.updatedAt}
+             completedAt:state.completedAt, lastStudyDate:state.lastStudyDate,
+             practice:state.practice?true:false, practiceBackup:state.practiceBackup||null, updatedAt:state.updatedAt}
   };
   return JSON.stringify(data, null, 2);
 }
@@ -3204,8 +3274,22 @@ function sanitizeImport(obj){
       if(!r || typeof r!=='object') return;
       res[id]={errors:Math.max(0,r.errors|0), done:!!r.done, firstTry:!!r.firstTry, tomorrow:!!r.tomorrow, advanced:!!r.advanced, graduatedNow:!!r.graduatedNow};
     });
+    // хвост тренировки из копии: валидируем так же строго, как обычную сессию
+    var pb=null;
+    if(s.practiceBackup && typeof s.practiceBackup==='object'){
+      var pbq=Array.isArray(s.practiceBackup.q)?s.practiceBackup.q.filter(function(id){ return !!CARD_MAP[id]; }).slice(0,MAX_SESSION*6):[];
+      var pbr={};
+      Object.keys(s.practiceBackup.r||{}).slice(0,200).forEach(function(id){
+        if(!CARD_MAP[id]) return;
+        var prr=s.practiceBackup.r[id];
+        if(!prr || typeof prr!=='object') return;
+        pbr[id]={errors:Math.max(0,prr.errors|0), done:!!prr.done, firstTry:!!prr.firstTry, tomorrow:!!prr.tomorrow, advanced:!!prr.advanced, graduatedNow:!!prr.graduatedNow};
+      });
+      pb={q:pbq, r:pbr, t:(typeof s.practiceBackup.t==='number' && s.practiceBackup.t>=0)?s.practiceBackup.t:Object.keys(pbr).length};
+    }
     out.session={
       status:s.status,
+      practice:!!s.practice, practiceBackup:pb,
       sessionDate:(typeof s.sessionDate==='string' && /^\d{4}-\d{2}-\d{2}$/.test(s.sessionDate))?s.sessionDate:null,
       queue:q, sessionResults:res,
       sessionTotal:(typeof s.sessionTotal==='number' && s.sessionTotal>=0)?s.sessionTotal:Object.keys(res).length,
@@ -3294,6 +3378,8 @@ $('btnImportYes').addEventListener('click', function(){
     state.cardScreen=c.session.cardScreen;
     state.startedAt=c.session.startedAt;
     state.completedAt=c.session.completedAt;
+    state.practice=!!c.session.practice;
+    state.practiceBackup=c.session.practiceBackup||null;
     if(c.session.lastStudyDate) state.lastStudyDate=c.session.lastStudyDate;
   }
   state.view='home';
@@ -4340,10 +4426,17 @@ function startApp(){
   if(!state.settings || !THEME_BG[state.settings.theme]) state.settings.theme='evening';
   if(typeof state.settings.swipeSens!=='number' || state.settings.swipeSens<0 || state.settings.swipeSens>100) state.settings.swipeSens=50;
   if(typeof state.settings.sndVol!=='number' || state.settings.sndVol<0 || state.settings.sndVol>100) state.settings.sndVol=100;
+  if(typeof state.practice!=='boolean') state.practice=false;
+  if(state.practiceBackup && typeof state.practiceBackup!=='object') state.practiceBackup=null;
   // слова, отсутствующие в текущем словаре, не показываем, но их прогресс сохраняем
   state.queue=state.queue.filter(function(id){ return !!CARD_MAP[id]; });
   ensureDay();
   if(state.status==='active' && state.queue.length===0){
+    if(state.practice){ // приложение закрыли между последней карточкой и финишем
+      var pbk=state.practiceBackup;
+      state.practice=false; state.practiceBackup=null;
+      if(pbk){ state.queue=pbk.q; state.sessionResults=pbk.r; state.sessionTotal=pbk.t; }
+    }
     state.status='completed';
     if(!state.completedAt) state.completedAt=Date.now();
     save();
@@ -4553,11 +4646,25 @@ function setDetTab(i, animate){
     b.classList.toggle('active', j===detTab);
   });
 }
-/* свайп влево/вправо переключает вкладки «Подробнее» */
+/* Свайп влево/вправо переключает вкладки «Статистика».
+   Тач-события обрабатываем отдельно от pointer: если первое движение
+   горизонтальное — гасим touchmove (иначе страница начинает вертикальную
+   прокрутку и браузер шлёт pointercancel, свайп не засчитывается). */
 (function(){
   var el=$('detTrack'); if(!el) return;
   var x0=0, y0=0, dx=0, dy=0, on=false, eng=false, pid=null;
+  var applyX=function(d){
+    var w=(el.parentNode && el.parentNode.clientWidth)?el.parentNode.clientWidth:0;
+    el.style.transform='translateX('+(-detTab*w+d)+'px)';
+  };
+  var settle=function(d){
+    if(d<=-30) setDetTab(detTab+1, true);   // лёгкий свайп перелистывает вкладку
+    else if(d>=30) setDetTab(detTab-1, true);
+    else setDetTab(detTab, true);
+  };
+  /* --- мышь/перо --- */
   el.addEventListener('pointerdown', function(e){
+    if(e.pointerType==='touch') return;
     if(e.button && e.button!==0) return;
     on=true; eng=false; dx=0; dy=0; x0=e.clientX; y0=e.clientY; pid=e.pointerId;
   });
@@ -4572,8 +4679,7 @@ function setDetTab(i, animate){
       } else if(Math.abs(dy)>12){ on=false; return; }
       else return;
     }
-    var w=(el.parentNode && el.parentNode.clientWidth)?el.parentNode.clientWidth:0;
-    el.style.transform='translateX('+(-detTab*w+dx)+'px)';
+    applyX(dx);
   });
   var end=function(e){
     if(!on || (e && typeof e.pointerId==='number' && e.pointerId!==pid)) return;
@@ -4582,12 +4688,39 @@ function setDetTab(i, animate){
     eng=false;
     try{ el.releasePointerCapture(pid); }catch(_){}
     el.style.transition='';
-    if(dx<=-30) setDetTab(detTab+1, true);   // лёгкий свайп перелистывает вкладку
-    else if(dx>=30) setDetTab(detTab-1, true);
-    else setDetTab(detTab, true);
+    settle(dx);
   };
   el.addEventListener('pointerup', end);
   el.addEventListener('pointercancel', end);
+  /* --- тап-скрин --- */
+  var tx0=0, ty0=0, tdx=0, tOn=false, tEng=false;
+  el.addEventListener('touchstart', function(e){
+    if(!e.touches || e.touches.length!==1){ tOn=false; return; }
+    var t=e.touches[0];
+    tx0=t.clientX; ty0=t.clientY; tdx=0; tOn=true; tEng=false;
+  }, {passive:true});
+  el.addEventListener('touchmove', function(e){
+    if(!tOn) return;
+    var t=e.touches && e.touches[0]; if(!t) return;
+    var ddx=t.clientX-tx0, ddy=t.clientY-ty0;
+    if(!tEng){
+      if(ddx===0 && ddy===0) return;
+      if(Math.abs(ddx)>6 && Math.abs(ddx)>Math.abs(ddy)) tEng=true; // горизонталь — наш жест
+      else { tOn=false; return; }                                   // вертикаль — даём странице
+    }
+    if(e.cancelable) e.preventDefault();
+    tdx=ddx;
+    el.style.transition='none';
+    applyX(tdx);
+  }, {passive:false});
+  var tEnd=function(){
+    if(!tOn) return;
+    var was=tEng, d=tdx;
+    tOn=false; tEng=false;
+    if(was){ el.style.transition=''; settle(d); }
+  };
+  el.addEventListener('touchend', tEnd);
+  el.addEventListener('touchcancel', function(){ tOn=false; tEng=false; el.style.transition=''; setDetTab(detTab, true); });
 })();
 Array.prototype.forEach.call(document.querySelectorAll('.det-tab'), function(b){
   b.addEventListener('click', function(){ setDetTab(parseInt(b.getAttribute('data-tab'),10)||0, true); });
@@ -4616,8 +4749,18 @@ $('btnDetailsBack').addEventListener('click', function(){ save(); goHome(); });
 /* ============ Свайп вниз закрывает панели (настройки и подробности слова) ============ */
 function attachSwipeClose(sheet, scrollEl, onClose){
   if(!sheet) return;
+  /* Жест должен работать и на тач-экранах. Раньше мы полагались только на
+     pointer-события, но при нативной прокрутке браузер первым делом шлёт
+     pointercancel — свайп «съедался» и панель не закрывалась. Теперь у тача
+     своя ветка: как только первое движение явно ВНИЗ (и панель прокручена
+     вверх), мы гасим touchmove через preventDefault — браузер не перехватывает
+     жест и не отменяет события. Мышь/перо по-прежнему идёт через pointer. */
+  var RESET=function(){ sheet.style.transition=''; sheet.style.transform=''; };
+  var finish=function(dy){ RESET(); if(dy>20) onClose(); }; // закрывает даже короткий свайп вниз
+  /* --- мышь и перо --- */
   var sy=0, dy=0, dragging=false, pid=null;
   sheet.addEventListener('pointerdown', function(e){
+    if(e.pointerType==='touch') return; // тач обрабатывает отдельная ветка ниже
     if(e.button && e.button!==0) return;
     if(e.target && e.target.closest && e.target.closest('button,input,a,select,textarea')) return;
     if(scrollEl && scrollEl.scrollTop>0) return;
@@ -4633,12 +4776,41 @@ function attachSwipeClose(sheet, scrollEl, onClose){
     if(!dragging || (e && typeof e.pointerId==='number' && e.pointerId!==pid)) return;
     dragging=false;
     try{ sheet.releasePointerCapture(pid); }catch(_){}
-    sheet.style.transition='';
-    sheet.style.transform='';
-    if(dy>20) onClose();   // закрывает даже короткий свайп вниз
+    finish(dy);
   };
   sheet.addEventListener('pointerup', end);
   sheet.addEventListener('pointercancel', end);
+  /* --- тап-скрин: явное решение по направлению --- */
+  var tsy=0, tsx=0, tdy=0, tOn=false, tEng=false;
+  sheet.addEventListener('touchstart', function(e){
+    if(!e.touches || e.touches.length!==1){ tOn=false; return; }
+    if(e.target && e.target.closest && e.target.closest('button,input,a,select,textarea')){ tOn=false; return; }
+    var t=e.touches[0];
+    tsy=t.clientY; tsx=t.clientX; tdy=0; tOn=true; tEng=false;
+  }, {passive:true});
+  sheet.addEventListener('touchmove', function(e){
+    if(!tOn) return;
+    var t=e.touches && e.touches[0]; if(!t) return;
+    var ddy=t.clientY-tsy, ddx=t.clientX-tsx;
+    if(!tEng){
+      if(ddy===0 && ddx===0) return;              // ещё не решили: ждём следующего движения
+      var top=(scrollEl ? scrollEl.scrollTop<=0 : true);
+      if(ddy>0 && Math.abs(ddy)>=Math.abs(ddx) && top) tEng=true; // вниз от верха — наш жест
+      else { tOn=false; return; }                 // вверх/по горизонтали/внутри прокрутки — отдаём браузеру
+    }
+    if(e.cancelable) e.preventDefault();          // браузер не запускает нативную прокрутку
+    tdy=ddy;
+    sheet.style.transition='none';
+    sheet.style.transform='translateY('+tdy+'px)';
+  }, {passive:false});
+  var tEnd=function(){
+    if(!tOn) return;
+    var was=tEng, d=tdy;
+    tOn=false; tEng=false;
+    if(was) finish(d);
+  };
+  sheet.addEventListener('touchend', tEnd);
+  sheet.addEventListener('touchcancel', function(){ tOn=false; tEng=false; RESET(); });
 }
 attachSwipeClose($('settingsSheet'), $('settingsSheet'), function(){ closeSettings(); });
 attachSwipeClose($('detailsSheet'), $('detailsScroll'), function(){ closeDetails(); });
@@ -4715,5 +4887,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a413c813cdfe8055',t:'MTc5MDQ0MTU3Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4142749fad5f693',t:'MTc5MDQ0NTQ3Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

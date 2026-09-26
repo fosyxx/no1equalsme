@@ -228,10 +228,11 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .morse-code{font-size:28px;font-weight:750;letter-spacing:.14em;min-height:34px;color:var(--text)}
 .morse-cue{font-size:13px;color:var(--faint)}
 /* Единственная зона ввода: удержание = точка/тире, кнопки «Проверить» нет */
-.morse-zone{position:relative;width:100%;min-height:160px;border-radius:20px;border:1px solid var(--line);background:var(--card2);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:18px 16px 24px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer;transition:border-color .12s ease,background .12s ease,box-shadow .12s ease;text-align:center;font:inherit}
+.morse-zone{position:relative;width:100%;min-height:220px;border-radius:20px;border:1px solid var(--line);background:var(--card2);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:18px 16px 24px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer;transition:border-color .12s ease,background .12s ease,box-shadow .12s ease;text-align:center;font:inherit}
 .mz-idle{display:flex;flex-direction:column;align-items:center;gap:6px}
 .mz-main{font-size:19px;font-weight:750}
 .mz-sub{font-size:13px;color:var(--muted)}
+.mz-whint{font-size:13.5px;font-weight:650;color:var(--muted);line-height:1.4}
 .morse-zone.press{border-color:var(--violet-line);background:var(--violet-soft)}
 .morse-zone.press .mz-main{color:var(--violet)}
 .morse-zone.ok{border-color:var(--green-line);background:var(--green-soft);box-shadow:0 0 30px rgba(130,185,145,.18)}
@@ -621,6 +622,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
           <span class="mz-idle" id="morseZoneIdle">
             <span class="mz-main" id="morseZoneMain">Удерживай</span>
             <span class="mz-sub" id="morseZoneHint">коротко — точка · долго — тире —</span>
+            <span class="mz-whint" id="morseWrongHint" hidden></span>
           </span>
           <span class="mz-result" id="morseResult" hidden>
             <b class="mz-letter" id="morseResLetter"></b>
@@ -3948,6 +3950,11 @@ function renderMorseHome(){
 }
 
 /* ---------- Рендер экрана ---------- */
+/* id буквы, по которой пользователь ошибся: подсказка «буква + верный код»
+   остаётся после затухания красного и гаснет только при первом нажатии
+   нового ввода (см. onMorseDown). Живёт в памяти — косметика, состояние
+   пароля/счётчиков не затрагивает. */
+var morseHintId=null;
 function renderMorse(){
   if(!morseState) return;
   ensureMorseDay();
@@ -3989,7 +3996,16 @@ function renderMorse(){
   }
   /* строка введённого кода */
   $('morseCode').textContent=prettyCode(morseState.sequence);
-  $('morseCue').hidden=morseState.sequence.length>0;
+  /* Подсказка после ошибки: какая это буква и каким кодом она пишется.
+     Показывается, пока ввод не начался заново; заменяет cue, чтобы не
+     дублировать две строки с одинаковым смыслом. */
+  var wh=$('morseWrongHint');
+  var hintOn=!!wh && !!card && morseState.mode==='input' && morseHintId===card.id && !morseState.sequence;
+  $('morseCue').hidden=morseState.sequence.length>0 || hintOn;
+  if(wh){
+    wh.hidden=!hintOn;
+    if(hintOn) wh.textContent='Буква '+card.letter+' — верный код: '+prettyCode(card.morse);
+  }
   /* зона ввода / результат */
   var locked=morseState.mode!=='input';
   var zone=$('morseZone');
@@ -4066,25 +4082,51 @@ function sndVolF(){ // общий ползунок громкости из на�
     return Math.max(0, Math.min(100, v))/100;
   }catch(e){ return 1; }
 }
-function appBeep(freq, durMs, vol){ // звук без привязки к переключателю морзе (для слов)
+/* Мягкий колокольчик: короткий подъём (~20 мс) и плавное экспоненциальное
+   затухание. Без щелчков на старте/на конце и без «пилы» — спокойный
+   музыкальный темб; мелодии собственные, чужие не копируем. */
+function softBell(ctx, freq, durMs, vol, attackMs){
   try{
-    var ctx=audioCtx();
     if(!ctx) return;
+    var t=ctx.currentTime, dur=Math.max(0.05, durMs/1000);
+    var at=Math.max(0.005, (typeof attackMs==='number')?attackMs:0.02);
+    var v=Math.max(0.0002, ((typeof vol==='number')?vol:0.05)*sndVolF());
     var osc=ctx.createOscillator(), g=ctx.createGain();
     osc.type='sine';
     osc.frequency.value=freq;
-    var t=ctx.currentTime, dur=durMs/1000, v=((typeof vol==='number')?vol:0.045)*sndVolF();
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(v, t+0.008);
-    g.gain.setValueAtTime(v, t+Math.max(0.012, dur-0.012));
-    g.gain.linearRampToValueAtTime(0, t+dur);
+    g.gain.setValueAtTime(0.0002, t);
+    g.gain.exponentialRampToValueAtTime(v, t+Math.min(at, dur/2));
+    g.gain.exponentialRampToValueAtTime(0.0002, t+dur);
     osc.connect(g); g.connect(ctx.destination);
-    osc.start(); osc.stop(t+dur+0.03);
+    osc.start(t); osc.stop(t+dur+0.06);
+  }catch(e){}
+}
+/* Мягкий нисходящий тон для «неверно»: заметен даже на телефонном динамике,
+   но звучит спокойно — без резкого щелчка и без рова низкочастотного buzzing */
+function softDrop(ctx, f0, f1, durMs, vol){
+  try{
+    if(!ctx) return;
+    var t=ctx.currentTime, dur=Math.max(0.06, durMs/1000);
+    var v=Math.max(0.0002, ((typeof vol==='number')?vol:0.055)*sndVolF());
+    var osc=ctx.createOscillator(), g=ctx.createGain();
+    osc.type='sine';
+    osc.frequency.setValueAtTime(f0, t);
+    osc.frequency.exponentialRampToValueAtTime(f1, t+dur);
+    g.gain.setValueAtTime(0.0002, t);
+    g.gain.exponentialRampToValueAtTime(v, t+0.025);
+    g.gain.exponentialRampToValueAtTime(0.0002, t+dur);
+    osc.connect(g); g.connect(ctx.destination);
+    osc.start(t); osc.stop(t+dur+0.06);
   }catch(e){}
 }
 function sfxWord(ok){ // звуковое сопровождение ответов в разделе слов
-  if(ok){ appBeep(660, 90); setTimeout(function(){ appBeep(880, 130); }, 95); }
-  else appBeep(320, 170, 0.05);
+  var ctx=audioCtx(); if(!ctx) return;
+  if(ok){
+    softBell(ctx, 523.25, 260, 0.05, 0.018);  // спокойный «да»: мягкий C5…
+    setTimeout(function(){ softBell(audioCtx(), 784, 360, 0.05, 0.018); }, 95); // …и выше G5
+  } else {
+    softDrop(ctx, 392, 311, 320, 0.06);       // тихий нисходящий — «неверно» слышен, но не резок
+  }
 }
 var morseTone=null;
 function startMorseTone(){
@@ -4096,7 +4138,7 @@ function startMorseTone(){
     osc.frequency.value=650;
     var t=ctx.currentTime;
     g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(0.05*sndVolF(), t+0.008); // плавное нарастание 5–10 мс с учётом громкости
+    g.gain.linearRampToValueAtTime(0.045*sndVolF(), t+0.03); // тон «врастает» 30 мс — без щелчка
     osc.connect(g); g.connect(ctx.destination);
     osc.start();
     morseTone={osc:osc, gain:g, ctx:ctx};
@@ -4109,24 +4151,12 @@ function stopMorseTone(){
     var t=m.ctx.currentTime;
     m.gain.gain.cancelScheduledValues(t);
     m.gain.gain.setValueAtTime(m.gain.gain.value, t);
-    m.gain.gain.linearRampToValueAtTime(0, t+0.008); // затухание 5–10 мс
-    m.osc.stop(t+0.02);
+    m.gain.gain.linearRampToValueAtTime(0, t+0.06); // затухание 60 мс — звук не обрывается
+    m.osc.stop(t+0.08);
   }catch(e){}
 }
-function morseErrorBeep(){
-  try{
-    var ctx=morseAudioCtx();
-    if(!ctx) return;
-    var osc=ctx.createOscillator(), g=ctx.createGain();
-    osc.type='sine';
-    osc.frequency.value=720;
-    var t=ctx.currentTime;
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(0.05*sndVolF(), t+0.008);
-    g.gain.linearRampToValueAtTime(0, t+0.09);
-    osc.connect(g); g.connect(ctx.destination);
-    osc.start(); osc.stop(t+0.11);
-  }catch(e){}
+function morseErrorBeep(){ // 6-й элемент: короткий, но мягкий сигнал переполнения
+  softDrop(morseAudioCtx(), 392, 311, 180, 0.055);
 }
 
 /* ---------- Ввод: pointer events ---------- */
@@ -4177,6 +4207,8 @@ function onMorseDown(e){
   if(morseLocked()) return;
   if(typeof e.preventDefault==='function') e.preventDefault();
   cancelMorseCheck();                     // новый pointerdown отменяет ожидание автопроверки
+  morseHintId=null;                       // новый ввод начался — подсказка после ошибки убирается
+  var whEl=$('morseWrongHint'); if(whEl) whEl.hidden=true;
   mz.t0=Date.now();
   mz.pointerId=e.pointerId;
   try{ if(e.target && typeof e.target.setPointerCapture==='function') e.target.setPointerCapture(e.pointerId); }catch(_){}
@@ -4249,6 +4281,7 @@ function runMorseCheck(){
     ls.ok=(ls.ok|0)+1;
     morseState.weaknessScore[card.id]=Math.max(0, w-1);   // −1, минимум 0
     morseState.mode='correct';
+    morseHintId=null; // ответ верный — подсказка про прежнюю букву не нужна
     haptic('success');
     morseSoundResult(true);
   } else {
@@ -4256,6 +4289,7 @@ function runMorseCheck(){
     ls.bad=(ls.bad|0)+1;
     morseState.weaknessScore[card.id]=Math.min(10, w+2);  // +2, максимум 10
     morseState.mode='incorrect';
+    morseHintId=card.id; // подсказка про эту букву останется и после затухания красного
     haptic('error');
     morseSoundResult(false);
   }
@@ -4817,42 +4851,50 @@ attachSwipeClose($('detailsSheet'), $('detailsScroll'), function(){ closeDetails
 
 /* ============ Вибрация при удержании поля морзе (своя настройка) ============ */
 var morseVibeTimer=null;
+var morseVibeCont=false; // флаг непрерывного гудения через Vibration API
 function startMorseVibe(){
-  if(!morseState || !morseState.vibeInput || morseVibeTimer) return;
+  if(!morseState || !morseState.vibeInput || morseVibeTimer || morseVibeCont) return;
+  /* 1) Прямое гудение: один сплошной вибросигнал на всё время удержания.
+     Паттерн «вибрация, пауза 0, вибрация…» не останавливает мотор между
+     отрезками — получается ровное гудение, а не серия отдельных толчков. */
+  try{
+    if(typeof navigator!=='undefined' && typeof navigator.vibrate==='function'){
+      var pat=[];
+      for(var i=0;i<30;i++){ pat.push(4000); pat.push(0); } // ~2 минуты удержания
+      if(navigator.vibrate(pat)){ morseVibeCont=true; return; }
+    }
+  }catch(e){}
+  /* 2) Фолбэк (iOS и браузеры без Vibration API): цепочка максимально
+        тяжёлых импульсов — единственный доступный там вариант. */
   var pulse=function(){
     try{
       if(tg && tg.HapticFeedback && typeof tg.HapticFeedback.impactOccurred==='function'){
-        tg.HapticFeedback.impactOccurred('heavy'); // максимальный уровень: пульсация при нажатии/удержании
+        tg.HapticFeedback.impactOccurred('heavy'); // максимальный уровень
       }
     }catch(e){}
     morseVibeTimer=setTimeout(pulse, 110); // цепочка setTimeout — не интервальный планировщик
   };
   pulse();
 }
-function stopMorseVibe(){ if(morseVibeTimer){ clearTimeout(morseVibeTimer); morseVibeTimer=null; } }
+function stopMorseVibe(){
+  if(morseVibeCont){ // остановить сплошное гудение
+    try{ if(typeof navigator!=='undefined' && typeof navigator.vibrate==='function') navigator.vibrate(0); }catch(e){}
+    morseVibeCont=false;
+  }
+  if(morseVibeTimer){ clearTimeout(morseVibeTimer); morseVibeTimer=null; }
+}
 
 /* ============ Звуковое сопровождение: щелчки ввода и результаты (Web Audio) ============ */
-function morseBeep(freq, durMs, vol){
-  try{
-    var ctx=morseAudioCtx();
-    if(!ctx) return;
-    var osc=ctx.createOscillator(), g=ctx.createGain();
-    osc.type='sine';
-    osc.frequency.value=freq;
-    var t=ctx.currentTime, dur=durMs/1000, v=((typeof vol==='number')?vol:0.045)*sndVolF();
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(v, t+0.008);
-    g.gain.setValueAtTime(v, t+Math.max(0.012, dur-0.012));
-    g.gain.linearRampToValueAtTime(0, t+dur);
-    osc.connect(g); g.connect(ctx.destination);
-    osc.start(); osc.stop(t+dur+0.03);
-  }catch(e){}
-}
+function morseBeep(freq, durMs, vol){ softBell(morseAudioCtx(), freq, durMs, vol); }
 function morseSoundResult(ok){
-  if(ok){ morseBeep(660, 90); setTimeout(function(){ morseBeep(880, 130); }, 95); }
-  else morseBeep(320, 170, 0.05);
+  if(ok){
+    softBell(morseAudioCtx(), 523.25, 260, 0.05, 0.018);  // мягкий «да»: C5…
+    setTimeout(function(){ softBell(morseAudioCtx(), 784, 360, 0.05, 0.018); }, 95); // …и выше G5
+  } else {
+    softDrop(morseAudioCtx(), 392, 311, 320, 0.06);       // спокойный нисходящий вместо тишины/резкости
+  }
 }
-function morseTick(isDash){ morseBeep(isDash?700:1100, 35, 0.03); }
+function morseTick(isDash){ softBell(morseAudioCtx(), isDash?698.46:880, 75, 0.03, 0.006); } // мягкий щелчок ввода
 
 /* ================= Инициализация ================= */
 function loadContentThenStart(){
@@ -4887,5 +4929,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4142749fad5f693',t:'MTc5MDQ0NTQ3Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a41450090b73d0e1',t:'MTc5MDQ0NzE0MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

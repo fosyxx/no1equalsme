@@ -217,10 +217,10 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .ms-main{font-size:15px;font-weight:700}
 .ms-sub{font-size:12px;color:var(--muted)}
 .morse-stage{flex:1;min-height:0;display:flex;flex-direction:column}
-.morse-ex{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px}
+.morse-ex{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px;overflow-y:auto}
 /* Изображения — белые линии на прозрачном фоне: только тёмная подложка,
    без инверсий, без белого прямоугольника, object-fit: contain */
-.morse-imgwrap{flex:1;min-height:130px;position:relative;border-radius:22px;overflow:hidden;background:#0b0b0f;border:1px solid var(--line);display:grid;place-items:center;padding:10px}
+.morse-imgwrap{width:min(100%,46vh);aspect-ratio:1/1;flex:none;margin:0 auto;position:relative;border-radius:22px;overflow:hidden;background:#0b0b0f;border:1px solid var(--line);display:grid;place-items:center;padding:10px}
 .morse-imgwrap img{width:100%;height:100%;object-fit:contain;display:block}
 .morse-img-load{color:#7b7490;font-size:13px}
 .morse-img-err{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;color:var(--muted);font-size:13px;padding:14px}
@@ -228,8 +228,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .morse-code{font-size:28px;font-weight:750;letter-spacing:.14em;min-height:34px;color:var(--text)}
 .morse-cue{font-size:13px;color:var(--faint)}
 /* Единственная зона ввода: удержание = точка/тире, кнопки «Проверить» нет */
-.morse-zone{position:relative;width:100%;min-height:120px;border-radius:20px;border:1px solid var(--line);background:var(--card2);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:18px 16px 24px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer;transition:border-color .12s ease,background .12s ease,box-shadow .12s ease;text-align:center;font:inherit}
-.morse-zone .mz-fill{position:absolute;left:0;bottom:0;height:4px;width:0;background:linear-gradient(90deg,var(--violet-deep),var(--violet));transition:width .05s linear;pointer-events:none}
+.morse-zone{position:relative;width:100%;min-height:160px;border-radius:20px;border:1px solid var(--line);background:var(--card2);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:18px 16px 24px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer;transition:border-color .12s ease,background .12s ease,box-shadow .12s ease;text-align:center;font:inherit}
 .mz-idle{display:flex;flex-direction:column;align-items:center;gap:6px}
 .mz-main{font-size:19px;font-weight:750}
 .mz-sub{font-size:13px;color:var(--muted)}
@@ -254,6 +253,34 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .morse-goal .btn-primary{width:100%}
 .morse-stats-note{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.45}
 
+
+/* ---------- Главная: две категории ---------- */
+.cat-block{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+/* ---------- Подробнее: две вкладки со свайпом + графики ---------- */
+.det-tabs{display:flex;gap:8px;padding:10px 2px 6px}
+.det-tab{flex:1;min-height:44px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--muted);font:inherit;font-weight:650;font-size:14px;transition:background .15s ease,border-color .15s ease,color .15s ease}
+.det-tab.active{background:var(--violet-soft);border-color:var(--violet-line);color:var(--text)}
+.det-main{flex:1;min-height:0;overflow:hidden}
+.det-track{display:flex;width:200%;height:100%;transform:translateX(0);transition:transform .28s ease;touch-action:pan-y}
+.det-page{width:50%;flex:none;height:100%;overflow-y:auto;overscroll-behavior:contain;padding:8px 2px 20px;display:flex;flex-direction:column;gap:14px}
+.det-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 12px 12px}
+.det-legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--muted);margin-bottom:8px}
+.det-legend span{display:inline-flex;align-items:center;gap:6px}
+.lg{width:10px;height:10px;border-radius:3px;display:inline-block;flex:none}
+.lg-violet{background:var(--violet)}
+.lg-green{background:var(--green)}
+.lg-muted{background:var(--faint)}
+.dt-chart{display:flex;align-items:stretch;gap:5px;height:158px}
+.dt-day{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;cursor:pointer;border-radius:8px;padding:2px 1px 0}
+.dt-day.sel{background:rgba(165,139,255,.08)}
+.dt-bars{flex:1;min-height:0;display:flex;align-items:flex-end;justify-content:center;gap:2px}
+.dt-bar{width:5px;max-width:6px;border-radius:3px 3px 1px 1px;min-height:3px;background:var(--violet);flex:none}
+.dt-bar.b-green{background:var(--green)}
+.dt-bar.b-muted{background:var(--faint)}
+.dt-bar.zero{min-height:0;background:none}
+.dt-lab{font-size:9.5px;line-height:1;color:var(--faint);text-align:center}
+.dt-detail{font-size:13.5px;color:var(--muted);line-height:1.45;min-height:20px;margin:8px 0 0}
+.dt-sub{font-size:12.5px;color:var(--faint);line-height:1.45;margin:6px 0 0}
 /* ---------- Результат ---------- */
 .result-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 2px 14px}
 .result-ic{width:64px;height:64px;border-radius:50%;background:var(--violet-soft);border:1px solid rgba(165,139,255,.35);display:grid;place-items:center;color:var(--violet);margin-bottom:14px;flex:none}
@@ -407,6 +434,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         <span class="dc-main" id="cntToday">Сегодня: 0 / 15 слов</span>
         <span class="dc-sub" id="cntBreak">Повторений: 0, Новых: 0</span>
       </div>
+      <div class="cat-block">
       <div class="cat-card">
         <div class="cat-ic" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
@@ -416,6 +444,8 @@ html.rm .card-drag.flipped .card-front{opacity:0}
           <span class="cat-sub" id="catSub"></span>
         </div>
         <span class="chip" id="catChip">Сегодня</span>
+      </div>
+      <button class="btn-primary" id="btnStart">Начать</button>
       </div>
       <div class="morse-block">
         <div class="cat-card" id="morseCard">
@@ -430,10 +460,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         </div>
         <button class="btn-ghost" id="btnMorseStart" disabled>Начать</button>
       </div>
-      <button class="arch-row" id="archRow">
-        <span>Освоено слов: <span class="cnt" id="archRowCount">0</span></span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
+      <button class="btn-ghost" id="btnDetails">Подробнее</button>
       <div class="home-bottom">
         <div class="summary" id="homeSummary" hidden>
           <h2>Итог дня</h2>
@@ -445,7 +472,6 @@ html.rm .card-drag.flipped .card-front{opacity:0}
           <p id="emptyDayText"></p>
           <button class="btn-ghost" id="btnNearest" hidden>К ближайшему повторению</button>
         </div>
-        <button class="btn-primary" id="btnStart">Начать</button>
         <button class="btn-ghost" id="btnShowResult" hidden>Посмотреть результат</button>
       </div>
     </main>
@@ -584,7 +610,6 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         </div>
         <button class="morse-zone" id="morseZone" type="button"
                 aria-label="Зона ввода: удерживай, коротко — точка, долго — тире">
-          <span class="mz-fill" id="morseHoldFill" aria-hidden="true"></span>
           <span class="mz-idle" id="morseZoneIdle">
             <span class="mz-main" id="morseZoneMain">Удерживай</span>
             <span class="mz-sub" id="morseZoneHint">коротко — точка · долго — тире —</span>
@@ -613,11 +638,57 @@ html.rm .card-drag.flipped .card-front{opacity:0}
     </main>
   </section>
 
+  <!-- Экран 6: Подробнее -->
+  <section class="view" id="view-details" aria-label="Подробнее">
+    <header class="sess-head">
+      <button class="icon-btn" id="btnDetailsBack" aria-label="Сохранить и вернуться на главную">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="sess-mid">
+        <span class="sess-progress">Подробнее</span>
+      </div>
+      <div class="head-spacer" aria-hidden="true"></div>
+    </header>
+    <div class="det-tabs" id="detTabs">
+      <button class="det-tab active" type="button" data-tab="0">Слова</button>
+      <button class="det-tab" type="button" data-tab="1">Морзе + Дактиль</button>
+    </div>
+    <main class="det-main">
+      <div class="det-track" id="detTrack">
+        <div class="det-page">
+          <div class="det-card">
+            <div class="det-legend">
+              <span><i class="lg lg-violet"></i>Изучено</span>
+              <span><i class="lg lg-green"></i>Показано новых</span>
+              <span><i class="lg lg-muted"></i>Повторено</span>
+            </div>
+            <div class="dt-chart" id="dtWordsChart"></div>
+            <p class="dt-detail" id="dtWordsDetail"></p>
+          </div>
+          <button class="arch-row" id="archRow">
+            <span>Освоено слов: <span class="cnt" id="archRowCount">0</span></span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+        <div class="det-page">
+          <div class="det-card">
+            <div class="det-legend">
+              <span><i class="lg lg-violet"></i>Введено верно</span>
+            </div>
+            <div class="dt-chart" id="dtMorseChart"></div>
+            <p class="dt-detail" id="dtMorseDetail"></p>
+            <p class="dt-sub" id="dtMorseTotals"></p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </section>
+
 </div>
 
 <!-- Настройки -->
 <div class="overlay" id="settingsOverlay" hidden>
-  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+  <div class="sheet" id="settingsSheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
     <div class="sheet-head">
       <h2 id="settingsTitle">Настройки</h2>
       <button class="icon-btn" id="btnCloseSettings" aria-label="Закрыть настройки">
@@ -650,6 +721,15 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         <span class="set-sub">Тон при удержании кода (Web Audio, без файлов)</span>
       </div>
       <button class="switch" id="swMorseSound" role="switch" aria-checked="true" aria-label="Звук Морзе">
+        <span class="track"><span class="knob"></span></span>
+      </button>
+    </div>
+    <div class="set-row">
+      <div class="set-text">
+        <span class="set-name">Вибрация при вводе Морзе</span>
+        <span class="set-sub">Стабильная вибрация, пока удерживается поле ввода</span>
+      </div>
+      <button class="switch" id="swMorseVibe" role="switch" aria-checked="false" aria-label="Вибрация при вводе Морзе">
         <span class="track"><span class="knob"></span></span>
       </button>
     </div>
@@ -944,7 +1024,7 @@ var D = REDUCED ? {fly:90, spring:60, flip:60} : {fly:250, spring:200, flip:280}
 
 /* ================= DOM ================= */
 function $(id){ return document.getElementById(id); }
-var elViews = {home:$('view-home'), session:$('view-session'), result:$('view-result'), archive:$('view-archive'), morse:$('view-morse')};
+var elViews = {home:$('view-home'), session:$('view-session'), result:$('view-result'), archive:$('view-archive'), morse:$('view-morse'), details:$('view-details')};
 var elHomeDate=$('homeDate'), elTestPillHome=$('testPillHome'), elHomeTitle=$('homeTitle'), elCatSub=$('catSub'), elCatChip=$('catChip'),
     elArchRow=$('archRow'), elArchRowCount=$('archRowCount'),
     elHomeSummary=$('homeSummary'), elSummaryLine1=$('summaryLine1'), elSummaryLine2=$('summaryLine2'),
@@ -1143,7 +1223,7 @@ function isValidState(s, v3){
     if(!s || typeof s!=='object') return false;
     if(v3 ? s.schemaVersion!==3 : s.schemaVersion!==2) return false;
     if(['idle','active','completed'].indexOf(s.status)<0) return false;
-    if(['home','session','result','archive','morse'].indexOf(s.view)<0) return false;
+    if(['home','session','result','archive','morse','details'].indexOf(s.view)<0) return false;
     if(['question','peek','definition'].indexOf(s.cardScreen)<0) return false;
     if(!(s.sessionDate===null || /^\d{4}-\d{2}-\d{2}$/.test(s.sessionDate))) return false;
     if(!(s.lastStudyDate===null || /^\d{4}-\d{2}-\d{2}$/.test(s.lastStudyDate))) return false;
@@ -1655,13 +1735,14 @@ function showView(v){
   else if(v==='result') renderResult();
   else if(v==='archive') renderArchive();
   else if(v==='morse') renderMorse();
+  else if(v==='details') renderDetails();
   updateTgBack();
 }
 function goHome(){ showView('home'); }
 function onTgBack(){
   if(detailsOpen){ closeDetails(); return; }
   if(settingsOpen){ closeSettings(); return; }
-  if(state.view==='session' || state.view==='result' || state.view==='archive' || state.view==='morse') goHome();
+  if(state.view==='session' || state.view==='result' || state.view==='archive' || state.view==='morse' || state.view==='details') goHome();
 }
 try{ if(tg && tg.BackButton && typeof tg.BackButton.onClick==='function') tg.BackButton.onClick(onTgBack); }catch(e){}
 
@@ -2200,7 +2281,10 @@ function recordDayStats(){
   var st=computeStats();
   var d=state.sessionDate;
   if(!d) return;
-  state.stats.days[d]={f:st.first, r:st.repeated, t:st.tomorrow, e:st.errors, a:st.advanced, g:st.graduated, n:state.sessionTotal, ts:Date.now()};
+  var planRow=(state.dayPlanDate===d && state.dayPlan)?state.dayPlan:null;
+  var row={f:st.first, r:st.repeated, t:st.tomorrow, e:st.errors, a:st.advanced, g:st.graduated, n:state.sessionTotal, ts:Date.now()};
+  if(planRow){ row.nw=planRow.news|0; row.rv=planRow.reviews|0; } // состав дня для графика «Подробнее»
+  state.stats.days[d]=row;
   trimStats();
 }
 
@@ -2533,7 +2617,10 @@ function mergeCloudStats(obj){
     var local=state.stats.days[d];
     var rts=(typeof r.ts==='number')?r.ts:0;
     if(!local || rts > ((local.ts)||0)){
-      state.stats.days[d]={f:r.f|0, r:r.r|0, t:r.t|0, e:r.e|0, a:r.a|0, g:r.g|0, n:r.n|0, ts:rts};
+      var nd={f:r.f|0, r:r.r|0, t:r.t|0, e:r.e|0, a:r.a|0, g:r.g|0, n:r.n|0, ts:rts};
+      if(typeof r.nw==='number') nd.nw=r.nw;
+      if(typeof r.rv==='number') nd.rv=r.rv;
+      state.stats.days[d]=nd;
     }
   });
   trimStats();
@@ -3251,28 +3338,7 @@ elBtnMore.addEventListener('click', function(e){ e.stopPropagation(); openDetail
 elBtnMore.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
 $('btnDetailsClose').addEventListener('click', closeDetails);
 elDetailsOverlay.addEventListener('click', function(e){ if(e.target===elDetailsOverlay) closeDetails(); });
-/* свайп вниз по панели */
-(function(){
-  var sy=0, dy=0, dragging=false;
-  elDetailsSheet.addEventListener('pointerdown', function(e){
-    if(e.target && e.target.closest && e.target.closest('button')) return;
-    if(elDetailsScroll.scrollTop>0) return;
-    sy=e.clientY; dy=0; dragging=true;
-  });
-  elDetailsSheet.addEventListener('pointermove', function(e){
-    if(!dragging) return;
-    dy=e.clientY-sy;
-    if(dy>0) elDetailsSheet.style.transform='translateY('+dy+'px)';
-  });
-  var end=function(){
-    if(!dragging) return;
-    dragging=false;
-    elDetailsSheet.style.transform='';
-    if(dy>90) closeDetails();
-  };
-  elDetailsSheet.addEventListener('pointerup', end);
-  elDetailsSheet.addEventListener('pointercancel', end);
-})();
+/* свайп вниз закрывает панели — см. attachSwipeClose в разделе «Морзе + Дактиль» ниже */
 
 /* ================= Загрузка словаря ================= */
 var elBootScreen=$('bootScreen'), elBootTitle=$('bootTitle'), elBootText=$('bootText'), elBtnBootRetry=$('btnBootRetry');
@@ -3582,7 +3648,7 @@ function loadMorseContent(){
 function freshMorseState(){
   return {schemaVersion:1, day:realToday(), dailyCorrect:0, dailyAttempts:0, dailyErrors:0,
           weaknessScore:{}, currentId:null, sequence:'', mode:'input', freeMode:false,
-          sound:true, updatedAt:Date.now()};
+          sound:true, vibeInput:false, history:{}, updatedAt:Date.now()};
 }
 function clampInt(v, lo, hi){
   return (typeof v==='number' && isFinite(v)) ? Math.min(hi, Math.max(lo, Math.floor(v))) : lo;
@@ -3614,6 +3680,8 @@ function loadMorseState(){
     mode:(['input','correct','incorrect','goal'].indexOf(s.mode)>=0) ? s.mode : 'input',
     freeMode:!!s.freeMode,
     sound:(typeof s.sound==='boolean') ? s.sound : true,
+    vibeInput:!!s.vibeInput,
+    history:normalizeMorseHistory(s.history),
     updatedAt:(typeof s.updatedAt==='number') ? s.updatedAt : Date.now()
   };
   ensureMorseDay();
@@ -3622,7 +3690,26 @@ function loadMorseState(){
 }
 function saveMorse(){
   if(!morseState) return;
-  try{ morseState.updatedAt=Date.now(); localStorage.setItem(MORSE_STATE_KEY, JSON.stringify(morseState)); }catch(e){}
+  try{
+    morseState.updatedAt=Date.now();
+    // зеркало дневных счётчиков — питает график в «Подробнее → Морзе»
+    if(!morseState.history || typeof morseState.history!=='object' || Array.isArray(morseState.history)) morseState.history={};
+    morseState.history[morseState.day]={correct:morseState.dailyCorrect|0, attempts:morseState.dailyAttempts|0, errors:morseState.dailyErrors|0};
+    var hk=Object.keys(morseState.history).sort();
+    if(hk.length>90) hk.slice(0, hk.length-90).forEach(function(k){ delete morseState.history[k]; }); // держим не больше 90 дней
+    localStorage.setItem(MORSE_STATE_KEY, JSON.stringify(morseState));
+  }catch(e){}
+}
+function normalizeMorseHistory(h){
+  var out={};
+  if(h && typeof h==='object' && !Array.isArray(h)){
+    Object.keys(h).forEach(function(d){
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(d)) return;
+      var v=h[d];
+      if(v && typeof v==='object') out[d]={correct:clampInt(v.correct,0,1000000), attempts:clampInt(v.attempts,0,1000000), errors:clampInt(v.errors,0,1000000)};
+    });
+  }
+  return out;
 }
 /* Новая локальная календарная дата: дневные счётчики и сессия сбрасываются,
    накопленные веса слабых букв (weaknessScore) сохраняются. */
@@ -3789,7 +3876,6 @@ function renderMorse(){
     }
   } else if(!locked){
     $('morseZoneMain').textContent='Удерживай';
-    $('morseHoldFill').style.width='0';
   }
 }
 function renderMorseStats(){
@@ -3811,10 +3897,18 @@ function renderMorseStats(){
   syncMorseSoundSwitch();
 }
 function syncMorseSoundSwitch(){
-  var sw=$('swMorseSound');
-  if(!sw || !morseState) return;
-  sw.classList.toggle('on', !!morseState.sound);
-  sw.setAttribute('aria-checked', String(!!morseState.sound));
+  if(morseState){
+    var sw=$('swMorseSound');
+    if(sw){
+      sw.classList.toggle('on', !!morseState.sound);
+      sw.setAttribute('aria-checked', String(!!morseState.sound));
+    }
+    var vb=$('swMorseVibe');
+    if(vb){
+      vb.classList.toggle('on', !!morseState.vibeInput);
+      vb.setAttribute('aria-checked', String(!!morseState.vibeInput));
+    }
+  }
 }
 
 /* ---------- Звук (Web Audio, без файлов) ---------- */
@@ -3902,6 +3996,7 @@ function endHoldVisual(){
   if(mz.threshTimer){ clearTimeout(mz.threshTimer); mz.threshTimer=null; }
   if(mz.raf){ cancelAnimationFrame(mz.raf); mz.raf=null; }
   stopMorseTone();
+  stopMorseVibe();
   mz.t0=null;
   mz.pointerId=null;
   var zone=$('morseZone');
@@ -3926,11 +4021,11 @@ function onMorseDown(e){
   $('morseZoneMain').textContent='Точка'; // до порога нажатие читается как точка
   startHoldFill();
   startMorseTone();                       // тон звучит, пока пользователь держит поле
+  startMorseVibe();                       // стабильная вибрация при удержании (настройка)
   if(mz.threshTimer) clearTimeout(mz.threshTimer);
   mz.threshTimer=setTimeout(function(){
     if(mz.t0===null) return;
     $('morseZoneMain').textContent='Тире'; // точка превратилась в тире
-    haptic('light');                       // лёгкий отклик в момент пересечения порога
   }, MORSE_DOT_MS);
 }
 function onMorseUp(e){
@@ -3952,6 +4047,7 @@ function onMorseUp(e){
     return;
   }
   morseState.sequence += (dur<MORSE_DOT_MS ? '.' : '-'); // ровно один символ за нажатие
+  morseTick(dur>=MORSE_DOT_MS);                          // щелчок — звуковое сопровождение ввода
   saveMorse();
   renderMorse();
   scheduleMorseCheck();
@@ -3987,11 +4083,13 @@ function runMorseCheck(){
     morseState.weaknessScore[card.id]=Math.max(0, w-1);   // −1, минимум 0
     morseState.mode='correct';
     haptic('success');
+    morseSoundResult(true);
   } else {
     morseState.dailyErrors++;
     morseState.weaknessScore[card.id]=Math.min(10, w+2);  // +2, максимум 10
     morseState.mode='incorrect';
     haptic('error');
+    morseSoundResult(false);
   }
   saveMorse();  // сохраняем ДО анимации: после перезапуска ответ не зачтётся повторно
   renderMorse();
@@ -4014,6 +4112,14 @@ function finishMorseResult(toGoal){
   if(!morseState || (morseState.mode!=='correct' && morseState.mode!=='incorrect')) return;
   if(toGoal){
     morseState.mode='goal';          // отдельный экран завершения цели
+    saveMorse();
+    renderMorse();
+    return;
+  }
+  if(morseState.mode==='incorrect'){
+    // ошибся — букву НЕ меняем: правильный код уже показан, ввод очищается, пробуем снова
+    morseState.sequence='';
+    morseState.mode='input';
     saveMorse();
     renderMorse();
     return;
@@ -4072,6 +4178,12 @@ $('swMorseSound').addEventListener('click', function(){
   saveMorse();
   syncMorseSoundSwitch();
 });
+$('swMorseVibe').addEventListener('click', function(){
+  morseState.vibeInput=!morseState.vibeInput;
+  if(!morseState.vibeInput) stopMorseVibe();
+  saveMorse();
+  syncMorseSoundSwitch();
+});
 $('btnMorseReset').addEventListener('click', function(){
   $('btnMorseReset').hidden=true;
   $('morseResetConfirm').hidden=false;
@@ -4108,6 +4220,7 @@ document.addEventListener('visibilitychange', function(){
   if(document.hidden){
     saveMorse();
     cancelMorseCheck();
+    stopMorseVibe();
     if(morseHoldTimer){ clearTimeout(morseHoldTimer); morseHoldTimer=null; morseHoldInterrupted=true; }
   } else {
     ensureMorseDay();
@@ -4161,6 +4274,7 @@ function startApp(){
   var initialView='home';
   if(state.status==='active' && state.view==='session') initialView='session';
   else if(state.status==='completed' && state.view==='result' && state.sessionDate===effDate()) initialView='result';
+  else if(state.view==='details') initialView='details';
   showView(initialView);
   if(initialView==='morse' && morseState && (morseState.mode==='correct'||morseState.mode==='incorrect')) armResultHold();
   hideBoot();
@@ -4171,6 +4285,267 @@ function startApp(){
     setTimeout(function(){ toast('Планировщик обновлён. Начинаем новый тестовый цикл.'); },400);
   }
 }
+/* ================= Экран «Подробнее»: две вкладки со свайпом и графики ================= */
+var detTab=0;
+var detWords={days:[], data:[], any:false, sel:-1, clicked:false};
+var detMorse={days:[], data:[], any:false, sel:-1, clicked:false};
+function detPad2(n){ return (n<10?'0':'')+n; }
+function detShiftDay(ymd, delta){
+  var p=String(ymd).split('-');
+  var d=new Date(+p[0], (+p[1])-1, (+p[2])+delta);
+  return d.getFullYear()+'-'+detPad2(d.getMonth()+1)+'-'+detPad2(d.getDate());
+}
+function detDayWindow(endDay){ var out=[]; for(var i=13;i>=0;i--) out.push(detShiftDay(endDay,-i)); return out; }
+function detLabel(ymd){ var p=String(ymd).split('-'); return (+p[2])+'.'+(+p[1]); }
+/* Статистика слов за день: берём только то, что уже записывает словарный модуль.
+   Изучено = продвинувшиеся слова, Показано новых/Повторено = состав плана дня;
+   для старых записей без nw/rv используем оценку по объёму сессии. */
+function wordsDayRow(d, eff){
+  var raw=(state.stats && state.stats.days)?state.stats.days[d]:null;
+  if(raw){
+    var nw=(typeof raw.nw==='number')?raw.nw:Math.min(raw.n|0, raw.f|0);
+    var rv=(typeof raw.rv==='number')?raw.rv:Math.max(0, (raw.n|0)-nw);
+    return {a:raw.a|0, nw:nw, rv:rv};
+  }
+  if(d===eff){
+    var plan=(state.dayPlanDate===eff && state.dayPlan)?state.dayPlan:null;
+    if(plan) return {a:computeStats().advanced|0, nw:plan.news|0, rv:plan.reviews|0};
+  }
+  return {a:0, nw:0, rv:0};
+}
+function showWordsDetail(){
+  var el=$('dtWordsDetail'); if(!el) return;
+  if(!detWords.any && !detWords.clicked){
+    el.textContent='Пока нет данных за 14 дней — цифры появятся после тренировок.';
+    return;
+  }
+  var i=detWords.sel, v=detWords.data[i];
+  el.textContent=detLabel(detWords.days[i])+': Изучено '+v.a+' · Показано новых '+v.nw+' · Повторено '+v.rv;
+}
+function showMorseDetail(){
+  var el=$('dtMorseDetail'); if(!el) return;
+  if(!detMorse.any && !detMorse.clicked){
+    el.textContent='Пока нет данных за 14 дней — цифры появятся после тренировок.';
+    return;
+  }
+  var i=detMorse.sel, v=detMorse.data[i];
+  el.textContent=detLabel(detMorse.days[i])+': Верно '+v.correct+' · Попыток '+v.attempts+' · Ошибок '+v.errors;
+}
+function renderDetails(){
+  /* ——— вкладка «Слова»: сколько слов проходил пользователь каждый день (пропуски видны) ——— */
+  var eff=effDate();
+  detWords.days=detDayWindow(eff);
+  detWords.data=detWords.days.map(function(d){ return wordsDayRow(d, eff); });
+  detWords.any=detWords.data.some(function(v){ return (v.a+v.nw+v.rv)>0; });
+  detWords.clicked=false;
+  detWords.sel=-1;
+  for(var i=detWords.days.length-1;i>=0;i--){
+    var v=detWords.data[i];
+    if(v.a+v.nw+v.rv>0){ detWords.sel=i; break; }
+  }
+  if(detWords.sel<0) detWords.sel=detWords.days.length-1;
+  var wMax=1;
+  detWords.data.forEach(function(v){ wMax=Math.max(wMax, v.a, v.nw, v.rv); });
+  var wc=$('dtWordsChart');
+  wc.innerHTML='';
+  detWords.days.forEach(function(d, idx){
+    var val=detWords.data[idx];
+    var cell=document.createElement('div');
+    cell.className='dt-day'+(idx===detWords.sel?' sel':'');
+    cell.setAttribute('data-d', d);
+    var bars=document.createElement('div'); bars.className='dt-bars';
+    [['',val.a],['b-green',val.nw],['b-muted',val.rv]].forEach(function(pair){
+      var b=document.createElement('i');
+      b.className=('dt-bar '+pair[0]).trim();
+      if(pair[1]>0) b.style.height=Math.max(6, Math.round(pair[1]/wMax*100))+'%';
+      else b.classList.add('zero');
+      bars.appendChild(b);
+    });
+    var lab=document.createElement('span'); lab.className='dt-lab';
+    lab.textContent=String(+d.split('-')[2]);
+    cell.appendChild(bars); cell.appendChild(lab);
+    wc.appendChild(cell);
+  });
+  showWordsDetail();
+  /* ——— вкладка «Морзе»: сколько букв введено правильно каждый день (своя локальная дата) ——— */
+  detMorse.days=detDayWindow(realToday());
+  detMorse.data=detMorse.days.map(function(d){
+    var h=(morseState && morseState.history && morseState.history[d])?morseState.history[d]:null;
+    return h?{correct:h.correct|0, attempts:h.attempts|0, errors:h.errors|0}:{correct:0, attempts:0, errors:0};
+  });
+  detMorse.any=detMorse.data.some(function(v){ return v.correct>0; });
+  detMorse.clicked=false;
+  detMorse.sel=-1;
+  for(var j=detMorse.days.length-1;j>=0;j--){ if(detMorse.data[j].correct>0){ detMorse.sel=j; break; } }
+  if(detMorse.sel<0) detMorse.sel=detMorse.days.length-1;
+  var mMax=1;
+  detMorse.data.forEach(function(v){ mMax=Math.max(mMax, v.correct); });
+  var mc=$('dtMorseChart');
+  mc.innerHTML='';
+  detMorse.days.forEach(function(d, idx){
+    var val=detMorse.data[idx];
+    var cell=document.createElement('div');
+    cell.className='dt-day'+(idx===detMorse.sel?' sel':'');
+    cell.setAttribute('data-d', d);
+    var bars=document.createElement('div'); bars.className='dt-bars';
+    var b=document.createElement('i'); b.className='dt-bar';
+    if(val.correct>0) b.style.height=Math.max(6, Math.round(val.correct/mMax*100))+'%';
+    else b.classList.add('zero');
+    bars.appendChild(b);
+    var lab=document.createElement('span'); lab.className='dt-lab';
+    lab.textContent=String(+d.split('-')[2]);
+    cell.appendChild(bars); cell.appendChild(lab);
+    mc.appendChild(cell);
+  });
+  showMorseDetail();
+  if(morseState){
+    $('dtMorseTotals').textContent='Сегодня: '+morseState.dailyCorrect+' / '+MORSE_GOAL+
+      ' · Попыток '+morseState.dailyAttempts+' · Ошибок '+morseState.dailyErrors+
+      ' · Точность '+morseAccuracyText();
+  }
+  var arc=$('archRowCount');
+  if(arc) arc.textContent=String(learnedCount());
+}
+function setDetTab(i, animate){
+  detTab=(i<0)?0:(i>1?1:i);
+  var track=$('detTrack');
+  if(track){
+    track.style.transition=(animate===false)?'none':'';
+    track.style.transform='translateX('+(-detTab*50)+'%)';
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.det-tab'), function(b, j){
+    b.classList.toggle('active', j===detTab);
+  });
+}
+/* свайп влево/вправо переключает вкладки «Подробнее» */
+(function(){
+  var el=$('detTrack'); if(!el) return;
+  var x0=0, y0=0, dx=0, dy=0, on=false, eng=false, pid=null;
+  el.addEventListener('pointerdown', function(e){
+    if(e.button && e.button!==0) return;
+    on=true; eng=false; dx=0; dy=0; x0=e.clientX; y0=e.clientY; pid=e.pointerId;
+  });
+  el.addEventListener('pointermove', function(e){
+    if(!on || e.pointerId!==pid) return;
+    dx=e.clientX-x0; dy=e.clientY-y0;
+    if(!eng){
+      if(Math.abs(dx)>12 && Math.abs(dx)>Math.abs(dy)){
+        eng=true;
+        try{ el.setPointerCapture(pid); }catch(_){}
+        el.style.transition='none';
+      } else if(Math.abs(dy)>12){ on=false; return; }
+      else return;
+    }
+    var w=(el.parentNode && el.parentNode.clientWidth)?el.parentNode.clientWidth:0;
+    el.style.transform='translateX('+(-detTab*w+dx)+'px)';
+  });
+  var end=function(e){
+    if(!on || (e && typeof e.pointerId==='number' && e.pointerId!==pid)) return;
+    on=false;
+    if(!eng) return;
+    eng=false;
+    try{ el.releasePointerCapture(pid); }catch(_){}
+    el.style.transition='';
+    if(dx<=-60) setDetTab(detTab+1, true);
+    else if(dx>=60) setDetTab(detTab-1, true);
+    else setDetTab(detTab, true);
+  };
+  el.addEventListener('pointerup', end);
+  el.addEventListener('pointercancel', end);
+})();
+Array.prototype.forEach.call(document.querySelectorAll('.det-tab'), function(b){
+  b.addEventListener('click', function(){ setDetTab(parseInt(b.getAttribute('data-tab'),10)||0, true); });
+});
+$('dtWordsChart').addEventListener('click', function(e){
+  var cell=e.target && e.target.closest ? e.target.closest('.dt-day') : null;
+  if(!cell) return;
+  var i=detWords.days.indexOf(cell.getAttribute('data-d'));
+  if(i<0) return;
+  detWords.sel=i; detWords.clicked=true;
+  Array.prototype.forEach.call($('dtWordsChart').children, function(c, j){ c.classList.toggle('sel', j===i); });
+  showWordsDetail();
+});
+$('dtMorseChart').addEventListener('click', function(e){
+  var cell=e.target && e.target.closest ? e.target.closest('.dt-day') : null;
+  if(!cell) return;
+  var i=detMorse.days.indexOf(cell.getAttribute('data-d'));
+  if(i<0) return;
+  detMorse.sel=i; detMorse.clicked=true;
+  Array.prototype.forEach.call($('dtMorseChart').children, function(c, j){ c.classList.toggle('sel', j===i); });
+  showMorseDetail();
+});
+$('btnDetails').addEventListener('click', function(){ setDetTab(0, false); showView('details'); });
+$('btnDetailsBack').addEventListener('click', function(){ save(); goHome(); });
+
+/* ============ Свайп вниз закрывает панели (настройки и подробности слова) ============ */
+function attachSwipeClose(sheet, scrollEl, onClose){
+  if(!sheet) return;
+  var sy=0, dy=0, dragging=false, pid=null;
+  sheet.addEventListener('pointerdown', function(e){
+    if(e.button && e.button!==0) return;
+    if(e.target && e.target.closest && e.target.closest('button,input,a,select,textarea')) return;
+    if(scrollEl && scrollEl.scrollTop>0) return;
+    sy=e.clientY; dy=0; dragging=true; pid=e.pointerId;
+    try{ sheet.setPointerCapture(pid); }catch(_){}
+  });
+  sheet.addEventListener('pointermove', function(e){
+    if(!dragging || e.pointerId!==pid) return;
+    dy=e.clientY-sy;
+    if(dy>0){ sheet.style.transition='none'; sheet.style.transform='translateY('+dy+'px)'; }
+  });
+  var end=function(e){
+    if(!dragging || (e && typeof e.pointerId==='number' && e.pointerId!==pid)) return;
+    dragging=false;
+    try{ sheet.releasePointerCapture(pid); }catch(_){}
+    sheet.style.transition='';
+    sheet.style.transform='';
+    if(dy>90) onClose();
+  };
+  sheet.addEventListener('pointerup', end);
+  sheet.addEventListener('pointercancel', end);
+}
+attachSwipeClose($('settingsSheet'), $('settingsSheet'), function(){ closeSettings(); });
+attachSwipeClose($('detailsSheet'), $('detailsScroll'), function(){ closeDetails(); });
+
+/* ============ Вибрация при удержании поля морзе (своя настройка) ============ */
+var morseVibeTimer=null;
+function startMorseVibe(){
+  if(!morseState || !morseState.vibeInput || morseVibeTimer) return;
+  var pulse=function(){
+    try{
+      if(tg && tg.HapticFeedback && typeof tg.HapticFeedback.impactOccurred==='function'){
+        tg.HapticFeedback.impactOccurred('light'); // «стабильная» пульсация, пока поле нажато
+      }
+    }catch(e){}
+    morseVibeTimer=setTimeout(pulse, 110); // цепочка setTimeout — не интервальный планировщик
+  };
+  pulse();
+}
+function stopMorseVibe(){ if(morseVibeTimer){ clearTimeout(morseVibeTimer); morseVibeTimer=null; } }
+
+/* ============ Звуковое сопровождение: щелчки ввода и результаты (Web Audio) ============ */
+function morseBeep(freq, durMs, vol){
+  try{
+    var ctx=morseAudioCtx();
+    if(!ctx) return;
+    var osc=ctx.createOscillator(), g=ctx.createGain();
+    osc.type='sine';
+    osc.frequency.value=freq;
+    var t=ctx.currentTime, dur=durMs/1000, v=(typeof vol==='number')?vol:0.045;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(v, t+0.008);
+    g.gain.setValueAtTime(v, t+Math.max(0.012, dur-0.012));
+    g.gain.linearRampToValueAtTime(0, t+dur);
+    osc.connect(g); g.connect(ctx.destination);
+    osc.start(); osc.stop(t+dur+0.03);
+  }catch(e){}
+}
+function morseSoundResult(ok){
+  if(ok){ morseBeep(660, 90); setTimeout(function(){ morseBeep(880, 130); }, 95); }
+  else morseBeep(320, 170, 0.05);
+}
+function morseTick(isDash){ morseBeep(isDash?700:1100, 35, 0.03); }
+
 /* ================= Инициализация ================= */
 function loadContentThenStart(){
   var cached=readContentCache();
@@ -4204,5 +4579,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a41346cdcf6ea665',t:'MTc5MDQzNjI3Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

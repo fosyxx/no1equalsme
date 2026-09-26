@@ -987,6 +987,11 @@ html.rm .card-drag.flipped .card-front{opacity:0}
 
 /* ================= Telegram ================= */
 var tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+/* WebApp-объект может появиться на странице ПОЗЖЕ (Telegram вставляет его
+   асинхронно). Читаем его в момент вызова — иначе хаптика молчит весь сеанс. */
+function tgLive(){
+  try{ return (window.Telegram && window.Telegram.WebApp) || tg || null; }catch(e){ return tg || null; }
+}
 try{
   if(tg){
     if(typeof tg.ready==='function') tg.ready();
@@ -1023,7 +1028,9 @@ var MAX_SESSION = 15; // (используется также для обрез�
 var CONTENT_URL = './data/words.json';
 var CONTENT_CACHE_KEY = 'nem_content_cache_v1';
 var SUPPORTED_SCHEMAS = [1,2];
-var LIMITS = {id:64, word:80, stress:120, pos:40, defShort:400, defFull:2000, example:600, register:60, list:40, item:80, cards:5000};
+/* Потолок cards поднят: словарь уже1500+ слов, старые5000 были запасом
+   под маленький файл и начали бы урезать карточки при росте. */
+var LIMITS = {id:64, word:80, stress:120, pos:40, defShort:400, defFull:2000, example:600, register:60, list:40, item:80, cards:20000};
 var CARDS = [];
 var CARD_MAP = {};
 var content = {ready:false, source:null, contentVersion:null, schemaVersion:null, updatedAt:null, count:0, skipped:0, checking:false};
@@ -1533,9 +1540,9 @@ function computeStats(){
 }
 function haptic(kind){
   if(!state.settings.haptics) return;
-  if(!tg || !tg.HapticFeedback) return;
+  var tLive=tgLive(); if(!tLive || !tLive.HapticFeedback) return;
   try{
-    var hf=tg.HapticFeedback;
+    var hf=tLive.HapticFeedback;
     if(kind==='success' && typeof hf.impactOccurred==='function') hf.impactOccurred('light');
     else if(kind==='error' && typeof hf.notificationOccurred==='function') hf.notificationOccurred('error');
     else if(kind==='light' && typeof hf.impactOccurred==='function') hf.impactOccurred('light');
@@ -3482,39 +3489,58 @@ function strList(v, maxItems, maxLen){
   }
   return out;
 }
+function strCut(v, max){
+  /* Длинные тексты ОБРЕЗАЕМ, а не бракуем карточку: словарь растёт и
+     определения становятся длиннее — слово не должно исчезать из-за лимита. */
+  if(typeof v!=='string' || !v.trim().length) return null;
+  v=v.trim();
+  return v.length>max ? (v.slice(0, max-1)+'…') : v;
+}
 function validateCard(raw, seen){
   if(!raw || typeof raw!=='object') return null;
-  var id=str(raw.id, LIMITS.id);
-  if(!id || seen[id]) return null;                        // id уникальный и непустой
   var word=str(raw.word, LIMITS.word);
-  var stress=str(raw.stress, LIMITS.stress);
-  var pos=str(raw.partOfSpeech, LIMITS.pos);
-  var dShort=str(raw.definitionShort, LIMITS.defShort);
-  var dFull=str(raw.definitionFull, LIMITS.defFull);
-  var ex=str(raw.example, LIMITS.example);
-  var reg=str(raw.register, LIMITS.register);
-  if(!word || !stress || !pos || !dShort || !dFull || !ex || !reg) return null;
-  var syn=strList(raw.synonyms, LIMITS.list, LIMITS.item);
-  var rel=strList(raw.relatedWords, LIMITS.list, LIMITS.item);
-  if(syn===null || rel===null) return null;               // поля обязаны быть массивами строк
+  if(!word) return null;                          // слово — единственное обязательное поле
+  /* Остальные поля необязательны: файл, отредактированный или экспортированный
+     вручную, грузится целиком, а не отбрасывается карточка за карточкой
+     (распространённая причина «словарь не подсосался»). */
+  var id=str(raw.id, LIMITS.id);
+  if(!id) id=('w_'+word).toLowerCase().replace(/\s+/g,'_').slice(0, LIMITS.id); // без id — устойчивый id из слова
+  if(seen[id]) return null;                       // дубликат id бракуем по-прежнему
+  var stress=str(raw.stress, LIMITS.stress) || word; // без ударения показываем слово как есть
+  var pos=str(raw.partOfSpeech, LIMITS.pos) || '';   // часть речи/регистр/пример опциональны
+  var dShort=strCut(raw.definitionShort, LIMITS.defShort);
+  var dFull=strCut(raw.definitionFull, LIMITS.defFull);
+  if(!dShort && !dFull) return null;              // нужен хотя бы один вариант определения
+  if(!dShort) dShort=dFull;                       // недостающая половина дублируется — вёрстка не ломается
+  if(!dFull) dFull=dShort;
+  var ex=strCut(raw.example, LIMITS.example) || '';
+  var reg=str(raw.register, LIMITS.register) || '';
+  var syn=strList(raw.synonyms, LIMITS.list, LIMITS.item) || []; // поля нет/неверный тип — пустой список
+  var rel=strList(raw.relatedWords, LIMITS.list, LIMITS.item) || [];
   return {id:id, word:word, stress:stress, partOfSpeech:pos, definitionShort:dShort, definitionFull:dFull,
           synonyms:syn, example:ex, relatedWords:rel, register:reg,
           contentVersion:(typeof raw.contentVersion==='number' && raw.contentVersion>0)?raw.contentVersion:1};
 }
 function validatePackage(root){
   if(!root || typeof root!=='object') return null;
-  var rawCards, schemaVersion, contentVersion, language, updatedAt;
+  var rawCards, schemaVersion, contentVersion, language, updatedAt, versionExplicit=false;
   if(Array.isArray(root)){                                 // допускаем «голый» массив карточек
     rawCards=root; schemaVersion=1; language='ru'; updatedAt=null; contentVersion=null;
   } else {
+    /* Обвязка читается мягко: отсутствующие schemaVersion/language/contentVersion
+       НЕ валят словарь — файл, сохранённый или экспортированный вручную, обязан
+       грузиться. Отказываем только при явном несовпадении (иная схема/язык). */
     rawCards=root.cards;
-    schemaVersion=root.schemaVersion;
+    schemaVersion=(root.schemaVersion===undefined || root.schemaVersion===null)?1:root.schemaVersion;
     contentVersion=root.contentVersion;
     language=root.language;
     updatedAt=(typeof root.updatedAt==='string')?root.updatedAt.slice(0,40):null;
+    if(typeof schemaVersion==='string' && /^\d+$/.test(schemaVersion)) schemaVersion=+schemaVersion;
     if(SUPPORTED_SCHEMAS.indexOf(schemaVersion)<0) return {error:'schema'};
-    if(typeof contentVersion!=='number' || !(contentVersion>0)) return {error:'version'};
-    if(language!=='ru') return {error:'language'};
+    if(language!==undefined && language!==null && !/^ru/i.test(String(language))) return {error:'language'};
+    if(typeof contentVersion==='string' && contentVersion!=='' && +contentVersion>0) contentVersion=+contentVersion; // «3» из редактора → 3
+    if(typeof contentVersion==='number' && contentVersion>0) versionExplicit=true;
+    else contentVersion=null;                  // версии нет — ниже выведем её из карточек, а не откажем
   }
   if(!Array.isArray(rawCards) || rawCards.length===0) return {error:'cards'};
   var seen={}, cards=[], skipped=[];
@@ -3531,11 +3557,12 @@ function validatePackage(root){
   if(skipped.length){
     try{ console.warn('No1EqualsMe: исключены повреждённые карточки словаря:', skipped); }catch(e){}
   }
-  if(contentVersion===null){
+  if(contentVersion===null || !(contentVersion>0)){
     contentVersion=cards.reduce(function(m,c){ return Math.max(m, c.contentVersion||1); }, 1);
   }
   return {cards:cards, skipped:skipped.length, schemaVersion:schemaVersion||1,
-          contentVersion:contentVersion, language:'ru', updatedAt:updatedAt};
+          contentVersion:contentVersion, versionExplicit:versionExplicit,
+          language:'ru', updatedAt:updatedAt};
 }
 function readContentCache(){
   try{
@@ -3566,6 +3593,42 @@ function applyPackage(pkg, source){
   content.skipped=pkg.skipped||0;
 }
 /* Сеть: fetch с проверкой ok, разбором и валидацией. MIME-тип сам по себе не повод отказать */
+/* Ручная правка JSON оставляет BOM (Блокнот) и «висячие» запятые — два самых
+   частых способов «файл на месте, а не грузится». Чищим только то, что ВНЕ строк,
+   чтобы не испортить тексты определений. */
+function cleanJsonText(s){
+  s=String(s).replace(/^\uFEFF/,'');
+  var out=[], inStr=false, esc=false;
+  for(var i=0;i<s.length;i++){
+    var ch=s.charAt(i);
+    if(inStr){ out.push(ch);
+      if(esc) esc=false;
+      else if(ch==='\\') esc=true;
+      else if(ch==='"') inStr=false;
+      continue; }
+    if(ch==='"'){ inStr=true; out.push(ch); continue; }
+    if(ch===','){
+      var j=i+1;
+      while(j<s.length && /\s/.test(s.charAt(j))) j++;
+      if(j<s.length && (s.charAt(j)===']' || s.charAt(j)==='}')) continue; // висячая запятая — пропускаем
+      out.push(ch); continue;
+    }
+    out.push(ch);
+  }
+  return out.join('');
+}
+/* Причина отказа словаря человеческим языком: «не подсосался» должно
+   объясняться тостом, а не быть загадкой. */
+function dictErrText(err){
+  var s=String((err && err.message) || err || '');
+  if(s.indexOf('http')===0) return 'файл ./data/words.json не отдаётся ('+s+')';
+  if(s==='parse') return 'words.json не разбирается как JSON — проверьте запятые и кавычки';
+  if(s==='schema') return 'неподдерживаемая версия формата (schemaVersion)';
+  if(s==='language') return 'файл помечен не как русский (language)';
+  if(s==='cards' || s==='empty') return 'в words.json нет пригодных карточек';
+  if(s==='nofetch') return 'страница не может прочитать файл — откройте её через сервер';
+  return 'файл не принят: '+(s||'неизвестная ошибка');
+}
 function fetchPackage(){
   return new Promise(function(resolve, reject){
     if(typeof fetch!=='function'){ reject(new Error('nofetch')); return; }
@@ -3579,7 +3642,7 @@ function fetchPackage(){
     }).then(function(text){
       if(timer) clearTimeout(timer);
       var parsed;
-      try{ parsed=JSON.parse(text); }                        // HTML вместо JSON упадёт здесь
+      try{ parsed=JSON.parse(cleanJsonText(text)); }                        // HTML вместо JSON упадёт здесь
       catch(e){ throw new Error('parse'); }
       var pkg=validatePackage(parsed);
       if(!pkg || pkg.error) throw new Error(pkg?pkg.error:'invalid');
@@ -3615,7 +3678,8 @@ function checkDictionaryUpdate(manual){
   content.checking=true;
   renderDictInfo();
   return fetchPackage().then(function(pkg){
-    var older = content.ready && content.contentVersion!=null && pkg.contentVersion < content.contentVersion;
+    var older = content.ready && pkg.versionExplicit === true && content.contentVersion!=null &&
+                pkg.contentVersion < content.contentVersion;
     if(older){
       content.checking=false;
       renderDictInfo();
@@ -3631,10 +3695,10 @@ function checkDictionaryUpdate(manual){
     renderArchive();
     if(manual) toast('Словарь актуален: версия '+pkg.contentVersion+', слов: '+pkg.cards.length+'.');
     return true;
-  }, function(){
+  }, function(err){
     content.checking=false;
     renderDictInfo();
-    if(manual) toast('Не удалось проверить обновление словаря. Используется последняя сохранённая версия.');
+    if(manual) toast('Словарь не обновлён: '+dictErrText(err)+'.');
     return false;
   });
 }
@@ -3753,7 +3817,7 @@ function loadMorseContent(){
     return res.text();
   }).then(function(text){
     if(timer) clearTimeout(timer);
-    var pkg=validateMorsePackage(JSON.parse(text));
+    var pkg=validateMorsePackage(JSON.parse(cleanJsonText(text)));
     if(pkg.error) throw new Error(pkg.error);
     var older=morseContent.ready && morseContent.contentVersion!=null && pkg.contentVersion<morseContent.contentVersion;
     if(older){ return; } // в сети версия старее сохранённой — оставляем кэш
@@ -4101,11 +4165,13 @@ function softBell(ctx, freq, durMs, vol, attackMs){
     osc.start(t); osc.stop(t+dur+0.06);
   }catch(e){}
 }
-/* Мягкий «неправильно» в духе хороших обучающих приложений: два коротких
-   тёплых тона вниз на малую терцию («бом-бух») — как знак, а не тревога.
-   Принципы из анализаDuolingo-подобного звука: <0.4 с, естественное затухание,
-   без протяжных нот и «пилы». Треугольная волна мягче синуса по атаке и лучше
-   присутствует на маленьком динамике. Тонов — ровно два, коротких. */
+/* Мягкое «неправильно» В ОДНОЙ ТОНАЛЬНОСТИ с колокольчиком «верно»:
+   верный ответ идёт C5→G5 вверх, ошибочный — E5→C5 вниз (та же малая терция,
+   зеркальное направление). Обе пары живут в одной октаве 523–784 Гц — без
+   «разброса» почти в две октавы между результатами. Принципы хорошего
+   обучающего звука: два коротких тона <0.4 с, естественное затухание,
+   без протяжных нот; треугольная волна мягче синуса по атаке и лучше
+   присутствует на маленьком динамике. */
 function sfxWrong(ctx){
   try{
     if(!ctx) return;
@@ -4122,8 +4188,8 @@ function sfxWrong(ctx){
       osc.connect(g); g.connect(ctx.destination);
       osc.start(t); osc.stop(t+dur+0.06);
     };
-    note(329.63, 0, 0.16, 0.09);     // E4 — короткий «бом»
-    note(261.63, 0.11, 0.30, 0.13);  // C4 — ниже терцией и громче: тёплый «бух»
+    note(659.26, 0, 0.16, 0.09);     // E5 — короткий «бом» в регистре колокольчика
+    note(523.25, 0.11, 0.30, 0.13);  // C5 — та же опора, что у «верно», но вниз: тёплый «бух»
   }catch(e){}
 }
 function sfxWord(ok){ // звуковое сопровождение ответов в разделе слов
@@ -4870,8 +4936,19 @@ var morseSub=null;         // активный саб-бас (60+120 Гц), жи
      а если вибро через navigator заблокирован — вызов просто вернёт false
      и останется impact. Побеждает тот канал, который на устройстве жив. */
 function morseHeavyPulse(navMs){
-  try{ if(tg && tg.HapticFeedback && typeof tg.HapticFeedback.impactOccurred==='function') tg.HapticFeedback.impactOccurred('heavy'); }catch(e){}
+  var t=tgLive(), hf=t && t.HapticFeedback;
+  /* Три независимых канала: сработает хотя бы один — вибрация обязана прийти.
+     1) navigator — единственный канал в обычном браузере; в Android TG обычно
+        заблокирован, но мешать не может (лишний вызов просто возвращается). */
   try{ if(typeof navigator!=='undefined' && typeof navigator.vibrate==='function') navigator.vibrate(navMs||35); }catch(e){}
+  /* 2) notificationOccurred — страховка Telegram: на части Android-сборок
+        impact МОЛЧИТ, а notification работает (issue #28 Telegram-Mini-Apps).
+        На iOS не зовём: там impact стабилен, а второй отклик дал бы двойной толчок. */
+  try{ if(hf && typeof hf.notificationOccurred==='function' && t.platform!=='ios') hf.notificationOccurred('warning'); }catch(e){}
+  /* 3) impactOccurred — основной канал, вызывается ПОСЛЕДНИМ: Android
+        перезапускает вибро-эффект новым вызовом, поэтому «победит» именно
+        тяжёлый паттерн heavy — тот самый, что чувствуется на110 мс. */
+  try{ if(hf && typeof hf.impactOccurred==='function') hf.impactOccurred('heavy'); }catch(e){}
 }
 
 /* Саб-бас: 60 Гц («поршневой» по спецификации) + октава 120 Гц — телефонный
@@ -4961,7 +5038,10 @@ function loadContentThenStart(){
   var cached=readContentCache();
   if(cached) applyPackage(cached, 'cache');   // мгновенно показываем последнюю исправную копию
   fetchPackage().then(function(pkg){
-    var older = cached && pkg.contentVersion < cached.contentVersion;
+    // «Старее» решаем только по явно указанной версии: файл без неё (или с
+    // выведенной из карточек) — свежая правка пользователя, её надо брать
+    var older = cached && pkg.versionExplicit === true && typeof cached.contentVersion==='number' &&
+                pkg.contentVersion < cached.contentVersion;
     if(older){
       applyPackage(cached, 'cache');
       renderDictInfo();
@@ -4969,16 +5049,20 @@ function loadContentThenStart(){
       toast('В сети более старая версия словаря — используется сохранённая.');
       return;
     }
+    var prevCount = cached ? cached.cards.length : null;
     applyPackage(pkg, 'network');
     writeContentCache(pkg);
     renderDictInfo();
-    if(appStarted){ renderHome(); renderArchive(); if(state.view==='session') renderSession(); }
+    if(appStarted){ renderHome(); renderArchive(); if(state.view==='session') renderSession();
+      // Подтверждение, что свежий файл ПРИНЯТ — иначе «не подсосался» остаётся загадкой
+      if(prevCount!=null && prevCount!==pkg.cards.length) toast('Словарь обновлён: слов '+pkg.cards.length+' (было '+prevCount+').');
+    }
     else startApp();
-  }, function(){
-    if(content.ready){                         // сеть недоступна — работаем на локальной копии
+  }, function(err){
+    if(content.ready){                         // сеть недоступна или файл отвергнут — берём копию
       renderDictInfo();
       startApp();
-      setTimeout(function(){ toast('Не удалось проверить обновление словаря. Используется последняя сохранённая версия.'); },500);
+      setTimeout(function(){ toast('Словарь не обновлён: '+dictErrText(err)+'. Используется сохранённая копия.'); },500);
     } else {
       showBootError();                         // первый запуск без сети и без копии
     }
@@ -4989,5 +5073,6 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a414a93a59bb15dc',t:'MTc5MDQ1MDc5NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","spa":2}' crossorigin="anonymous"></script>
+</body>
 </html>

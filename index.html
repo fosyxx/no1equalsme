@@ -3621,13 +3621,18 @@ function cleanJsonText(s){
    объясняться тостом, а не быть загадкой. */
 function dictErrText(err){
   var s=String((err && err.message) || err || '');
+  /* AbortError — это НАШ таймаут (AbortController) либо сворачивание/загрузка
+     страницы: браузер сам пишет по-английски, показываем причину понятно. */
+  var aborted=(err && err.name==='AbortError') || /abort/i.test(s);
+  if(aborted) return 'загрузка прервалась — браузер отменил запрос: сеть не уложилась в таймаут, либо страницу свернули/перезагрузили во время загрузки. Подождите и нажмите «Проверить словарь» ещё раз';
   if(s.indexOf('http')===0) return 'файл ./data/words.json не отдаётся ('+s+')';
   if(s==='parse') return 'words.json не разбирается как JSON — проверьте запятые и кавычки';
   if(s==='schema') return 'неподдерживаемая версия формата (schemaVersion)';
   if(s==='language') return 'файл помечен не как русский (language)';
   if(s==='cards' || s==='empty') return 'в words.json нет пригодных карточек';
   if(s==='nofetch') return 'страница не может прочитать файл — откройте её через сервер';
-  return 'файл не принят: '+(s||'неизвестная ошибка');
+  if(/fetch|network|load/i.test(s)) return 'браузер не смог загрузить файл — проверьте соединение';
+  return 'непредвиденная ошибка'+(s ? ' ('+s.slice(0,60)+')' : ''); // остаток — для диагностики, коротко
 }
 function fetchPackage(){
   return new Promise(function(resolve, reject){
@@ -3635,7 +3640,7 @@ function fetchPackage(){
     var ctrl=null, timer=null;
     try{ if(typeof AbortController==='function') ctrl=new AbortController(); }catch(e){ ctrl=null; }
     var opts={cache:'no-cache', credentials:'same-origin'};   // позволяем браузеру проверить обновление
-    if(ctrl){ opts.signal=ctrl.signal; timer=setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, 12000); }
+    if(ctrl){ opts.signal=ctrl.signal; timer=setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, 25000); }   // 25 с: словарь в1500 слов на слабой сети не укладывался в12 с
     fetch(CONTENT_URL, opts).then(function(res){
       if(!res.ok) throw new Error('http '+res.status);       // 404 и прочее — неуспех
       return res.text();
@@ -3697,6 +3702,7 @@ function checkDictionaryUpdate(manual){
     return true;
   }, function(err){
     content.checking=false;
+    if(typeof console!=='undefined' && console.warn) console.warn('No1EqualsMe: проверка словаря:', err);
     renderDictInfo();
     if(manual) toast('Словарь не обновлён: '+dictErrText(err)+'.');
     return false;
@@ -3811,7 +3817,7 @@ function loadMorseContent(){
   var ctrl=null, timer=null;
   try{ if(typeof AbortController==='function') ctrl=new AbortController(); }catch(e){ ctrl=null; }
   var opts={cache:'no-cache', credentials:'same-origin'};
-  if(ctrl){ opts.signal=ctrl.signal; timer=setTimeout(function(){ try{ctrl.abort();}catch(e){} }, 12000); }
+  if(ctrl){ opts.signal=ctrl.signal; timer=setTimeout(function(){ try{ctrl.abort();}catch(e){} }, 25000); }   // тот же таймаут, что у словаря
   fetch(MORSE_URL, opts).then(function(res){
     if(!res.ok) throw new Error('http '+res.status);
     return res.text();
@@ -5064,6 +5070,7 @@ function loadContentThenStart(){
     }
     else startApp();
   }, function(err){
+    if(typeof console!=='undefined' && console.warn) console.warn('No1EqualsMe: словарь не обновлён:', err);
     if(content.ready){                         // сеть недоступна или файл отвергнут — берём копию
       renderDictInfo();
       startApp();
@@ -5078,6 +5085,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>

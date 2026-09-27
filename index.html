@@ -243,10 +243,10 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 /* Стрик: число букв подряд; «рекордный» огонёк — золотом со свечением и
    пульсацией — загорается, когда серия дошла до лучшего результата (идёт бой
    за новый рекорд). Цвета — через --flame/--flame-rec из блоков тем. */
-.ms-streak{display:inline-flex;align-items:center;gap:4px;font-size:13.5px;font-weight:750;color:var(--flame);line-height:1}
-.ms-streak svg{width:15px;height:15px;flex:none}
+.ms-streak{display:inline-flex;align-items:center;gap:6px;font-size:17px;font-weight:800;color:var(--flame);line-height:1;padding:2px 6px}
+.ms-streak svg{width:28px;height:28px;flex:none}
 .ms-streak b{font-variant-numeric:tabular-nums}
-.ms-streak.rec{color:var(--flame-rec);filter:drop-shadow(0 0 6px rgba(255,186,82,.5))}
+.ms-streak.rec{color:var(--flame-rec);filter:drop-shadow(0 0 9px rgba(255,186,82,.6))}
 .ms-streak.rec svg{animation:streakPulse .5s ease-in-out infinite alternate}
 @keyframes streakPulse{from{transform:scale(1)}to{transform:scale(1.18)}}
 html.rm .ms-streak.rec svg{animation:none}
@@ -643,7 +643,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
     <main class="morse-stage">
       <div class="morse-ex" id="morseEx">
         <div class="morse-imgwrap" id="morseImgWrap">
-          <img id="morseImg" alt="" hidden>
+          <img id="morseImg" alt="" decoding="async" hidden>
           <div class="morse-img-load" id="morseImgLoading">Загружаем жест…</div>
           <div class="morse-img-err" id="morseImgErr" hidden>
             <span>Изображение жеста не загрузилось</span>
@@ -3823,6 +3823,15 @@ var MORSE_CARDS=[];
 var MORSE_MAP={};
 var morseState=null;
 var morseImgStatus={};      // id → 'loading' | 'ok' | 'fail'
+var morseImgQueue=[];       // id, ждущие старта (порядок = приоритет)
+var morseImgBusy={};        // id → 1, уже в полёте
+var morseImgFails={};       // id → число неудачных попыток
+var morseImgActive=0;       // сколько запросов идёт прямо сейчас
+var MORSE_IMG_PAR=3;        // не больше 3 параллельных запросов: иначе
+                            // лимит соединений браузера душит их, и жест
+                            // текущей буквы ждёт десятки секунд
+var MORSE_IMG_ATTEMPTS=3;   // всего попыток на картинку (1 + 2 авто)
+var MORSE_IMG_RETRY_MS=1200;// пауза авто-повтора × номер попытки
 var morseCheckTimer=null;   // единственный активный таймер автопроверки
 var morseHoldTimer=null;    // таймер показа результата
 var morseHoldInterrupted=false;
@@ -3867,6 +3876,7 @@ function setMorseCards(cards, version, updatedAt){
   morseContent.contentVersion=version;
   morseContent.updatedAt=updatedAt||null;
   morseContent.count=cards.length;
+  preloadMorseImages(); // качаем жесты заранее — к открытию раздела они уже в кэше
 }
 function readMorseCache(){
   try{
@@ -4050,22 +4060,76 @@ function prettyCode(seq){
 }
 
 /* ---------- Изображения ---------- */
-function loadMorseImage(card, force){
-  if(!card) return;
-  var st=morseImgStatus[card.id];
-  if(st==='ok' || st==='loading') return;
-  if(st==='fail' && !force) return;
-  morseImgStatus[card.id]='loading';
+/* Загрузка жестов через единую очередь:
+   - одновременно только MORSE_IMG_PAR запросов (остальные ждут своей
+     очереди, а не душат канал);
+   - urgent=true ставит карточку в НАЧАЛО очереди — так жест текущей буквы
+     грузится первым и сменяется сразу, а не после тридцати соседей;
+   - после сбоя картинка сама повторяет загрузку (MORSE_IMG_ATTEMPTS попыток
+     с растущей паузой), поэтому «не сменилась/не загрузилась» обычно чинится
+     без ручного «Повторить».
+   force: true — ручной «Повторить» (счётчик попыток зануляется),
+   'auto' — авто-повтор по таймеру, false/undefined — обычный запрос. */
+function loadMorseImage(card, force, urgent){
+  if(!card || !card.id) return;
+  var id=card.id, st=morseImgStatus[id], qi;
+  if(st==='ok') return;
+  if(st==='loading'){
+    // уже грузится: приоритет — вернуть в начало очереди, если ещё не в полёте
+    if(urgent && !morseImgBusy[id]){
+      qi=morseImgQueue.indexOf(id);
+      if(qi>=0){ morseImgQueue.splice(qi,1); morseImgQueue.unshift(id); }
+    }
+    return;
+  }
+  if(st==='fail'){
+    if(force===true){ morseImgFails[id]=0; }        // ручной «Повторить»
+    else if(force==='auto'){ /* авто-повтор после паузы */ }
+    else return;                                     // обычный рендер упавшую не дёргает
+  }
+  morseImgStatus[id]='loading';
+  if(urgent){
+    qi=morseImgQueue.indexOf(id);
+    if(qi>=0) morseImgQueue.splice(qi,1);
+    morseImgQueue.unshift(id);
+  } else {
+    morseImgQueue.push(id);
+  }
+  pumpMorseImgQueue();
+}
+function pumpMorseImgQueue(){
+  while(morseImgActive<MORSE_IMG_PAR && morseImgQueue.length){
+    var id=morseImgQueue.shift();
+    if(morseImgStatus[id]!=='loading') continue; // могло устареть
+    morseImgActive++; morseImgBusy[id]=1;
+    startMorseImgJob(MORSE_MAP[id]||null, id);
+  }
+}
+function startMorseImgJob(card, id){
+  var done=function(ok){
+    morseImgActive=Math.max(0,morseImgActive-1);
+    delete morseImgBusy[id];
+    if(ok){
+      morseImgFails[id]=0;
+      morseImgStatus[id]='ok';
+    } else {
+      morseImgFails[id]=(morseImgFails[id]|0)+1;
+      morseImgStatus[id]='fail';
+      if((morseImgFails[id]|0)<MORSE_IMG_ATTEMPTS){
+        // пауза — и картинка уходит в очередь снова (обычно чинится сама)
+        setTimeout(function(){
+          if(morseImgStatus[id]==='fail') loadMorseImage(MORSE_MAP[id], 'auto');
+        }, MORSE_IMG_RETRY_MS*(morseImgFails[id]|0));
+      }
+    }
+    if(typeof state!=='undefined' && state && state.view==='morse') renderMorse();
+    pumpMorseImgQueue();
+  };
+  if(!card){ done(false); return; }
   var im;
-  try{ im=new Image(); }catch(e){ morseImgStatus[card.id]='fail'; return; }
-  im.onload=function(){
-    morseImgStatus[card.id]='ok';
-    if(typeof state!=='undefined' && state && state.view==='morse') renderMorse();
-  };
-  im.onerror=function(){
-    morseImgStatus[card.id]='fail';
-    if(typeof state!=='undefined' && state && state.view==='morse') renderMorse();
-  };
+  try{ im=new Image(); }catch(e){ done(false); return; }
+  im.onload=function(){ done(true); };
+  im.onerror=function(){ done(false); };
   im.src=card.image;
 }
 function preloadMorseImages(){ MORSE_CARDS.forEach(function(c){ loadMorseImage(c); }); }
@@ -4141,7 +4205,7 @@ function renderMorse(){
   /* изображение: до проверки буква нигде не видна */
   var img=$('morseImg'), imgLoad=$('morseImgLoading'), imgErr=$('morseImgErr');
   if(card){
-    if(!morseImgStatus[card.id]) loadMorseImage(card);
+    loadMorseImage(card, false, true); // текущая карточка — приоритет очереди
     var st=morseImgStatus[card.id]||'loading';
     if(st==='ok'){
       if(img.getAttribute('src')!==card.image) img.src=card.image;
@@ -4529,7 +4593,8 @@ function openMorse(){
     if(morseState.mode==='correct'||morseState.mode==='incorrect') morseState.mode='input';
     saveMorse();
   }
-  preloadMorseImages(); // предзагрузка изображений перед упражнением
+  loadMorseImage(currentMorseCard(), false, true); // её жест — первым в очереди
+  preloadMorseImages(); // остальные — той же очередью (лимит MORSE_IMG_PAR запросов)
   if(morseState.mode==='correct'||morseState.mode==='incorrect') armResultHold();
   showView('morse');
 }
@@ -4540,6 +4605,16 @@ $('btnMorseBack').addEventListener('click', function(){ saveMorse(); goHome(); }
 $('btnMorseImgRetry').addEventListener('click', function(e){
   e.stopPropagation();
   loadMorseImage(currentMorseCard(), true);
+});
+$('morseImg').addEventListener('error', function(){
+  /* Заявлено «ok», но файл бит/пропал (сброс кэша): сбрасываем статус и
+     грузим заново. Один раз на карточку — чтобы не зациклиться. */
+  var c=currentMorseCard();
+  if(c && morseImgStatus[c.id]==='ok' && !morseImgBusy[c.id]){
+    delete morseImgStatus[c.id];
+    morseImgFails[c.id]=0;
+    loadMorseImage(c, true);
+  }
 });
 $('btnMorseContinue').addEventListener('click', function(){
   morseState.freeMode=true;
@@ -5192,5 +5267,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a41bacc0cf80b187',t:'MTc5MDUyNDMzOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

@@ -243,7 +243,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 /* Стрик: число букв подряд; «рекордный» огонёк — золотом со свечением и
    пульсацией — загорается, когда серия дошла до лучшего результата (идёт бой
    за новый рекорд). Цвета — через --flame/--flame-rec из блоков тем. */
-.ms-streak{display:inline-flex;align-items:center;gap:6px;font-size:17px;font-weight:800;color:var(--flame);line-height:1;padding:2px 6px}
+.ms-streak{display:inline-flex;align-items:center;gap:6px;font-size:17px;font-weight:800;color:var(--flame);line-height:1;padding:2px 6px;transform:translateY(5px)}
 .ms-streak svg{width:28px;height:28px;flex:none}
 .ms-streak b{font-variant-numeric:tabular-nums}
 .ms-streak.rec{color:var(--flame-rec);filter:drop-shadow(0 0 9px rgba(255,186,82,.6))}
@@ -256,7 +256,7 @@ html.rm .ms-streak.rec svg{animation:none}
 .morse-ex{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px;overflow-y:auto}
 /* Изображения — белые линии на прозрачном фоне: только тёмная подложка,
    без инверсий, без белого прямоугольника, object-fit: contain */
-.morse-imgwrap{width:min(100%,46vh);aspect-ratio:1/1;flex:none;margin:0 auto;position:relative;border-radius:22px;overflow:hidden;background:#0b0b0f;border:1px solid var(--line);display:grid;place-items:center;padding:10px}
+.morse-imgwrap{width:min(100%,42vh);aspect-ratio:1/1;flex:none;margin:0 auto;position:relative;border-radius:22px;overflow:hidden;background:#0b0b0f;border:1px solid var(--line);display:grid;place-items:center;padding:10px}
 .morse-imgwrap img{width:100%;height:100%;object-fit:contain;display:block}
 .morse-img-load{color:#7b7490;font-size:13px}
 .morse-img-err{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;color:var(--muted);font-size:13px;padding:14px}
@@ -3832,6 +3832,7 @@ var MORSE_IMG_PAR=3;        // не больше 3 параллельных за
                             // текущей буквы ждёт десятки секунд
 var MORSE_IMG_ATTEMPTS=3;   // всего попыток на картинку (1 + 2 авто)
 var MORSE_IMG_RETRY_MS=1200;// пауза авто-повтора × номер попытки
+var morseImgObj={};      // id → objectURL готового жеста: показ из памяти
 var morseCheckTimer=null;   // единственный активный таймер автопроверки
 var morseHoldTimer=null;    // таймер показа результата
 var morseHoldInterrupted=false;
@@ -4126,11 +4127,62 @@ function startMorseImgJob(card, id){
     pumpMorseImgQueue();
   };
   if(!card){ done(false); return; }
+  /* Основной путь: кладём картинку в Cache API (переживает перезагрузку),
+     показываем из objectURL в памяти — смена буквы МГНОВЕННАЯ, сеть и
+     HTTP-кэш в показе больше не участвуют. localStorage для фото НЕ
+     используем: 33 фото ≈ 4 МБ base64 упираются в квоту (~5 МБ) и могут
+     сломать сохранение прогресса — отсюда и запрет base64 в ассетах. */
+  var canMem=(typeof fetch==='function' && typeof Blob!=='undefined' &&
+              typeof URL!=='undefined' && typeof URL.createObjectURL==='function' &&
+              typeof caches!=='undefined' && caches && caches.open);
+  if(canMem){ morseImgFromCache(card, done); return; }
+  /* Запасной путь (нет Cache API / objectURL) — как раньше: new Image() */
   var im;
   try{ im=new Image(); }catch(e){ done(false); return; }
   im.onload=function(){ done(true); };
   im.onerror=function(){ done(false); };
   im.src=card.image;
+}
+/* Имя кэша содержит версию контента: обновились жесты (contentVersion
+   вырос) — старая папка не мешает, новые файлы качаются заново. */
+function morseImgCacheName(){ return 'nem-signs-img-v'+String((morseContent && morseContent.contentVersion) || 1); }
+function morseImgFromCache(card, done){
+  if(morseImgObj[card.id]){ done(true); return; } // уже в памяти этой сессии
+  var p;
+  try{ p=caches.open(morseImgCacheName()); }catch(e){ p=null; }
+  Promise.resolve(p).then(function(c){
+    if(!c || typeof c.match!=='function') return null;
+    return c.match(card.image).catch(function(){ return null; });
+  }).then(function(resp){
+    if(resp && typeof resp.blob==='function'){
+      return resp.blob().then(function(b){ morseImgToObject(card, b, done); },
+                              function(){ morseImgFetch(card, done); });
+    }
+    return morseImgFetch(card, done);
+  }).catch(function(){ done(false); });
+}
+function morseImgFetch(card, done){
+  Promise.resolve().then(function(){ return fetch(card.image); }).then(function(r){
+    if(!r || !r.ok || typeof r.blob!=='function') throw new Error('morse image http');
+    return r.blob().then(function(b){
+      morseImgCachePut(card, b);   // в кэш — для будущих сессий (не блокирует показ)
+      morseImgToObject(card, b, done);
+    });
+  }).catch(function(){ done(false); });
+}
+function morseImgCachePut(card, b){
+  try{
+    if(typeof Response!=='function') return;
+    caches.open(morseImgCacheName()).then(function(c){
+      if(c && typeof c.put==='function') return c.put(card.image, new Response(b));
+    }).catch(function(){});
+  }catch(e){}
+}
+function morseImgToObject(card, b, done){
+  try{
+    morseImgObj[card.id]=URL.createObjectURL(b); // objectURL живёт до перезагрузки
+    done(true);
+  }catch(e){ done(false); }
 }
 function preloadMorseImages(){ MORSE_CARDS.forEach(function(c){ loadMorseImage(c); }); }
 
@@ -4208,7 +4260,8 @@ function renderMorse(){
     loadMorseImage(card, false, true); // текущая карточка — приоритет очереди
     var st=morseImgStatus[card.id]||'loading';
     if(st==='ok'){
-      if(img.getAttribute('src')!==card.image) img.src=card.image;
+      var imgSrc=morseImgObj[card.id]||card.image; // память или (фолбэк) путь
+      if(img.getAttribute('src')!==imgSrc) img.src=imgSrc;
       img.alt=card.imageAlt||'';
       img.hidden=false; imgLoad.hidden=true; imgErr.hidden=true;
     } else if(st==='fail'){
@@ -4611,6 +4664,7 @@ $('morseImg').addEventListener('error', function(){
      грузим заново. Один раз на карточку — чтобы не зациклиться. */
   var c=currentMorseCard();
   if(c && morseImgStatus[c.id]==='ok' && !morseImgBusy[c.id]){
+    delete morseImgObj[c.id];
     delete morseImgStatus[c.id];
     morseImgFails[c.id]=0;
     loadMorseImage(c, true);
@@ -5267,5 +5321,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a41c16d1cf6eae05',t:'MTc5MDUyODY4Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

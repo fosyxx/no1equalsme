@@ -22,6 +22,7 @@ html, html[data-theme="evening"]{
   --red:#d68d8d; --red-soft:rgba(214,141,141,.13); --red-line:rgba(214,141,141,.38);
   --track:#262233; --sheet:#1c1926; --sw-track:#35304a; --sw-knob:#cfc8e2;
   --glow:rgba(165,139,255,.13);
+  --flame:#cf9b82; --flame-rec:#ffba52; /* стрик: обычная серия / рекордная */
   --shadow-card:0 16px 36px rgba(0,0,0,.4);
   --shadow-soft:0 10px 26px rgba(0,0,0,.28);
 }
@@ -35,6 +36,7 @@ html[data-theme="dark"]{
   --red:#d38989; --red-soft:rgba(211,137,137,.12); --red-line:rgba(211,137,137,.36);
   --track:#1f212a; --sheet:#16171d; --sw-track:#33353f; --sw-knob:#c9c7d4;
   --glow:rgba(165,139,255,.08);
+  --flame:#cf9b82; --flame-rec:#ffba52;
   --shadow-card:0 16px 36px rgba(0,0,0,.45);
   --shadow-soft:0 10px 26px rgba(0,0,0,.3);
 }
@@ -48,9 +50,37 @@ html[data-theme="light"]{
   --red:#bf4a4a; --red-soft:rgba(191,74,74,.09); --red-line:rgba(191,74,74,.34);
   --track:#e7e3f3; --sheet:#ffffff; --sw-track:#d9d3ea; --sw-knob:#ffffff;
   --glow:rgba(122,90,224,.12);
+  --flame:#b8785e; --flame-rec:#e08c14;
   --shadow-card:0 16px 34px rgba(80,60,140,.16);
   --shadow-soft:0 10px 24px rgba(80,60,140,.10);
 }
+/* ---------- Раунд 13: основной цвет приложения ----------
+   Ключевое решение: акцент переопределяет ТЕ ЖЕ переменные --violet* и --glow,
+   которыми оформлены кнопки, бейджи, свечения и активные состояния всей
+   вёрстки — приложение перекрашивается целиком без правок компонентов.
+   Фиолетовый — базовый, его значения лежат в темах (правил нет — и не нужно).
+   Для вечерней и тёмной тем берём читаемые светлые оттенки; для светлой —
+   отдельные более тёмные (на белом фоне светлые акценты «съедаются»).
+   Спецификация: [data-theme][data-accent] (0,2,1) бьёт и тему, и базовый акцент. */
+html[data-accent="blue"]{--violet:#7aa6ff;--violet-deep:#5f8ae8;--violet-soft:rgba(122,166,255,.13);--violet-line:rgba(122,166,255,.38);--glow:rgba(122,166,255,.12)}
+html[data-accent="sky"]{--violet:#5fc9e8;--violet-deep:#3fa9cc;--violet-soft:rgba(95,201,232,.13);--violet-line:rgba(95,201,232,.38);--glow:rgba(95,201,232,.12)}
+html[data-accent="green"]{--violet:#5ecf96;--violet-deep:#43b07d;--violet-soft:rgba(94,207,150,.13);--violet-line:rgba(94,207,150,.38);--glow:rgba(94,207,150,.12)}
+html[data-accent="rose"]{--violet:#ef8ec5;--violet-deep:#d96fb0;--violet-soft:rgba(239,142,197,.13);--violet-line:rgba(239,142,197,.38);--glow:rgba(239,142,197,.12)}
+html[data-theme="light"][data-accent="blue"]{--violet:#3f6fd8;--violet-deep:#3561c9;--violet-soft:rgba(63,111,216,.10);--violet-line:rgba(63,111,216,.34);--glow:rgba(63,111,216,.12)}
+html[data-theme="light"][data-accent="sky"]{--violet:#1f8fb5;--violet-deep:#1a7e9f;--violet-soft:rgba(31,143,181,.10);--violet-line:rgba(31,143,181,.34);--glow:rgba(31,143,181,.12)}
+html[data-theme="light"][data-accent="green"]{--violet:#1f8f5f;--violet-deep:#1a7e52;--violet-soft:rgba(31,143,95,.10);--violet-line:rgba(31,143,95,.34);--glow:rgba(31,143,95,.12)}
+html[data-theme="light"][data-accent="rose"]{--violet:#c24e97;--violet-deep:#ad4187;--violet-soft:rgba(194,78,151,.10);--violet-line:rgba(194,78,151,.34);--glow:rgba(194,78,151,.12)}
+/* Выбор цвета в настройках (внутри блока «Тема») */
+.accent-block{margin-top:12px;display:flex;flex-direction:column;gap:9px}
+.accent-label{font-size:13px;color:var(--muted)}
+.accent-row{display:flex;gap:13px;align-items:center}
+.accent-dot{width:30px;height:30px;border-radius:50%;padding:0;border:none;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
+.accent-dot.on{outline:2px solid var(--violet);outline-offset:3px}
+.acc-violet{background:#a58bff}
+.acc-blue{background:#7aa6ff}
+.acc-sky{background:#5fc9e8}
+.acc-green{background:#5ecf96}
+.acc-rose{background:#ef8ec5}
 html{background:var(--bg)}
 html,body{height:100%}
 body{
@@ -150,15 +180,15 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .card-drag.gl-green .card-front{border-color:var(--green-line);box-shadow:var(--shadow-card),0 0 30px rgba(130,185,145,.22)}
 .card-drag.gl-red .card-front{border-color:var(--red-line);box-shadow:var(--shadow-card),0 0 30px rgba(214,141,141,.22)}
 .card-drag.gl-red-back .card-back{border-color:var(--red-line);box-shadow:var(--shadow-card),0 0 30px rgba(214,141,141,.2)}
-.card-drag.gl-violet .card-back{border-color:var(--violet-line);box-shadow:var(--shadow-card),0 0 30px rgba(165,139,255,.22)}
+.card-drag.gl-violet .card-back{border-color:var(--violet-line);box-shadow:var(--shadow-card),0 0 30px var(--violet-line)}
 .tint{position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;z-index:4;transition:opacity .1s linear}
 .tint.green{background:linear-gradient(180deg,rgba(130,185,145,.2),rgba(130,185,145,.1))}
 .tint.red{background:linear-gradient(180deg,rgba(214,141,141,.2),rgba(214,141,141,.1))}
-.tint.violet{background:linear-gradient(180deg,rgba(165,139,255,.2),rgba(165,139,255,.1))}
+.tint.violet{background:linear-gradient(180deg,var(--violet-soft),transparent)}
 .front-label{position:absolute;top:24px;left:52px;right:52px;text-align:center;color:var(--muted);font-size:13px;font-weight:600;letter-spacing:.06em}
 .front-word{font-size:clamp(29px,8.8vw,40px);font-weight:700;letter-spacing:-.01em;line-height:1.12;overflow-wrap:anywhere}
 .front-hint{position:absolute;bottom:20px;left:0;right:0;text-align:center;color:var(--faint);font-size:13px}
-.badge{position:absolute;top:16px;left:16px;z-index:6;font-size:12px;font-weight:650;color:var(--violet);background:var(--violet-soft);border:1px solid rgba(165,139,255,.35);border-radius:999px;padding:5px 11px}
+.badge{position:absolute;top:16px;left:16px;z-index:6;font-size:12px;font-weight:650;color:var(--violet);background:var(--violet-soft);border:1px solid var(--violet-line);border-radius:999px;padding:5px 11px}
 .peek-btn{position:absolute;right:12px;top:12px;z-index:7;width:48px;height:48px;border-radius:50%;background:var(--card2);border:1px solid var(--line);color:var(--violet);display:grid;place-items:center;transition:border-color .15s,background .15s}
 .peek-btn:active{border-color:var(--violet-line);background:var(--violet-soft)}
 .peek-btn svg{width:22px;height:22px}
@@ -172,18 +202,18 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .def{font-size:18.5px;line-height:1.48;margin-bottom:16px;max-width:32ch}
 .syn{font-size:13.5px;margin-bottom:10px}
 .syn-label{color:var(--muted)}
-.ex{color:var(--muted);font-size:13.5px;line-height:1.5;border-left:2px solid rgba(165,139,255,.4);padding-left:10px;margin-bottom:12px}
+.ex{color:var(--muted);font-size:13.5px;line-height:1.5;border-left:2px solid var(--violet-line);padding-left:10px;margin-bottom:12px}
 .return-note{flex:none;color:var(--violet);font-size:13px;text-align:center;padding:6px 4px 10px}
 .btn-back{flex:none;min-height:52px;width:100%;border-radius:15px;background:var(--violet-soft);border:1px solid var(--violet-line);color:var(--violet);font-weight:700;font-size:15.5px;transition:background .15s}
-.btn-back:active{background:rgba(165,139,255,.22)}
+.btn-back:active{background:var(--violet-soft)}
 .btn-more{display:flex;align-items:center;justify-content:center;align-self:center;width:100%;max-width:340px;min-height:52px;padding:0 20px;margin:0 auto 6px;border-radius:15px;border:1px solid var(--violet-line);background:var(--violet-soft);color:var(--violet);font-weight:700;font-size:15.5px;transition:background .15s}
-.btn-more:active{background:rgba(165,139,255,.22)}
+.btn-more:active{background:var(--violet-soft)}
 .details-overlay{z-index:60}
 .details-sheet{height:92%;max-height:92%;display:flex;flex-direction:column;touch-action:pan-y}
 .details-sheet .sheet-head h2{font-size:24px;font-weight:750;overflow-wrap:anywhere;padding-right:8px}
 .details-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-bottom:6px}
 .dt-pos{display:flex;flex-wrap:wrap;gap:8px;align-items:center;color:var(--muted);font-size:14.5px;font-style:italic;margin-bottom:12px}
-.dt-reg{font-style:normal;font-size:12.5px;font-weight:650;color:var(--violet);background:var(--violet-soft);border:1px solid rgba(165,139,255,.3);border-radius:999px;padding:4px 10px}
+.dt-reg{font-style:normal;font-size:12.5px;font-weight:650;color:var(--violet);background:var(--violet-soft);border:1px solid var(--violet-line);border-radius:999px;padding:4px 10px}
 .dt-reg:empty{display:none}
 .dt-def{font-size:18px;line-height:1.5;margin-bottom:18px}
 .dt-block{margin-bottom:18px}
@@ -210,6 +240,16 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 /* ---------- Морзе + Дактиль ---------- */
 .morse-block{margin-top:14px;display:flex;flex-direction:column;gap:14px}
 .morse-status{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:2px 2px 10px}
+/* Стрик: число букв подряд; «рекордный» огонёк — золотом со свечением и
+   пульсацией — загорается, когда серия дошла до лучшего результата (идёт бой
+   за новый рекорд). Цвета — через --flame/--flame-rec из блоков тем. */
+.ms-streak{display:inline-flex;align-items:center;gap:4px;font-size:13.5px;font-weight:750;color:var(--flame);line-height:1}
+.ms-streak svg{width:15px;height:15px;flex:none}
+.ms-streak b{font-variant-numeric:tabular-nums}
+.ms-streak.rec{color:var(--flame-rec);filter:drop-shadow(0 0 6px rgba(255,186,82,.5))}
+.ms-streak.rec svg{animation:streakPulse .5s ease-in-out infinite alternate}
+@keyframes streakPulse{from{transform:scale(1)}to{transform:scale(1.18)}}
+html.rm .ms-streak.rec svg{animation:none}
 .ms-main{font-size:15px;font-weight:700}
 .ms-sub{font-size:12px;color:var(--muted)}
 .morse-stage{flex:1;min-height:0;display:flex;flex-direction:column}
@@ -272,7 +312,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .lg-red{background:var(--red)}
 .dt-chart{display:flex;align-items:stretch;gap:5px;height:158px}
 .dt-day{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;cursor:pointer;border-radius:8px;padding:2px 1px 0}
-.dt-day.sel{background:rgba(165,139,255,.08)}
+.dt-day.sel{background:var(--violet-soft)}
 .dt-bars{flex:1;min-height:0;display:flex;align-items:flex-end;justify-content:center;gap:2px}
 .dt-bar{width:5px;max-width:6px;border-radius:3px 3px 1px 1px;min-height:3px;background:var(--violet);flex:none}
 .dt-bar.b-green{background:var(--green)}
@@ -290,7 +330,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .wipe-pass{width:100%;min-height:44px;border-radius:12px;border:1px solid var(--red-line);background:var(--card2);color:var(--text);padding:0 12px;font:inherit;font-size:15px;margin:8px 0 4px}
 /* ---------- Результат ---------- */
 .result-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 2px 14px}
-.result-ic{width:64px;height:64px;border-radius:50%;background:var(--violet-soft);border:1px solid rgba(165,139,255,.35);display:grid;place-items:center;color:var(--violet);margin-bottom:14px;flex:none}
+.result-ic{width:64px;height:64px;border-radius:50%;background:var(--violet-soft);border:1px solid var(--violet-line);display:grid;place-items:center;color:var(--violet);margin-bottom:14px;flex:none}
 .result-ic svg{width:30px;height:30px}
 .result-title{font-size:23px;font-weight:750;margin-bottom:18px}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;margin-bottom:14px}
@@ -300,7 +340,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .forgot{width:100%;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;margin-bottom:14px}
 .forgot h3{font-size:14px;font-weight:650;margin-bottom:8px}
 .forgot ul{list-style:none;display:flex;flex-wrap:wrap;gap:8px}
-.forgot li{font-size:13px;color:var(--violet);background:var(--violet-soft);border:1px solid rgba(165,139,255,.3);border-radius:999px;padding:5px 11px}
+.forgot li{font-size:13px;color:var(--violet);background:var(--violet-soft);border:1px solid var(--violet-line);border-radius:999px;padding:5px 11px}
 .forgot .all-ok{color:var(--muted);font-size:13.5px}
 .result-msg{color:var(--muted);font-size:14px;max-width:310px;margin:0 auto}
 .result-bottom{flex:none;padding-top:8px}
@@ -595,6 +635,10 @@ html.rm .card-drag.flipped .card-front{opacity:0}
     <div class="morse-status" id="morseStatus">
       <span class="ms-main" id="morseStatusMain">Правильно: 0 / 10</span>
       <span class="ms-sub" id="morseStatusSub">Точность: —</span>
+      <span class="ms-streak" id="morseStreak" title="Букв подряд без ошибок">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c2.2 3.1 5.8 4.6 7.4 8.1 1.7 3.7-.4 8.4-4.9 9.4-3.9.9-7.7-1.4-8.4-5.3-.5-2.7.6-5.1 2.4-6.9-.4 1.6-.2 3 .7 3.9-.6-3.4.9-6.4 2.8-9.2z"/></svg>
+        <b id="morseStreakN">0</b>
+      </span>
     </div>
     <main class="morse-stage">
       <div class="morse-ex" id="morseEx">
@@ -711,6 +755,16 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         <button class="seg-btn on" role="radio" aria-checked="true" data-theme-btn="evening">Стандартная</button>
         <button class="seg-btn" role="radio" aria-checked="false" data-theme-btn="dark">Тёмная</button>
         <button class="seg-btn" role="radio" aria-checked="false" data-theme-btn="light">Светлая</button>
+      </div>
+      <div class="accent-block">
+        <span class="accent-label">Основной цвет</span>
+        <div class="accent-row" role="radiogroup" aria-label="Основной цвет">
+          <button class="accent-dot acc-violet on" data-accent-btn="violet" role="radio" aria-checked="true" aria-label="Фиолетовый"></button>
+          <button class="accent-dot acc-blue" data-accent-btn="blue" role="radio" aria-checked="false" aria-label="Синий"></button>
+          <button class="accent-dot acc-sky" data-accent-btn="sky" role="radio" aria-checked="false" aria-label="Голубой"></button>
+          <button class="accent-dot acc-green" data-accent-btn="green" role="radio" aria-checked="false" aria-label="Зелёный"></button>
+          <button class="accent-dot acc-rose" data-accent-btn="rose" role="radio" aria-checked="false" aria-label="Розовый"></button>
+        </div>
       </div>
     </div>
     <div class="set-row">
@@ -1181,7 +1235,7 @@ function freshState(){
     customWords:[],          // тестовые слова (только первый запуск)
     lastStudyDate:null,      // последняя использованная учебная дата
     startedAt:null, updatedAt:Date.now(), completedAt:null,
-    settings:{haptics:true, theme:'evening', swipeSens:50, sndVol:100}
+    settings:{haptics:true, theme:'evening', swipeSens:50, sndVol:100, accent:'violet'}
   };
 }
 
@@ -1300,6 +1354,7 @@ function migrateStateV2(s){
   if(s.settings && typeof s.settings==='object'){
     if(typeof s.settings.haptics==='boolean') out.settings.haptics=s.settings.haptics;
     if(s.settings.theme==='evening'||s.settings.theme==='dark'||s.settings.theme==='light') out.settings.theme=s.settings.theme;
+    if(ACCENTS.indexOf(s.settings.accent)>=0) out.settings.accent=s.settings.accent;
     if(typeof s.settings.swipeSens==='number' && s.settings.swipeSens>=0 && s.settings.swipeSens<=100) out.settings.swipeSens=s.settings.swipeSens;
     if(typeof s.settings.sndVol==='number' && s.settings.sndVol>=0 && s.settings.sndVol<=100) out.settings.sndVol=s.settings.sndVol;
     out.settings.updatedAt=(typeof s.settings.updatedAt==='number')?s.settings.updatedAt:0;
@@ -2160,6 +2215,7 @@ function applyTheme(){
       if(typeof tg.setBottomBarColor==='function') tg.setBottomBarColor(THEME_BG[t]);
     }
   }catch(e){}
+  applyAccent();
   syncThemeSeg();
 }
 segButtons.forEach(function(b){
@@ -2170,6 +2226,36 @@ segButtons.forEach(function(b){
     state.settings.updatedAt=Date.now();
     save();
     applyTheme();
+  });
+});
+
+/* Основной цвет: настройка живёт рядом с темой. Акцент записывается в
+   data-accent и переопределяет --violet*-переменные (см. CSS-блок «Раунд 13»),
+   поэтому кнопки/бейджи/свечения перекрашиваются сразу и целиком. */
+var ACCENTS=['violet','blue','sky','green','rose'];
+var accentButtons=Array.prototype.slice.call(document.querySelectorAll('[data-accent-btn]'));
+function currentAccent(){
+  return (typeof state!=='undefined' && state && state.settings && ACCENTS.indexOf(state.settings.accent)>=0) ? state.settings.accent : 'violet';
+}
+function syncAccentDots(){
+  (accentButtons||[]).forEach(function(b){
+    var on=b.getAttribute('data-accent-btn')===currentAccent();
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-checked', String(on));
+  });
+}
+function applyAccent(){
+  try{ document.documentElement.setAttribute('data-accent', currentAccent()); }catch(e){}
+  syncAccentDots();
+}
+(accentButtons||[]).forEach(function(b){
+  b.addEventListener('click', function(){
+    var a=b.getAttribute('data-accent-btn');
+    if(ACCENTS.indexOf(a)<0 || !state || !state.settings) return;
+    state.settings.accent=a;
+    state.settings.updatedAt=Date.now();
+    save();
+    applyTheme(); // applyTheme дополнительно вызывает applyAccent
   });
 });
 
@@ -2314,7 +2400,7 @@ elBtnResetNo.addEventListener('click', function(){
   elResetConfirm.hidden=true; elBtnReset.hidden=false;
 });
 elBtnResetYes.addEventListener('click', function(){
-  var keepSettings={haptics:state.settings.haptics, theme:state.settings.theme, swipeSens:swipeSens(), sndVol:(typeof state.settings.sndVol==='number'?state.settings.sndVol:100)};
+  var keepSettings={haptics:state.settings.haptics, theme:state.settings.theme, swipeSens:swipeSens(), sndVol:(typeof state.settings.sndVol==='number'?state.settings.sndVol:100), accent:currentAccent()};
   try{ localStorage.removeItem(KEY); }catch(e){}
   try{ localStorage.removeItem(TKEY); }catch(e){}
   state=freshState();
@@ -2323,6 +2409,7 @@ elBtnResetYes.addEventListener('click', function(){
   state.settings.theme=keepSettings.theme;
   state.settings.swipeSens=keepSettings.swipeSens;
   state.settings.sndVol=keepSettings.sndVol;
+  state.settings.accent=keepSettings.accent;
   save();
   saveTest();
   applyTheme();
@@ -2597,7 +2684,7 @@ function buildPayloads(){
   var blockNames=Object.keys(blocks).sort();
   blockNames.forEach(function(bk){ out[bk]=JSON.stringify({v:CLOUD_SCHEMA, c:blocks[bk]}); });
   // настройки (без тестового режима и сдвига даты)
-  out[CK.settings]=JSON.stringify({v:CLOUD_SCHEMA, haptics:!!state.settings.haptics, theme:state.settings.theme||'evening',
+  out[CK.settings]=JSON.stringify({v:CLOUD_SCHEMA, haptics:!!state.settings.haptics, theme:state.settings.theme||'evening', accent:currentAccent(),
     swipeSens:swipeSens(), updatedAt:state.settings.updatedAt||0});
   // активная/завершённая сессия
   var sr={};
@@ -2655,6 +2742,10 @@ function mergeCloudSettings(obj){
   if(remoteTs <= (state.settings.updatedAt||0)) return;
   if(typeof obj.haptics==='boolean') state.settings.haptics=obj.haptics;
   if(obj.theme==='evening'||obj.theme==='dark'||obj.theme==='light') state.settings.theme=obj.theme;
+    if(ACCENTS.indexOf(obj.accent)>=0 && state.settings.accent!==obj.accent){
+      state.settings.accent=obj.accent;
+      try{ applyAccent(); }catch(e){}   // цвет из облака применяется сразу
+    }
   if(typeof obj.swipeSens==='number' && obj.swipeSens>=0 && obj.swipeSens<=100) state.settings.swipeSens=obj.swipeSens;
   state.settings.updatedAt=remoteTs;
 }
@@ -3068,7 +3159,7 @@ $('btnKeepLocal').addEventListener('click', function(){
 });
 $('btnFreshStart').addEventListener('click', function(){
   elCloudAfter.hidden=true; elBtnCloudWipe.hidden=false;
-  var keep={haptics:state.settings.haptics, theme:state.settings.theme, swipeSens:swipeSens(), sndVol:(typeof state.settings.sndVol==='number'?state.settings.sndVol:100)};
+  var keep={haptics:state.settings.haptics, theme:state.settings.theme, swipeSens:swipeSens(), sndVol:(typeof state.settings.sndVol==='number'?state.settings.sndVol:100), accent:currentAccent()};
   try{ localStorage.removeItem(KEY); }catch(e){}
   try{ localStorage.removeItem(TKEY); }catch(e){}
   state=freshState();
@@ -3077,6 +3168,7 @@ $('btnFreshStart').addEventListener('click', function(){
   state.settings.theme=keep.theme;
   state.settings.swipeSens=keep.swipeSens;
   state.settings.sndVol=keep.sndVol;
+  state.settings.accent=keep.accent;
   state.settings.updatedAt=Date.now();
   normalizeStats();
   mirror={}; saveMirror();
@@ -3096,7 +3188,7 @@ function buildBackupText(){
     schemaVersion:3,
     createdAt:new Date().toISOString(),
     cards:state.cards,
-    settings:{haptics:!!state.settings.haptics, theme:state.settings.theme||'evening', swipeSens:swipeSens(), sndVol:(typeof state.settings.sndVol==='number'?state.settings.sndVol:100), updatedAt:state.settings.updatedAt||0},
+    settings:{haptics:!!state.settings.haptics, theme:state.settings.theme||'evening', accent:currentAccent(), swipeSens:swipeSens(), sndVol:(typeof state.settings.sndVol==='number'?state.settings.sndVol:100), updatedAt:state.settings.updatedAt||0},
     stats:state.stats,
     session:{status:state.status, sessionDate:state.sessionDate, queue:state.queue, sessionTotal:state.sessionTotal,
              sessionResults:state.sessionResults, cardScreen:state.cardScreen, startedAt:state.startedAt,
@@ -3248,6 +3340,7 @@ function sanitizeImport(obj){
       theme:(['evening','dark','light'].indexOf(obj.settings.theme)>=0)?obj.settings.theme:'evening',
       swipeSens:(typeof obj.settings.swipeSens==='number' && obj.settings.swipeSens>=0 && obj.settings.swipeSens<=100)?obj.settings.swipeSens:50,
       sndVol:(typeof obj.settings.sndVol==='number' && obj.settings.sndVol>=0 && obj.settings.sndVol<=100)?obj.settings.sndVol:100,
+      accent:(['violet','blue','sky','green','rose'].indexOf(obj.settings.accent)>=0)?obj.settings.accent:'violet',
       updatedAt:(typeof obj.settings.updatedAt==='number')?obj.settings.updatedAt:0
     };
   }
@@ -3829,7 +3922,7 @@ function loadMorseContent(){
 function freshMorseState(){
   return {schemaVersion:1, day:realToday(), dailyCorrect:0, dailyAttempts:0, dailyErrors:0,
           weaknessScore:{}, currentId:null, sequence:'', mode:'input', freeMode:false,
-          sound:true, vibeInput:false, history:{}, letterStats:{}, updatedAt:Date.now()};
+          sound:true, vibeInput:false, history:{}, letterStats:{}, streak:0, streakBest:0, updatedAt:Date.now()};
 }
 function clampInt(v, lo, hi){
   return (typeof v==='number' && isFinite(v)) ? Math.min(hi, Math.max(lo, Math.floor(v))) : lo;
@@ -3855,6 +3948,8 @@ function loadMorseState(){
     dailyCorrect:clampInt(s.dailyCorrect,0,MORSE_GOAL),
     dailyAttempts:clampInt(s.dailyAttempts,0,1000000),
     dailyErrors:clampInt(s.dailyErrors,0,1000000),
+    streak:clampInt(s.streak,0,1000000),
+    streakBest:clampInt(s.streakBest,0,1000000),
     weaknessScore:normalizeWeakness(s.weaknessScore),
     currentId:(typeof s.currentId==='string' && s.currentId) ? s.currentId : null,
     sequence:(typeof s.sequence==='string' && /^[.\-]{0,5}$/.test(s.sequence)) ? s.sequence : '',
@@ -3866,8 +3961,9 @@ function loadMorseState(){
     letterStats:normalizeMorseLetterStats(s.letterStats),
     updatedAt:(typeof s.updatedAt==='number') ? s.updatedAt : Date.now()
   };
+  if(morseState.streakBest<morseState.streak) morseState.streakBest=morseState.streak; // рекорд не меньше живой серии
   ensureMorseDay();
-  // цель закрыта, а пользователь остался во вводе — дальше это свободная тренировка
+  // цель закрыта, и пользователь остался во вводе — дальше это свободная тренировка
   if(morseState.dailyCorrect>=MORSE_GOAL && morseState.mode==='input') morseState.freeMode=true;
 }
 function saveMorse(){
@@ -3913,6 +4009,7 @@ function ensureMorseDay(){
     morseState.dailyCorrect=0;
     morseState.dailyAttempts=0;
     morseState.dailyErrors=0;
+    morseState.streak=0; // новый день — серия с нуля; рекорд streakBest живёт вечно
     morseState.freeMode=false;
     morseState.mode='input';
     morseState.currentId=null;
@@ -4032,6 +4129,14 @@ function renderMorse(){
     ? 'Свободная тренировка'
     : ('Правильно: '+morseState.dailyCorrect+' / '+MORSE_GOAL);
   $('morseStatusSub').textContent='Точность: '+morseAccuracyText();
+  /* Стрик и рекордная подсветка: rec горит, когда серия равна рекорду —
+     следующая верная буква станет новым рекордом. */
+  var stk=$('morseStreak'), stkN=$('morseStreakN');
+  if(stk && stkN){
+    var sc=morseState.streak|0;
+    stkN.textContent=String(sc);
+    stk.classList.toggle('rec', sc>0 && sc>=(morseState.streakBest|0));
+  }
   var card=currentMorseCard();
   /* изображение: до проверки буква нигде не видна */
   var img=$('morseImg'), imgLoad=$('morseImgLoading'), imgErr=$('morseImgErr');
@@ -4345,6 +4450,8 @@ function runMorseCheck(){
   if(ok){
     if(wasBelow) morseState.dailyCorrect=Math.min(MORSE_GOAL, morseState.dailyCorrect+1); // ошибки цель не двигают
     ls.ok=(ls.ok|0)+1;
+    morseState.streak=(morseState.streak|0)+1;            // стрик: буква подряд
+    if(morseState.streak>(morseState.streakBest|0)) morseState.streakBest=morseState.streak; // новый рекорд
     morseState.weaknessScore[card.id]=Math.max(0, w-1);   // −1, минимум 0
     morseState.mode='correct';
     morseHintId=null; // ответ верный — подсказка про прежнюю букву не нужна
@@ -4353,6 +4460,7 @@ function runMorseCheck(){
   } else {
     morseState.dailyErrors++;
     ls.bad=(ls.bad|0)+1;
+    morseState.streak=0; // ошибка обнуляет стрик
     morseState.weaknessScore[card.id]=Math.min(10, w+2);  // +2, максимум 10
     morseState.mode='incorrect';
     morseHintId=card.id; // подсказка про эту букву останется и после затухания красного
@@ -4524,6 +4632,7 @@ function startApp(){
   loadTest();
   refreshCards();               // подключить тестовые слова к словарю после загрузки состояния
   if(!state.settings || !THEME_BG[state.settings.theme]) state.settings.theme='evening';
+  if(state.settings && ACCENTS.indexOf(state.settings.accent)<0) state.settings.accent='violet';
   if(typeof state.settings.swipeSens!=='number' || state.settings.swipeSens<0 || state.settings.swipeSens>100) state.settings.swipeSens=50;
   if(typeof state.settings.sndVol!=='number' || state.settings.sndVol<0 || state.settings.sndVol>100) state.settings.sndVol=100;
   if(typeof state.practice!=='boolean') state.practice=false;
@@ -5083,5 +5192,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a41999f609064673',t:'MTc5MDUwMjU5OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a41bacc0cf80b187',t:'MTc5MDUyNDMzOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

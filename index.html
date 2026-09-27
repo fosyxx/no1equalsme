@@ -119,10 +119,6 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .arch-row .cnt{color:var(--violet)}
 .arch-row svg{width:18px;height:18px;color:var(--muted);flex:none}
 .home-bottom{margin-top:auto;display:flex;flex-direction:column;gap:12px;padding-top:16px}
-.summary{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
-.summary h2{font-size:15px;font-weight:650}
-.summary p{color:var(--muted);font-size:13.5px}
-.summary strong{color:var(--text);font-weight:650}
 .empty-day{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px}
 .empty-day h2{font-size:16px;font-weight:700}
 .empty-day p{color:var(--muted);font-size:13.5px;line-height:1.45}
@@ -273,6 +269,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .lg-violet{background:var(--violet)}
 .lg-green{background:var(--green)}
 .lg-muted{background:var(--faint)}
+.lg-red{background:var(--red)}
 .dt-chart{display:flex;align-items:stretch;gap:5px;height:158px}
 .dt-day{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;cursor:pointer;border-radius:8px;padding:2px 1px 0}
 .dt-day.sel{background:rgba(165,139,255,.08)}
@@ -280,13 +277,14 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .dt-bar{width:5px;max-width:6px;border-radius:3px 3px 1px 1px;min-height:3px;background:var(--violet);flex:none}
 .dt-bar.b-green{background:var(--green)}
 .dt-bar.b-muted{background:var(--faint)}
+.dt-bar.b-red{background:var(--red)}
 .dt-bar.zero{min-height:0;background:none}
 .dt-lab{font-size:9.5px;line-height:1;color:var(--faint);text-align:center}
 .dt-detail{font-size:13.5px;color:var(--muted);line-height:1.45;min-height:20px;margin:8px 0 0}
 .dt-sub{font-size:12.5px;color:var(--faint);line-height:1.45;margin:6px 0 0}
 
 /* ---------- Раунд 3 ---------- */
-.det-foot{text-align:center;display:flex;flex-direction:column;gap:7px;font-size:15.5px;color:var(--muted);padding:4px 8px 6px}
+.det-foot{text-align:center;display:flex;flex-direction:column;gap:7px;font-size:18px;color:var(--muted);padding:4px 8px 6px}
 .det-foot div{line-height:1.5}
 .cat-block .btn-primary,.morse-block .btn-primary{box-shadow:0 4px 11px rgba(143,116,224,.18)}
 .wipe-pass{width:100%;min-height:44px;border-radius:12px;border:1px solid var(--red-line);background:var(--card2);color:var(--text);padding:0 12px;font:inherit;font-size:15px;margin:8px 0 4px}
@@ -471,11 +469,6 @@ html.rm .card-drag.flipped .card-front{opacity:0}
       </div>
       <button class="btn-ghost" id="btnDetails">Статистика</button>
       <div class="home-bottom">
-        <div class="summary" id="homeSummary" hidden>
-          <h2>Итог дня</h2>
-          <p id="summaryLine1"></p>
-          <p id="summaryLine2"></p>
-        </div>
         <div class="empty-day" id="emptyDay" hidden>
           <h2 id="emptyDayTitle">На сегодня повторений нет</h2>
           <p id="emptyDayText"></p>
@@ -685,6 +678,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
           <div class="det-card">
             <div class="det-legend">
               <span><i class="lg lg-violet"></i>Введено верно</span>
+              <span><i class="lg lg-red"></i>Введено неверно</span>
             </div>
             <div class="dt-chart" id="dtMorseChart"></div>
             <p class="dt-detail" id="dtMorseDetail"></p>
@@ -1063,7 +1057,6 @@ function $(id){ return document.getElementById(id); }
 var elViews = {home:$('view-home'), session:$('view-session'), result:$('view-result'), archive:$('view-archive'), morse:$('view-morse'), details:$('view-details')};
 var elHomeDate=$('homeDate'), elTestPillHome=$('testPillHome'), elHomeTitle=$('homeTitle'), elCatSub=$('catSub'), elCatChip=$('catChip'),
     elArchRow=$('archRow'), elArchRowCount=$('archRowCount'),
-    elHomeSummary=$('homeSummary'), elSummaryLine1=$('summaryLine1'), elSummaryLine2=$('summaryLine2'),
     elEmptyDay=$('emptyDay'), elEmptyDayTitle=$('emptyDayTitle'), elEmptyDayText=$('emptyDayText'), elBtnNearest=$('btnNearest'),
     elCntToday=$('cntToday'), elCntBreak=$('cntBreak'),
     elBtnStart=$('btnStart'), elBtnShowResult=$('btnShowResult'), elBtnSettings=$('btnSettings');
@@ -1573,26 +1566,15 @@ function renderHome(){
   elCntBreak.textContent='Повторений: '+plan.reviews+', Новых: '+plan.news;
   elCatChip.className='chip';
   if(state.status==='completed' && state.sessionDate===eff){
-    var st=computeStats();
     elHomeTitle.textContent='На сегодня всё';
     elCatSub.textContent=state.sessionTotal+' '+plural(state.sessionTotal,'карточка','карточки','карточек')+' · день завершён';
     elCatChip.textContent='Готово'; elCatChip.classList.add('is-done');
-    elSummaryLine1.innerHTML='';
-    elSummaryLine1.appendChild(document.createTextNode('С первого раза: ')); elSummaryLine1.appendChild(strong(String(st.first)));
-    elSummaryLine1.appendChild(document.createTextNode(' · Повторено: ')); elSummaryLine1.appendChild(strong(String(st.repeated)));
-    elSummaryLine1.appendChild(document.createTextNode(' · На завтра: ')); elSummaryLine1.appendChild(strong(String(st.tomorrow)));
-    elSummaryLine2.innerHTML='';
-    elSummaryLine2.appendChild(document.createTextNode('Ошибок: ')); elSummaryLine2.appendChild(strong(String(st.errors)));
-    elSummaryLine2.appendChild(document.createTextNode(' · +Этап: ')); elSummaryLine2.appendChild(strong(String(st.advanced)));
-    elSummaryLine2.appendChild(document.createTextNode(' · Освоено: ')); elSummaryLine2.appendChild(strong(String(st.graduated)));
-    elHomeSummary.hidden=false;
     elEmptyDay.hidden=true;
     elBtnStart.hidden=false;
     elBtnStart.textContent='Продолжить тренировку'; // норма закрыта — тренируемся дальше, как в «Морзе»
     elBtnShowResult.hidden=false;
     return;
   }
-  elHomeSummary.hidden=true;
   elBtnShowResult.hidden=true;
   elHomeTitle.textContent='Вечерняя сессия';
   if(state.status==='active'){
@@ -1682,7 +1664,11 @@ function renderSession(opts){
   elWordFront.textContent=c.word;              // лицевая сторона — слово без ударения
   fitFrontWord();
   elWordBack.textContent=c.stress;
-  elDefBack.textContent=c.definitionFull;      // оборот — развёрнутое определение
+  /* Оборот — КОРОТКОЕ определение: его видно сразу при перевороте без единого
+     нажатия. Развёрнутое (definitionFull) остаётся там, где и было, — на экране
+     «Подробнее» (elDtDefFull); короткое поле есть у любой карточки
+     (валидатор словаря при отсутствии дублирует в него длинное). */
+  elDefBack.textContent=c.definitionShort || c.definitionFull;
   fitBackWord();
   var r=state.sessionResults[c.id];
   elBadgeRepeat.hidden=!(r && r.errors>0 && !r.done);
@@ -1841,8 +1827,8 @@ function finishSession(){
    тренировку» у морзе. Берём случайные уже начатые слова (learning/graduated/
    learned, не новые), но ответы НЕ вызывают applyKnow/applyForget: шаги,
    интервалы, план дня и статистика дня остаются нетронутыми. Прежние итоги дня
-   кладём в practiceBackup и возвращаем по завершении — поэтому «Итог дня» на
-   главной после тренировки показывает реальный день, а не практику. */
+   кладём в practiceBackup и возвращаем по завершении — поэтому главная и
+   экран результата показывают реальный день, а не практику. */
 function startPracticeSession(){
   if(state.status==='active' || state.practice) return;
   if(!content.ready || !CARDS.length) return;
@@ -4701,13 +4687,14 @@ function renderDetails(){
     var h=(morseState && morseState.history && morseState.history[d])?morseState.history[d]:null;
     return h?{correct:h.correct|0, attempts:h.attempts|0, errors:h.errors|0}:{correct:0, attempts:0, errors:0};
   });
-  detMorse.any=detMorse.data.some(function(v){ return v.correct>0; });
+  detMorse.any=detMorse.data.some(function(v){ return v.correct>0 || v.errors>0; });
   detMorse.clicked=false;
   detMorse.sel=-1;
-  for(var j=detMorse.days.length-1;j>=0;j--){ if(detMorse.data[j].correct>0){ detMorse.sel=j; break; } }
+  for(var j=detMorse.days.length-1;j>=0;j--){ if(detMorse.data[j].correct>0 || detMorse.data[j].errors>0){ detMorse.sel=j; break; } }
   if(detMorse.sel<0) detMorse.sel=detMorse.days.length-1;
   var mMax=1;
-  detMorse.data.forEach(function(v){ mMax=Math.max(mMax, v.correct); });
+  // потолок шкалы — по ОБОИМ рядам, иначе столбец «неверно» упирается в легенду
+  detMorse.data.forEach(function(v){ mMax=Math.max(mMax, v.correct, v.errors); });
   var mc=$('dtMorseChart');
   mc.innerHTML='';
   detMorse.days.forEach(function(d, idx){
@@ -4720,6 +4707,13 @@ function renderDetails(){
     if(val.correct>0) b.style.height=Math.max(6, Math.round(val.correct/mMax*100))+'%';
     else b.classList.add('zero');
     bars.appendChild(b);
+    /* Рядом второй столбец — «Введено неверно» (ошибки ввода за день):
+       та же шкала, красный — как в легенде. Порядок = порядок легенды. */
+    var bad=val.errors|0;
+    var bw=document.createElement('i'); bw.className='dt-bar b-red';
+    if(bad>0) bw.style.height=Math.max(6, Math.round(bad/mMax*100))+'%';
+    else bw.classList.add('zero');
+    bars.appendChild(bw);
     var lab=document.createElement('span'); lab.className='dt-lab';
     lab.textContent=String(+d.split('-')[2]);
     cell.appendChild(bars); cell.appendChild(lab);
@@ -4733,12 +4727,16 @@ function renderDetails(){
     if(!ls) return;
     var ok=ls.ok|0, bad=ls.bad|0;
     if(ok+bad>0){
-      letterParts.push(c.letter+' '+Math.round(ok/(ok+bad)*100)+'%');
+      letterParts.push({l:c.letter, p:Math.round(ok/(ok+bad)*100)}); // собираем объектами — сортируем ниже
       okAll+=ok; badAll+=bad;
     }
   });
+  /* Сортировка по проценту точности, НЕ по алфавиту: сверху самые точные
+     буквы, слабые уходят вниз — глазом сразу видно, что подтягивать. */
+  letterParts.sort(function(a,b){ return b.p-a.p; });
+  var letterTxt=letterParts.map(function(x){ return x.l+' '+x.p+'%'; });
   fillDetFoot('detMorseFoot', [
-    letterParts.length ? ('Верный ввод по буквам: '+letterParts.join(' · ')) : 'Верный ввод по буквам: пока нет данных',
+    letterTxt.length ? ('Верный ввод по буквам: '+letterTxt.join(' · ')) : 'Верный ввод по буквам: пока нет данных',
     'Точность за всё время: '+((okAll+badAll)>0?Math.round(okAll/(okAll+badAll)*100)+'%':'—')
   ]);
   if(morseState){
@@ -5085,5 +5083,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a41999f609064673',t:'MTc5MDUwMjU5OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

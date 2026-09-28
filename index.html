@@ -4100,10 +4100,18 @@ function loadMorseImage(card, force, urgent){
 }
 function pumpMorseImgQueue(){
   while(morseImgActive<MORSE_IMG_PAR && morseImgQueue.length){
-    var id=morseImgQueue.shift();
-    if(morseImgStatus[id]!=='loading') continue; // могло устареть
+    var job=morseImgQueue.shift();
+    var isReval=(typeof job==='object' && job!==null && job.reval===true);
+    var id=isReval?job.id:job;
+    if(isReval){
+      // фоновая перепроверка — только для спокойно лежащего в кэше жеста
+      if(morseImgStatus[id]!=='ok' || morseImgBusy[id]) continue;
+    } else {
+      if(morseImgStatus[id]!=='loading') continue; // могло устареть
+    }
     morseImgActive++; morseImgBusy[id]=1;
-    startMorseImgJob(MORSE_MAP[id]||null, id);
+    if(isReval) startMorseImgReval(MORSE_MAP[id]||null, id);
+    else startMorseImgJob(MORSE_MAP[id]||null, id);
   }
 }
 function startMorseImgJob(card, id){
@@ -4155,26 +4163,43 @@ function morseImgFromCache(card, done){
     return c.match(card.image).catch(function(){ return null; });
   }).then(function(resp){
     if(resp && typeof resp.blob==='function'){
-      return resp.blob().then(function(b){ morseImgToObject(card, b, done); },
-                              function(){ morseImgFetch(card, done); });
+      return resp.blob().then(function(b){
+        morseImgToObject(card, b, done);
+        /* Кэш показали — фоном тут же спрашиваем сервер: заменили ли файл.
+           Так новые signs подхватываются в ЭТОЙ же сессии, а не «когда-то». */
+        morseImgEnqueueReval(card);
+      }, function(){ morseImgFetch(card, done); });
     }
     return morseImgFetch(card, done);
   }).catch(function(){ done(false); });
 }
 function morseImgFetch(card, done){
-  Promise.resolve().then(function(){ return fetch(card.image); }).then(function(r){
+  Promise.resolve().then(function(){
+    // no-cache: не доверяем даже HTTP-кэшу браузера — иначе старые жесты
+    // «приедут» повторно и пользователь снова увидит прежние фото
+    return fetch(card.image, {cache:'no-cache'});
+  }).then(function(r){
     if(!r || !r.ok || typeof r.blob!=='function') throw new Error('morse image http');
+    var keep=(typeof r.clone==='function')?r.clone():null;
     return r.blob().then(function(b){
-      morseImgCachePut(card, b);   // в кэш — для будущих сессий (не блокирует показ)
+      morseImgCachePut(card, b, keep); // с ETag/Last-Modified — для ревалидации
       morseImgToObject(card, b, done);
     });
   }).catch(function(){ done(false); });
 }
-function morseImgCachePut(card, b){
+function morseImgCachePut(card, b, srcResp){
   try{
     if(typeof Response!=='function') return;
+    /* Сохраняем валидаторы сервера (ETag/Last-Modified): по ним следующая
+       сессия делает дешёвый условный запрос и узнаёт, что файл заменён. */
+    var hdrs={};
+    if(srcResp && srcResp.headers && typeof srcResp.headers.get==='function'){
+      ['etag','last-modified','content-type'].forEach(function(k){
+        try{ var v=srcResp.headers.get(k); if(v) hdrs[k]=v; }catch(e){}
+      });
+    }
     caches.open(morseImgCacheName()).then(function(c){
-      if(c && typeof c.put==='function') return c.put(card.image, new Response(b));
+      if(c && typeof c.put==='function') return c.put(card.image, new Response(b, {headers:hdrs}));
     }).catch(function(){});
   }catch(e){}
 }
@@ -4183,6 +4208,61 @@ function morseImgToObject(card, b, done){
     morseImgObj[card.id]=URL.createObjectURL(b); // objectURL живёт до перезагрузки
     done(true);
   }catch(e){ done(false); }
+}
+/* Фоновая ревалидация показанного из кэша жеста.
+   304 → файл прежний, ничего не трогаем.
+   200 → подгрузили новые signs: подменяем objectURL на месте (старая картинка
+   не гаснет — плейсхолдер не мигает), переписываем src текущей карточки и
+   обновляем свой кэш. Сеть недоступна → остаёмся на кэше, ошибка не копится. */
+function morseImgEnqueueReval(card){
+  if(!card || !card.id) return;
+  if(morseImgStatus[card.id]!=='ok' || morseImgBusy[card.id]) return;
+  morseImgQueue.push({id:card.id, reval:true});
+  pumpMorseImgQueue();
+}
+function startMorseImgReval(card, id){
+  var finish=function(){
+    morseImgActive=Math.max(0,morseImgActive-1);
+    delete morseImgBusy[id];
+    pumpMorseImgQueue();
+  };
+  if(!card){ finish(); return; }
+  var p;
+  try{ p=caches.open(morseImgCacheName()); }catch(e){ p=null; }
+  Promise.resolve(p).then(function(c){
+    if(!c || typeof c.match!=='function') return null;
+    return c.match(card.image).catch(function(){ return null; });
+  }).then(function(stored){
+    var headers={};
+    if(stored && stored.headers && typeof stored.headers.get==='function'){
+      try{
+        var et=stored.headers.get('etag'), lm=stored.headers.get('last-modified');
+        if(et) headers['If-None-Match']=et;
+        if(lm) headers['If-Modified-Since']=lm;
+      }catch(e){}
+    }
+    return fetch(card.image, {cache:'no-cache', headers:headers}).then(function(r){
+      if(!r) return;
+      if(r.status===304) return;                      // сервер подтвердил: файл прежний
+      if(!r.ok || typeof r.blob!=='function') return; // сети нет — кэш не трогаем
+      var keep=(typeof r.clone==='function')?r.clone():null;
+      return r.blob().then(function(b){
+        var old=morseImgObj[id];
+        try{ morseImgObj[id]=URL.createObjectURL(b); }catch(e){ return; }
+        if(old){ try{ URL.revokeObjectURL(old); }catch(e){} }
+        morseImgCachePut(card, b, keep);
+        try{ // это текущая карточка — подменяем src на лету
+          if(typeof state!=='undefined' && state && state.view==='morse'){
+            var img=$('morseImg'), cur=currentMorseCard();
+            if(cur && cur.id===id && img && !img.hidden &&
+               morseImgObj[id] && img.getAttribute('src')!==morseImgObj[id]){
+              img.src=morseImgObj[id];
+            }
+          }
+        }catch(e){}
+      });
+    });
+  }).catch(function(){}).then(finish, finish);
 }
 function preloadMorseImages(){ MORSE_CARDS.forEach(function(c){ loadMorseImage(c); }); }
 
@@ -5321,5 +5401,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a41c16d1cf6eae05',t:'MTc5MDUyODY4Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

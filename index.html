@@ -3800,7 +3800,9 @@ elBtnBootRetry.addEventListener('click', function(){
    - раздел полностью независим от слов: свой localStorage-ключ, НЕТ интервального
      планировщика и НЕТ записи в Telegram CloudStorage (buildPayloads его не знает);
    - дневная цель — 10 ПРАВИЛЬНЫХ ответов в локальный календарный день (не UTC);
-     ошибки счётчик цели не увеличивают;
+     ошибки счётчик цели не увеличивают; сама цель — ТРИГГЕР экрана «Готово»,
+     а не потолок: после неё верные ответы продолжают копиться (как и ошибки),
+     чтобы статистика свободной тренировки была честной;
    - буквы выбираются взвешенно-случайно (вес = 1 + weaknessScore), без повтора
      одной буквы дважды подряд при наличии других карточек; новая буква выбирается
      ТОЛЬКО после окончания экрана результата — готовой очереди не существует;
@@ -3811,7 +3813,7 @@ elBtnBootRetry.addEventListener('click', function(){
 var MORSE_URL='./data/morse-signs.json';
 var MORSE_CACHE_KEY='nem_morse_cache_v1';
 var MORSE_STATE_KEY='nem_morse_practice_v1';
-var MORSE_GOAL=10;          // дневная цель: количество правильных ответов
+var MORSE_GOAL=10;          // дневная цель: триггер экрана цели, НЕ потолок счётчика
 var MORSE_MAX_INPUT=5;      // максимум элементов кода (больше пяти не вводим)
 var MORSE_DOT_MS=192;       // <192 мс — точка, ≥192 мс — тире (80% от прежних 240 мс)
 var MORSE_MIN_MS=40;        // короче 40 мс — случайное касание, игнорируем
@@ -3956,7 +3958,8 @@ function loadMorseState(){
   morseState={
     schemaVersion:1,
     day:(typeof s.day==='string' && /^\d{4}-\d{2}-\d{2}$/.test(s.day)) ? s.day : realToday(),
-    dailyCorrect:clampInt(s.dailyCorrect,0,MORSE_GOAL),
+    // потолка больше нет: свободный режим копит верные и дальше (12, 15, 30…)
+    dailyCorrect:clampInt(s.dailyCorrect,0,1000000),
     dailyAttempts:clampInt(s.dailyAttempts,0,1000000),
     dailyErrors:clampInt(s.dailyErrors,0,1000000),
     streak:clampInt(s.streak,0,1000000),
@@ -4638,14 +4641,14 @@ function runMorseCheck(){
   }
   if(!morseState.sequence) return;
   var ok=(morseState.sequence===card.morse);
-  var wasBelow=morseState.dailyCorrect<MORSE_GOAL;
+  var wasBelow=morseState.dailyCorrect<MORSE_GOAL; // только для экрана цели (10-й верный)
   morseState.dailyAttempts++;
   if(!morseState.letterStats || typeof morseState.letterStats!=='object') morseState.letterStats={};
   if(!morseState.letterStats[card.id] || typeof morseState.letterStats[card.id]!=='object') morseState.letterStats[card.id]={ok:0,bad:0};
   var ls=morseState.letterStats[card.id]; // доля верных вводов по букве — для статистики
   var w=morseWeak(card.id);
   if(ok){
-    if(wasBelow) morseState.dailyCorrect=Math.min(MORSE_GOAL, morseState.dailyCorrect+1); // ошибки цель не двигают
+    morseState.dailyCorrect=(morseState.dailyCorrect|0)+1; // копится и после цели — симметрично ошибкам
     ls.ok=(ls.ok|0)+1;
     morseState.streak=(morseState.streak|0)+1;            // стрик: буква подряд
     if(morseState.streak>(morseState.streakBest|0)) morseState.streakBest=morseState.streak; // новый рекорд

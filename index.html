@@ -258,6 +258,8 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .speak-btn{position:absolute;right:14px;bottom:14px;width:46px;height:46px;border-radius:50%;background:var(--violet-soft);border:1px solid var(--violet-line);display:grid;place-items:center;color:var(--violet);z-index:2}
 .speak-btn svg{width:20px;height:20px}
 .speak-btn:disabled{opacity:.45}
+.card-front .ls-lang{margin-bottom:2px}
+#btnLsSpeakBack{top:12px;right:12px;bottom:auto}
 .morse-status{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:2px 2px 10px}
 /* Стрик: число букв подряд; «рекордный» огонёк — золотом со свечением и
    пульсацией — загорается, когда серия дошла до лучшего результата (идёт бой
@@ -797,7 +799,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
     </main>
   </section>
 
-  <!-- Экран 7: Языки — тренировка -->
+  <!-- Экран 7: Языки — тренировка (механика карточек один в один как в «Словах») -->
   <section class="view" id="view-langsession" aria-label="Тренировка языков">
     <header class="sess-head">
       <button class="icon-btn" id="btnLsessBack" aria-label="Назад к языкам">
@@ -816,31 +818,37 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         <div class="card-drag" id="lsDrag">
           <div class="card-inner" id="lsInner">
             <div class="card-face card-front" id="lsFront">
-              <span class="front-label" id="lsLabel">Вспомни русский смысл</span>
+              <span class="badge" id="lsBadgeRepeat" hidden>Повтор</span>
+              <span class="front-label" id="lsLabel">Вспомни перевод</span>
               <span class="ls-lang" id="lsLangName"></span>
-              <h2 class="front-word" id="lsNative"></h2>
-              <p class="ls-ru" id="lsRuFront" hidden></p>
-              <span class="front-hint" id="lsHint">Нажми, чтобы увидеть ответ</span>
+              <h2 class="front-word" id="lsQ"></h2>
+              <span class="front-hint" id="lsHint">Свайпни или используй кнопки</span>
+              <button class="peek-btn" id="btnLsPeek" aria-label="Проверить себя: подсмотреть перевод, не отвечая">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.1 9a3 3 0 0 1 5.8 1c0 1.6-1.2 2.3-2.1 2.9-.6.4-.9.8-.9 1.6v.2"/><circle cx="12" cy="17.5" r="1.1" fill="currentColor" stroke="none"/></svg>
+              </button>
               <button class="speak-btn" id="btnLsSpeakFront" aria-label="Озвучить слово">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>
               </button>
-              <div class="tint" aria-hidden="true"></div>
+              <div class="tint" id="lsTintFront" aria-hidden="true"></div>
             </div>
             <div class="card-face card-back" id="lsBack">
-              <div class="back-scroll">
+              <span class="badge" id="lsBadgePeek" hidden>Проверка себя</span>
+              <div class="back-scroll" id="lsBackScroll">
                 <span class="ls-lang" id="lsBackLang"></span>
                 <h2 class="back-word" id="lsBackHead"></h2>
                 <p class="def" id="lsBackSub"></p>
                 <p class="dt-sub" id="lsBackNote"></p>
               </div>
+              <p class="return-note" id="lsReturnNote" hidden></p>
+              <button class="btn-back" id="btnLsBackAction">Понятно, повторить позже</button>
               <button class="speak-btn" id="btnLsSpeakBack" aria-label="Озвучить слово">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>
               </button>
-              <div class="tint violet" aria-hidden="true"></div>
+              <div class="tint violet" id="lsTintBack" aria-hidden="true"></div>
             </div>
           </div>
         </div>
-        <div class="actions" id="lsActions" hidden>
+        <div class="actions" id="lsActions">
           <button class="act act-no" id="btnLsNo">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             <span>Не помню</span>
@@ -5384,65 +5392,93 @@ function mergeLangCloudValue(key, obj){
 loadLangState();
 
 /* ---------- Озвучка: Web Speech API (без серверов и токенов) ---------- */
-var langVoiceRetryTimer=null;
-function langFindVoice(bcp47){
-  try{
-    if(typeof speechSynthesis==='undefined' || !speechSynthesis.getVoices) return null;
-    var vs=speechSynthesis.getVoices()||[];
-    if(!vs.length) return null;
-    for(var i=0;i<vs.length;i++){ if(vs[i] && vs[i].lang===bcp47) return vs[i]; }   // точное совпадение
-    var base=String(bcp47||'').split('-')[0];
-    for(var j=0;j<vs.length;j++){ if(vs[j] && String(vs[j].lang||'').split('-')[0]===base) return vs[j]; }
-    return null;
-  }catch(e){ return null; }
+/* Точный лог: каждая неудача объясняется в консоли причиной (нет API /
+   нет голоса / код ошибки синтеза), а не общим «что-то пошло не так». */
+function langLogSound(where, info){
+  try{ console.warn('No1EqualsMe: озвучка [' + where + ']', info); }catch(e){}
 }
-function doSpeakLang(text, bcp47, voice){
+function langVoicesRaw(){
   try{
-    var u=new SpeechSynthesisUtterance(text);
-    u.lang=bcp47; u.rate=0.85; u.pitch=1;               // скорость ~0.85, высота стандартная
-    if(voice) u.voice=voice;
-    speechSynthesis.speak(u);
-    return true;
-  }catch(e){ toast('Озвучка не поддерживается на этом устройстве'); return false; }
+    if(typeof speechSynthesis==='undefined' || !speechSynthesis.getVoices) return [];
+    return speechSynthesis.getVoices()||[];
+  }catch(e){ return []; }
+}
+function langPickVoice(vs, bcp47){
+  if(!vs || !vs.length) return null;
+  for(var i=0;i<vs.length;i++){ if(vs[i] && vs[i].lang===bcp47) return vs[i]; }   // точное совпадение
+  var base=String(bcp47||'').split('-')[0];
+  for(var j=0;j<vs.length;j++){ if(vs[j] && String(vs[j].lang||'').split('-')[0]===base) return vs[j]; }
+  return null;
 }
 function speakLang(text, bcp47){
-  if(typeof speechSynthesis==='undefined' || typeof SpeechSynthesisUtterance==='undefined'){
-    toast('Озвучка не поддерживается на этом устройстве'); return false;
+  var hasSynth=(typeof speechSynthesis!=='undefined' && typeof speechSynthesis.speak==='function');
+  var hasUtt=(typeof SpeechSynthesisUtterance==='function');
+  if(!hasSynth || !hasUtt){
+    langLogSound('нет Web Speech API', {
+      speechSynthesis:hasSynth, utterance:hasUtt,
+      ua:(typeof navigator!=='undefined' && navigator.userAgent)||''
+    });
+    toast('Озвучка не поддерживается на этом устройстве');
+    return false;
   }
-  try{ speechSynthesis.cancel(); }catch(e){}            // новое воспроизведение — старое гасим
-  var v=langFindVoice(bcp47);
-  if(v) return doSpeakLang(text, bcp47, v);
-  var raw=[];
-  try{ raw=speechSynthesis.getVoices()||[]; }catch(e){}
-  if(raw.length){
-    // список голосов уже загружен, но языка карточки в нём нет — сообщаем сразу
+  try{ speechSynthesis.cancel(); }catch(e){}          // новое воспроизведение — старое гасим
+  var vs=langVoicesRaw();
+  var v=langPickVoice(vs, bcp47);
+  if(vs.length && !v){
+    // список уже загружен, но голоса этого языка в нём нет — говорим сразу
+    langLogSound('нет голоса языка', {
+      target:bcp47, voicesCount:vs.length,
+      langs:vs.map(function(x){ return x.lang; }).filter(function(x,i,a){ return a.indexOf(x)===i; }).slice(0,24)
+    });
     toast('Голос этого языка не установлен. Добавьте его в настройках речи телефона.');
     return false;
   }
-  /* Список ещё не готов: голоса приходят асинхронно (voiceschanged) — одну
-     попытку ждём событие, затем честно сообщаем. Карточка не ломается. */
-  if(!langVoiceRetryTimer && typeof speechSynthesis.addEventListener==='function'){
-    var onv=function(){
-      clearTimeout(langVoiceRetryTimer); langVoiceRetryTimer=null;
-      try{ speechSynthesis.removeEventListener('voiceschanged', onv); }catch(e){}
-      var v2=langFindVoice(bcp47);
-      if(v2) doSpeakLang(text, bcp47, v2);
-      else toast('Голос этого языка не установлен. Добавьте его в настройках речи телефона.');
+  /* Список голосов может быть ещё пуст (грузятся асинхронно): произносим по
+     lang — движок сам выберет голос; реальные ошибки придёт из onerror. */
+  try{
+    var u=new SpeechSynthesisUtterance(text);
+    u.lang=bcp47; u.rate=0.85; u.pitch=1;
+    if(v) u.voice=v;
+    u.onerror=function(ev){
+      var code=(ev && ev.error) ? String(ev.error) : 'unknown';
+      langLogSound('ошибка синтеза', {
+        code:code, lang:bcp47, textLen:String(text||'').length,
+        hasMatchedVoice:!!v, voicesCount:vs.length,
+        ua:(typeof navigator!=='undefined' && navigator.userAgent)||''
+      });
+      if(code==='language-not-supported' || code==='voice-unavailable'){
+        toast('Голос этого языка не установлен. Добавьте его в настройках речи телефона.');
+      } else if(code==='not-allowed' || code==='service-not-allowed'){
+        toast('Браузер запретил звук — разрешите озвучку для этой страницы в настройках.');
+      } else if(code==='synthesis-unavailable' || code==='no-audio' || code==='audio-busy'){
+        toast('Звук сейчас недоступен — откройте страницу заново и попробуйте ещё раз.');
+      } else {
+        toast('Не удалось воспроизвести звук — попробуйте ещё раз.');
+      }
     };
-    try{ speechSynthesis.addEventListener('voiceschanged', onv); }catch(e){}
-    langVoiceRetryTimer=setTimeout(function(){
-      langVoiceRetryTimer=null;
-      try{ speechSynthesis.removeEventListener('voiceschanged', onv); }catch(e){}
-      if(!langFindVoice(bcp47)) toast('Голос этого языка не установлен. Добавьте его в настройках речи телефона.');
-    }, 1500);
+    speechSynthesis.speak(u);
+    if(!vs.length) langLogSound('голоса ещё не загружены — произносим по lang', {target:bcp47});
     return true;
+  }catch(e){
+    langLogSound('speak() бросил исключение', {
+      message:String((e && e.message) || e), lang:bcp47,
+      ua:(typeof navigator!=='undefined' && navigator.userAgent)||''
+    });
+    toast('Озвучка не поддерживается на этом устройстве');
+    return false;
   }
-  toast('Голос этого языка не установлен. Добавьте его в настройках речи телефона.');
-  return false;
 }
 function stopLangSpeech(){
   try{ if(typeof speechSynthesis!=='undefined') speechSynthesis.cancel(); }catch(e){}
 }
+/* Прогрев голосов: подписываемся сразу (в т.ч. свойством — старый WebKit) */
+try{
+  if(typeof speechSynthesis!=='undefined'){
+    var warmVoices=function(){ try{ langVoicesRaw(); }catch(e){} };
+    if(typeof speechSynthesis.addEventListener==='function') speechSynthesis.addEventListener('voiceschanged', warmVoices);
+    speechSynthesis.onvoiceschanged=warmVoices;
+  }
+}catch(e){}
 document.addEventListener('visibilitychange', function(){ if(document.hidden) stopLangSpeech(); });
 
 /* ---------- Карточка на главной ---------- */
@@ -5540,8 +5576,18 @@ function renderLangs(){
   });
 }
 
-/* ---------- Тренировка ---------- */
-var langSess={filter:null, base:0, shown:0, id:null, revealed:false};
+/* ---------- Тренировка: механика карточек — как в «Словах» ----------
+   Полное соответствие разделу «Слова»:
+   - лицевая = вопрос, кнопки «Помню/Не помню» видны сразу, свайп вправо/лево
+     отвечает с лицевой (порог и чувствительность общие — swipeSens());
+   - кнопка-глаз (peek) — «подсмотреть», не отвечая; бейдж «Проверка себя»;
+   - «Не помню» → переворот на оборот с ОБРАТНОЙ СВЯЗЬЮ, где вместо определения
+     стоит перевод (+ транскрипция и примечание), заметка «вернётся завтра» и
+     кнопка «Понятно, повторить позже» — уход из неё уводит карточку дальше;
+   - «Помню» → fly-вылет вправо; лок/flipAt/тиенты — те же, что в «Словах»;
+   - направление определяется стадией (≥6 — русский смысл → иностранное). */
+var langSess={filter:null, base:0, shown:0, id:null, screen:'question', errs:{}, _renderedId:null};
+var lsLock=false, lsDrag=null, lsFlipAt=0;
 function langQueueFor(filter){
   var day=ensureLangDay();
   if(!day) return [];
@@ -5551,9 +5597,66 @@ function openLangSession(filter){
   if(!langContent.ready){ toast(langContent.error?'Языки не загрузились. Нажми «Повторить» на главной.':'Языки ещё загружаются…'); return; }
   var q=langQueueFor(filter);
   if(!q.length){ toast(langQueueFor(null).length?'Сегодня по этому языку карточек нет':'Готово на сегодня'); return; }
-  langSess={filter:filter||null, base:q.length, shown:0, id:q[0], revealed:false};
+  langSess={filter:filter||null, base:q.length, shown:0, id:q[0], screen:'question', errs:{}, _renderedId:null};
+  lsLock=false; lsDrag=null; lsFlipAt=0;
   stopLangSpeech();
   showView('langsession');
+}
+function lsIsRev(){
+  var p=langState.cards[langSess.id];
+  return !!(p && p.s>=6);   // после успешной 30-дневной проверки направление меняется
+}
+function renderLangSession(opts){
+  opts=opts||{};
+  $('lsProgress').textContent=langSess.shown+' из '+langSess.base;
+  $('lsBar').setAttribute('aria-valuenow', String(langSess.shown));
+  $('lsBarFill').style.width=(langSess.base?Math.round(langSess.shown/langSess.base*100):0)+'%';
+  var c=langContent.cardById[langSess.id];
+  if(!c){ // карточка исчезла из контента — честно убираем из очереди
+    var day=langState.day;
+    if(day){ var ix=day.queue.indexOf(langSess.id); if(ix>=0) day.queue.splice(ix,1); saveLang(); }
+    langSess.id=null;
+    lsNextCard();
+    return;
+  }
+  if(langSess._renderedId!==langSess.id){ stopLangSpeech(); langSess._renderedId=langSess.id; }
+  var rev=lsIsRev();
+  var back=langSess.screen!=='question';
+  var peek=langSess.screen==='peek';
+  var def=langSess.screen==='definition';
+  /* Лицевая — вопрос */
+  $('lsLabel').textContent=rev?'Что это за слово?':'Вспомни перевод';
+  $('lsLangName').textContent=c.language;
+  $('lsQ').textContent=rev?c.translationRu:c.native;
+  $('lsHint').textContent='Свайпни или используй кнопки';
+  $('btnLsSpeakFront').hidden=rev;   // звук назвал бы ответ до раскрытия
+  $('lsBadgeRepeat').hidden=!langSess.errs[langSess.id];
+  /* Оборот — вместо определения стоит перевод */
+  $('lsBackLang').textContent=c.language;
+  $('lsBackHead').textContent=rev?c.native:c.translationRu;
+  var tr=String(c.transliteration||'');
+  $('lsBackSub').textContent=tr;
+  $('lsBackSub').hidden=!tr.replace(/^\s+|\s+$/g,'');
+  var note=String(c.usageNoteRu||'');
+  $('lsBackNote').textContent=note;
+  $('lsBackNote').hidden=!note.replace(/^\s+|\s+$/g,'');
+  $('lsBadgePeek').hidden=!peek;
+  $('lsReturnNote').hidden=!def;
+  if(def) $('lsReturnNote').textContent='Это слово вернётся завтра';
+  $('btnLsBackAction').textContent=peek?'Вернуться к слову':'Понятно, повторить позже';
+  $('lsActions').classList.toggle('hidden', back);
+  $('btnLsPeek').tabIndex=back?-1:0;
+  $('btnLsBackAction').tabIndex=back?0:-1;
+  if(back) $('lsBackScroll').scrollTop=0;
+  if(opts.instantFlip) $('lsInner').classList.add('no-anim');
+  $('lsDrag').classList.toggle('flipped', back);
+  if(opts.instantFlip){ void $('lsInner').offsetWidth; $('lsInner').classList.remove('no-anim'); }
+  $('lsDrag').classList.toggle('gl-red-back', def);   // после «Не помню» оборот слегка светится красным
+  if(opts.enter){
+    $('lsDrag').classList.remove('enter');
+    void $('lsDrag').offsetWidth;
+    $('lsDrag').classList.add('enter');
+  }
 }
 function lsNextCard(){
   var q=langQueueFor(langSess.filter);
@@ -5564,149 +5667,210 @@ function lsNextCard(){
     return;
   }
   langSess.id=q[0];
-  langSess.revealed=false;
-  renderLangSession();
+  langSess.screen='question';
+  renderLangSession({enter:true, instantFlip:true});
 }
-function renderLangSession(){
+/* «Помню» — как answer(true) в словах: прогресс, вылет вправо, следующая */
+function lsAnswer(remembered){
+  if(lsLock || lsDrag) return;
+  if(typeof state!=='undefined' && state && state.view!=='langsession') return;
+  if(langSess.screen!=='question' || !langSess.id) return;
+  lsLock=true;
   var id=langSess.id;
-  if(!id){ lsNextCard(); return; }
-  var c=langContent.cardById[id];
-  if(!c){ // карточка исчезла из контента — честно убираем из очереди
-    var day=langState.day;
-    var ix=day?day.queue.indexOf(id):-1;
-    if(ix>=0) day.queue.splice(ix,1);
-    saveLang();
-    langSess.id=null;
-    lsNextCard();
+  if(remembered){
+    haptic('success');
+    sfxWord(true);
+    langApply(id, true);
+    langSess.shown++;
+    langSess.screen='question';
+    renderLangHome();
+    lsFly(1, function(){ lsNextCard(); lsLock=false; });
+  } else {
+    /* «Не помню»: сброс цикла и «завтра» применяются сразу (как applyForget),
+       а карточка остаётся на обороте как обратная связь — «Понятно» ведёт дальше */
+    haptic('error');
+    sfxWord(false);
+    langSess.errs[id]=true;
+    langApply(id, false);
+    langSess.screen='definition';
+    lsFlipAt=Date.now();
+    renderLangHome();
+    lsRender();
+    setTimeout(function(){ lsLock=false; }, D.flip);
+  }
+}
+function lsRender(){ renderLangSession(); }
+/* Уход с экрана обратной связи (тап, свайп, кнопка) — как continueFromDefinition */
+function lsContinueDef(dir){
+  if(lsLock) return;
+  if(langSess.screen!=='definition') return;
+  if(Date.now()-lsFlipAt<300) return;
+  lsLock=true;
+  langSess.screen='question';
+  langSess.id=null;
+  lsFly(dir||1, function(){ lsNextCard(); lsLock=false; });
+}
+function lsEnterPeek(){
+  if(lsLock || lsDrag) return;
+  if(langSess.screen!=='question') return;
+  lsLock=true;
+  langSess.screen='peek';
+  lsFlipAt=Date.now();
+  lsRender();
+  setTimeout(function(){ lsLock=false; }, D.flip);
+}
+function lsExitPeek(){
+  if(lsLock) return;
+  if(langSess.screen!=='peek') return;
+  if(Date.now()-lsFlipAt<300) return;
+  lsLock=true;
+  langSess.screen='question';
+  lsRender();
+  setTimeout(function(){ lsLock=false; }, D.flip);
+}
+function lsBackProceed(){
+  if(lsLock) return;
+  if(Date.now()-lsFlipAt<300) return;
+  if(langSess.screen==='peek') lsExitPeek();
+  else if(langSess.screen==='definition') lsContinueDef(1);
+}
+/* ---------- Анимации и жесты (по образцу слов) ---------- */
+function lsFly(dir, cb){
+  $('lsDrag').classList.remove('is-drag','enter');
+  $('lsDrag').classList.add('anim');
+  var w=($('lsCardArea').clientWidth||window.innerWidth)+120;
+  $('lsDrag').style.transform='translateX('+(dir*w)+'px) rotate('+(dir*9)+'deg)';
+  setTimeout(function(){
+    $('lsDrag').classList.remove('anim');
+    $('lsDrag').classList.add('no-anim');
+    $('lsDrag').style.transform='';
+    lsClearVisual();
+    void $('lsDrag').offsetWidth;
+    $('lsDrag').classList.remove('no-anim');
+    cb();
+  }, D.fly);
+}
+function lsThreshold(){ return Math.max(26, ($('lsDrag').clientWidth||300)*(swipePct()/100)); }
+function lsClearVisual(){
+  $('lsTintFront').style.opacity='0'; $('lsTintFront').className='tint';
+  $('lsTintBack').style.opacity='0';
+  $('lsDrag').classList.remove('gl-green','gl-red','gl-violet');
+}
+function lsSetVisual(dx){
+  var t=Math.min(Math.abs(dx)/lsThreshold(),1);
+  if(langSess.screen!=='question'){
+    $('lsTintFront').style.opacity='0'; $('lsDrag').classList.remove('gl-green','gl-red');
+    $('lsTintBack').style.opacity=(t*0.28).toFixed(3);
+    $('lsDrag').classList.toggle('gl-violet', t>0.02);
     return;
   }
-  var p=langState.cards[id]||{s:1};
-  var rev=(p.s>=6); // после успешной 30-дневной проверки направление меняется
-  stopLangSpeech(); // новая карточка — речь прежней гасим
-  $('lsProgress').textContent=langSess.shown+' из '+langSess.base;
-  $('lsBar').setAttribute('aria-valuenow', String(langSess.shown));
-  $('lsBarFill').style.width=(langSess.base?Math.round(langSess.shown/langSess.base*100):0)+'%';
-  var drag=$('lsDrag');
-  drag.classList.remove('flipped');
-  drag.style.transform='';
-  langSess.revealed=false;
-  $('lsActions').hidden=true;
-  $('lsLangName').textContent=c.language;
-  var frontSpeak=$('btnLsSpeakFront');
-  if(!rev){
-    /* Ранняя стадия: иностранное → русский смысл */
-    $('lsLabel').textContent='Вспомни русский смысл';
-    $('lsNative').hidden=false;
-    $('lsNative').textContent=c.native;         // крупное поле native
-    $('lsRuFront').hidden=true;
-    frontSpeak.hidden=false; frontSpeak.disabled=false;  // звук до раскрытия разрешён
-    $('lsHint').textContent='Нажми, чтобы увидеть ответ';
+  $('lsTintBack').style.opacity='0'; $('lsDrag').classList.remove('gl-violet');
+  if(dx>4){
+    $('lsTintFront').className='tint green'; $('lsTintFront').style.opacity=(t*0.22).toFixed(3);
+    $('lsDrag').classList.add('gl-green'); $('lsDrag').classList.remove('gl-red');
+  } else if(dx<-4){
+    $('lsTintFront').className='tint red'; $('lsTintFront').style.opacity=(t*0.22).toFixed(3);
+    $('lsDrag').classList.add('gl-red'); $('lsDrag').classList.remove('gl-green');
   } else {
-    /* Длинная стадия: русский смысл → иностранное слово */
-    $('lsLabel').textContent='Что это за слово?';
-    $('lsNative').hidden=true;
-    $('lsRuFront').hidden=false;
-    $('lsRuFront').textContent=c.translationRu; // крупный русский смысл
-    frontSpeak.hidden=true;                    // звук раскрыл бы ответ — прячем
-    $('lsHint').textContent='Нажми, чтобы увидеть слово';
+    $('lsTintFront').style.opacity='0'; $('lsTintFront').className='tint';
+    $('lsDrag').classList.remove('gl-green','gl-red');
   }
-  $('lsBackLang').textContent=c.language;
-  $('lsBackHead').textContent=rev?c.native:c.translationRu;
-  var tr=String(c.transliteration||'');
-  $('lsBackSub').textContent=tr;
-  $('lsBackSub').hidden=!tr.replace(/^\s+|\s+$/g,'');
-  var note=String(c.usageNoteRu||'');
-  $('lsBackNote').textContent=note;
-  $('lsBackNote').hidden=!note.replace(/^\s+|\s+$/g,'');
 }
-function lsReveal(){
-  if(langSess.revealed || !langSess.id) return;
-  langSess.revealed=true;
-  stopLangSpeech();
-  $('lsDrag').classList.add('flipped');
-  $('lsActions').hidden=false;
-  $('lsHint').textContent='Свайп или кнопки внизу';
+function lsSpringBack(cb){
+  $('lsDrag').classList.remove('is-drag','enter');
+  $('lsDrag').classList.add('anim');
+  $('lsDrag').style.transform='';
+  lsClearVisual();
+  setTimeout(function(){ $('lsDrag').classList.remove('anim'); if(cb) cb(); }, D.spring);
 }
-function lsAnswer(know){
-  if(!langSess.revealed || !langSess.id) return; // до раскрытия карточку не засчитываем
-  stopLangSpeech();
-  var id=langSess.id;
-  langApply(id, know);
-  langSess.shown++;
-  langSess.id=null;
-  renderLangHome();
-  lsNextCard();
+function lsOnDown(e){
+  if(!(typeof state!=='undefined' && state && state.view==='langsession')) return;
+  if(e.isPrimary===false) return;
+  if(e.pointerType==='mouse' && e.button!==0) return;
+  if(e.target && e.target.closest && e.target.closest('button')) return;
+  if(e.clientX<18) return;
+  if(lsLock) return;
+  lsDrag={id:e.pointerId, x0:e.clientX, y0:e.clientY, dx:0, dy:0, active:false, downAt:Date.now()};
+  try{ $('lsDrag').setPointerCapture(e.pointerId); }catch(err){}
 }
-
-/* ---------- Опрос и обработчики ---------- */
+function lsOnMove(e){
+  if(!lsDrag || e.pointerId!==lsDrag.id) return;
+  var dx=e.clientX-lsDrag.x0, dy=e.clientY-lsDrag.y0;
+  lsDrag.dx=dx; lsDrag.dy=dy;
+  if(!lsDrag.active){
+    if(Math.abs(dx)>10 && Math.abs(dx)>Math.abs(dy)*1.15){
+      lsDrag.active=true;
+      $('lsDrag').classList.remove('enter');
+      $('lsDrag').classList.add('is-drag');
+    } else if(Math.abs(dy)>14 && Math.abs(dy)>Math.abs(dx)){
+      lsDrag=null; return;
+    } else return;
+  }
+  var rot=Math.max(-7, Math.min(7, dx/18));
+  $('lsDrag').style.transform='translateX('+dx+'px) rotate('+rot+'deg)';
+  lsSetVisual(dx);
+}
+function lsOnUp(e){
+  if(!lsDrag || e.pointerId!==lsDrag.id) return;
+  var g=lsDrag; lsDrag=null;
+  var side=langSess.screen;
+  if(g.active){
+    var pass=Math.abs(g.dx)>=lsThreshold();
+    if(side==='question'){
+      if(pass && !lsLock) lsAnswer(g.dx>0);
+      else lsSpringBack();
+    } else {
+      if(pass && Date.now()-lsFlipAt>=300 && g.downAt>lsFlipAt){
+        if(side==='definition') lsContinueDef(g.dx>0?1:-1);
+        else lsSpringBack(function(){ lsExitPeek(); });
+      } else lsSpringBack();
+    }
+  } else {
+    var isTap=(Date.now()-g.downAt<600) && Math.abs(g.dx)<12 && Math.abs(g.dy)<12;
+    if(isTap && side!=='question' && Date.now()-lsFlipAt>=300 && g.downAt>lsFlipAt) lsBackProceed();
+  }
+}
+function lsOnCancel(e){
+  if(!lsDrag || e.pointerId!==lsDrag.id) return;
+  if(lsDrag.active) lsSpringBack();
+  lsDrag=null;
+}
 (function(){
-  var front=$('lsFront');
-  if(front) front.addEventListener('click', function(e){
-    if(e.target.closest && e.target.closest('button')) return; // кнопки фронта — не раскрытие
-    lsReveal();
+  var drag=$('lsDrag');
+  drag.addEventListener('pointerdown', lsOnDown);
+  drag.addEventListener('pointermove', lsOnMove);
+  drag.addEventListener('pointerup', lsOnUp);
+  drag.addEventListener('pointercancel', lsOnCancel);
+  drag.addEventListener('lostpointercapture', function(e){
+    if(!lsDrag || e.pointerId!==lsDrag.id) return;
+    if(lsDrag.active) lsSpringBack();
+    lsDrag=null;
   });
-  var sf=$('btnLsSpeakFront');
-  if(sf) sf.addEventListener('click', function(e){
-    e.stopPropagation();                    // озвучка не раскрывает и не свайпит
+  /* Кнопки */
+  $('btnLsYes').addEventListener('click', function(){ lsAnswer(true); });
+  $('btnLsNo').addEventListener('click', function(){ lsAnswer(false); });
+  $('btnLsPeek').addEventListener('click', function(e){ e.stopPropagation(); lsEnterPeek(); });
+  $('btnLsPeek').addEventListener('pointerdown', function(e){ e.stopPropagation(); });
+  $('btnLsBackAction').addEventListener('click', function(){ lsBackProceed(); });
+  $('btnLsSpeakFront').addEventListener('click', function(e){
+    e.stopPropagation();
     var c=langContent.cardById[langSess.id];
-    if(c) speakLang(c.native, c.bcp47);     // звук поле native, не транскрипцию
+    if(c) speakLang(c.native, c.bcp47);   // звук — поле native, не транскрипция
   });
-  var sb=$('btnLsSpeakBack');
-  if(sb) sb.addEventListener('click', function(e){
+  $('btnLsSpeakBack').addEventListener('click', function(e){
     e.stopPropagation();
     var c=langContent.cardById[langSess.id];
     if(c) speakLang(c.native, c.bcp47);
   });
-  var yn=$('btnLsYes'), no=$('btnLsNo');
-  if(yn) yn.addEventListener('click', function(){ lsAnswer(true); });
-  if(no) no.addEventListener('click', function(){ lsAnswer(false); });
-  /* Свайпы: до раскрытия игнорируются (тап — раскрыть), после — работают как
-     в «Словах»: вправо «Помню», влево «Не помню». */
-  var area=$('lsCardArea');
-  if(area){
-    var st=null;
-    area.addEventListener('pointerdown', function(e){
-      if(!langSess.id) return;
-      if(e.target && e.target.closest && e.target.closest('button')) return;
-      st={x:e.clientX, y:e.clientY, dx:0, moved:false};
-      try{ area.setPointerCapture(e.pointerId); }catch(_){}
-    });
-    area.addEventListener('pointermove', function(e){
-      if(!st) return;
-      st.dx=e.clientX-st.x;
-      if(Math.abs(st.dx)>6 || Math.abs(e.clientY-st.y)>6) st.moved=true;
-      if(langSess.revealed && Math.abs(st.dx)>8){
-        $('lsDrag').style.transform='translateX('+st.dx+'px)';
-      }
-    });
-    var endDrag=function(e){
-      if(!st) return;
-      var dx=st.dx, moved=st.moved;
-      st=null;
-      $('lsDrag').style.transform='';
-      if(!langSess.revealed){
-        if(!moved) lsReveal();               // тап по лицевой — раскрыть
-        return;                              // свайп до раскрытия НЕ засчитывает карточку
-      }
-      if(dx>=90) lsAnswer(true);
-      else if(dx<=-90) lsAnswer(false);
-    };
-    area.addEventListener('pointerup', endDrag);
-    area.addEventListener('pointercancel', function(){ st=null; $('lsDrag').style.transform=''; });
-  }
-  var back=$('btnLangsBack');
-  if(back) back.addEventListener('click', function(){ goHome(); });
-  var lback=$('btnLsessBack');
-  if(lback) lback.addEventListener('click', function(){ stopLangSpeech(); showView('langs'); });
-  var mixed=$('btnMixedTrain');
-  if(mixed) mixed.addEventListener('click', function(){ openLangSession(null); });
-  var home=$('btnLangStart');
-  if(home) home.addEventListener('click', function(){
+  $('btnLsessBack').addEventListener('click', function(){ stopLangSpeech(); showView('langs'); });
+  /* Навигация раздела, главная карточка и сброс */
+  $('btnLangsBack').addEventListener('click', function(){ goHome(); });
+  $('btnMixedTrain').addEventListener('click', function(){ openLangSession(null); });
+  $('btnLangStart').addEventListener('click', function(){
     if(langContent.error){ loadLanguages(); return; }  // «Повторить»
     openLangSession(null);
   });
-  /* Тап по карточке «Языки» — вход в обзор раздела (список языков,
-     статистика и сброс); кнопка на карточке — сразу смешанная тренировка. */
+  /* Тап по карточке «Языки» — вход в обзор раздела; кнопка — сразу смешанная */
   var langCardEl=$('langCard');
   if(langCardEl) langCardEl.addEventListener('click', function(e){
     if(e.target && e.target.closest && e.target.closest('button')) return;
@@ -5722,7 +5886,6 @@ function lsAnswer(know){
     toast('Прогресс языков сброшен. Слова и Морзе не затронуты.');
   });
 })();
-
 loadMorseContent();
 loadLanguages();
 
@@ -6296,5 +6459,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4352a090cf03483',t:'MTc5MDc5MTYxNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a435596888e8e756',t:'MTc5MDc5MzU1NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

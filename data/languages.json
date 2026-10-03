@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "contentVersion": 1,
-  "updatedAt": "2026-09-29",
+  "contentVersion": 2,
+  "updatedAt": "2026-10-03",
   "sourceLanguage": "ru",
   "cardsPerLanguage": 50,
   "languages": [
@@ -77,8 +77,9 @@
       "transliteration": "",
       "translationRu": "Привет",
       "topic": "приветствие",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_hello.mp3"
     },
     {
       "id": "lang_es_goodbye",
@@ -90,8 +91,9 @@
       "transliteration": "",
       "translationRu": "До свидания",
       "topic": "прощание",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_goodbye.mp3"
     },
     {
       "id": "lang_es_thanks",
@@ -103,8 +105,9 @@
       "transliteration": "",
       "translationRu": "Спасибо",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_thanks.mp3"
     },
     {
       "id": "lang_es_please",
@@ -116,8 +119,9 @@
       "transliteration": "",
       "translationRu": "Пожалуйста",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_please.mp3"
     },
     {
       "id": "lang_es_yes",
@@ -129,8 +133,9 @@
       "transliteration": "",
       "translationRu": "Да",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_yes.mp3"
     },
     {
       "id": "lang_es_no",
@@ -142,8 +147,9 @@
       "transliteration": "",
       "translationRu": "Нет",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_no.mp3"
     },
     {
       "id": "lang_es_excuse_me",
@@ -155,8 +161,9 @@
       "transliteration": "",
       "translationRu": "Извините",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_excuse_me.mp3"
     },
     {
       "id": "lang_es_sorry",
@@ -168,8 +175,9 @@
       "transliteration": "",
       "translationRu": "Простите",
       "topic": "извинение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_sorry.mp3"
     },
     {
       "id": "lang_es_help",
@@ -181,8 +189,9 @@
       "transliteration": "",
       "translationRu": "Помогите!",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_help.mp3"
     },
     {
       "id": "lang_es_careful",
@@ -194,8 +203,9 @@
       "transliteration": "",
       "translationRu": "Осторожно!",
       "topic": "предупреждение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_careful.mp3"
     },
     {
       "id": "lang_es_stop",
@@ -207,8 +217,9 @@
       "transliteration": "",
       "translationRu": "Стойте!",
       "topic": "команда",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_stop.mp3"
     },
     {
       "id": "lang_es_wait",
@@ -220,8 +231,9 @@
       "transliteration": "",
       "translationRu": "Подождите",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_wait.mp3"
     },
     {
       "id": "lang_es_dont_understand",
@@ -233,8 +245,9 @@
       "transliteration": "",
       "translationRu": "Я не понимаю",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_dont_understand.mp3"
     },
     {
       "id": "lang_es_repeat",
@@ -246,8 +259,9 @@
       "transliteration": "",
       "translationRu": "Повторите, пожалуйста",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_repeat.mp3"
     },
     {
       "id": "lang_es_speak_english",
@@ -259,8 +273,9 @@
       "transliteration": "",
       "translationRu": "Вы говорите по-английски?",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_speak_english.mp3"
     },
     {
       "id": "lang_es_where",
@@ -272,8 +287,9 @@
       "transliteration": "",
       "translationRu": "Где?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_where.mp3"
     },
     {
       "id": "lang_es_when",
@@ -285,8 +301,9 @@
       "transliteration": "",
       "translationRu": "Когда?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_when.mp3"
     },
     {
       "id": "lang_es_how_much",
@@ -298,8 +315,9 @@
       "transliteration": "",
       "translationRu": "Сколько это стоит?",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_how_much.mp3"
     },
     {
       "id": "lang_es_toilet",
@@ -311,8 +329,9 @@
       "transliteration": "",
       "translationRu": "Туалет",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_toilet.mp3"
     },
     {
       "id": "lang_es_hotel",
@@ -324,8 +343,9 @@
       "transliteration": "",
       "translationRu": "Отель",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_hotel.mp3"
     },
     {
       "id": "lang_es_hospital",
@@ -337,8 +357,9 @@
       "transliteration": "",
       "translationRu": "Больница",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_hospital.mp3"
     },
     {
       "id": "lang_es_police",
@@ -350,8 +371,9 @@
       "transliteration": "",
       "translationRu": "Полиция",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_police.mp3"
     },
     {
       "id": "lang_es_pharmacy",
@@ -363,8 +385,9 @@
       "transliteration": "",
       "translationRu": "Аптека",
       "topic": "здоровье",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_pharmacy.mp3"
     },
     {
       "id": "lang_es_water",
@@ -376,8 +399,9 @@
       "transliteration": "",
       "translationRu": "Вода",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_water.mp3"
     },
     {
       "id": "lang_es_food",
@@ -389,8 +413,9 @@
       "transliteration": "",
       "translationRu": "Еда",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_food.mp3"
     },
     {
       "id": "lang_es_bread",
@@ -402,8 +427,9 @@
       "transliteration": "",
       "translationRu": "Хлеб",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_bread.mp3"
     },
     {
       "id": "lang_es_meat",
@@ -415,8 +441,9 @@
       "transliteration": "",
       "translationRu": "Мясо",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_meat.mp3"
     },
     {
       "id": "lang_es_fish",
@@ -428,8 +455,9 @@
       "transliteration": "",
       "translationRu": "Рыба",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_fish.mp3"
     },
     {
       "id": "lang_es_without_meat",
@@ -441,8 +469,9 @@
       "transliteration": "",
       "translationRu": "Без мяса",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_without_meat.mp3"
     },
     {
       "id": "lang_es_coffee",
@@ -454,8 +483,9 @@
       "transliteration": "",
       "translationRu": "Кофе",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_coffee.mp3"
     },
     {
       "id": "lang_es_tea",
@@ -467,8 +497,9 @@
       "transliteration": "",
       "translationRu": "Чай",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_tea.mp3"
     },
     {
       "id": "lang_es_breakfast",
@@ -480,8 +511,9 @@
       "transliteration": "",
       "translationRu": "Завтрак",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_breakfast.mp3"
     },
     {
       "id": "lang_es_bill",
@@ -493,8 +525,9 @@
       "transliteration": "",
       "translationRu": "Счёт, пожалуйста",
       "topic": "кафе",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_bill.mp3"
     },
     {
       "id": "lang_es_buy_this",
@@ -506,8 +539,9 @@
       "transliteration": "",
       "translationRu": "Я хочу купить это",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_buy_this.mp3"
     },
     {
       "id": "lang_es_money",
@@ -519,8 +553,9 @@
       "transliteration": "",
       "translationRu": "Деньги",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_money.mp3"
     },
     {
       "id": "lang_es_bank_card",
@@ -532,8 +567,9 @@
       "transliteration": "",
       "translationRu": "Банковская карта",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_bank_card.mp3"
     },
     {
       "id": "lang_es_train",
@@ -545,8 +581,9 @@
       "transliteration": "",
       "translationRu": "Поезд",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_train.mp3"
     },
     {
       "id": "lang_es_bus",
@@ -558,8 +595,9 @@
       "transliteration": "",
       "translationRu": "Автобус",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_bus.mp3"
     },
     {
       "id": "lang_es_taxi",
@@ -571,8 +609,9 @@
       "transliteration": "",
       "translationRu": "Такси",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_taxi.mp3"
     },
     {
       "id": "lang_es_airport",
@@ -584,8 +623,9 @@
       "transliteration": "",
       "translationRu": "Аэропорт",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_airport.mp3"
     },
     {
       "id": "lang_es_station",
@@ -597,8 +637,9 @@
       "transliteration": "",
       "translationRu": "Железнодорожный вокзал",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_station.mp3"
     },
     {
       "id": "lang_es_left",
@@ -610,8 +651,9 @@
       "transliteration": "",
       "translationRu": "Налево",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_left.mp3"
     },
     {
       "id": "lang_es_right",
@@ -623,8 +665,9 @@
       "transliteration": "",
       "translationRu": "Направо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_right.mp3"
     },
     {
       "id": "lang_es_straight",
@@ -636,8 +679,9 @@
       "transliteration": "",
       "translationRu": "Прямо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_straight.mp3"
     },
     {
       "id": "lang_es_today",
@@ -649,8 +693,9 @@
       "transliteration": "",
       "translationRu": "Сегодня",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_today.mp3"
     },
     {
       "id": "lang_es_tomorrow",
@@ -662,8 +707,9 @@
       "transliteration": "",
       "translationRu": "Завтра",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_tomorrow.mp3"
     },
     {
       "id": "lang_es_good",
@@ -675,8 +721,9 @@
       "transliteration": "",
       "translationRu": "Хорошо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_good.mp3"
     },
     {
       "id": "lang_es_bad",
@@ -688,8 +735,9 @@
       "transliteration": "",
       "translationRu": "Плохо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_bad.mp3"
     },
     {
       "id": "lang_es_may_i",
@@ -701,8 +749,9 @@
       "transliteration": "",
       "translationRu": "Можно?",
       "topic": "разрешение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_may_i.mp3"
     },
     {
       "id": "lang_es_forbidden",
@@ -714,8 +763,9 @@
       "transliteration": "",
       "translationRu": "Нельзя",
       "topic": "запрет",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_es_forbidden.mp3"
     },
     {
       "id": "lang_fr_hello",
@@ -727,8 +777,9 @@
       "transliteration": "",
       "translationRu": "Привет",
       "topic": "приветствие",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_hello.mp3"
     },
     {
       "id": "lang_fr_goodbye",
@@ -740,8 +791,9 @@
       "transliteration": "",
       "translationRu": "До свидания",
       "topic": "прощание",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_goodbye.mp3"
     },
     {
       "id": "lang_fr_thanks",
@@ -753,8 +805,9 @@
       "transliteration": "",
       "translationRu": "Спасибо",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_thanks.mp3"
     },
     {
       "id": "lang_fr_please",
@@ -766,8 +819,9 @@
       "transliteration": "",
       "translationRu": "Пожалуйста",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_please.mp3"
     },
     {
       "id": "lang_fr_yes",
@@ -779,8 +833,9 @@
       "transliteration": "",
       "translationRu": "Да",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_yes.mp3"
     },
     {
       "id": "lang_fr_no",
@@ -792,8 +847,9 @@
       "transliteration": "",
       "translationRu": "Нет",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_no.mp3"
     },
     {
       "id": "lang_fr_excuse_me",
@@ -805,8 +861,9 @@
       "transliteration": "",
       "translationRu": "Извините",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_excuse_me.mp3"
     },
     {
       "id": "lang_fr_sorry",
@@ -818,8 +875,9 @@
       "transliteration": "",
       "translationRu": "Простите",
       "topic": "извинение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_sorry.mp3"
     },
     {
       "id": "lang_fr_help",
@@ -831,8 +889,9 @@
       "transliteration": "",
       "translationRu": "Помогите!",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_help.mp3"
     },
     {
       "id": "lang_fr_careful",
@@ -844,8 +903,9 @@
       "transliteration": "",
       "translationRu": "Осторожно!",
       "topic": "предупреждение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_careful.mp3"
     },
     {
       "id": "lang_fr_stop",
@@ -857,8 +917,9 @@
       "transliteration": "",
       "translationRu": "Стойте!",
       "topic": "команда",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_stop.mp3"
     },
     {
       "id": "lang_fr_wait",
@@ -870,8 +931,9 @@
       "transliteration": "",
       "translationRu": "Подождите",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_wait.mp3"
     },
     {
       "id": "lang_fr_dont_understand",
@@ -883,8 +945,9 @@
       "transliteration": "",
       "translationRu": "Я не понимаю",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_dont_understand.mp3"
     },
     {
       "id": "lang_fr_repeat",
@@ -896,8 +959,9 @@
       "transliteration": "",
       "translationRu": "Повторите, пожалуйста",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_repeat.mp3"
     },
     {
       "id": "lang_fr_speak_english",
@@ -909,8 +973,9 @@
       "transliteration": "",
       "translationRu": "Вы говорите по-английски?",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_speak_english.mp3"
     },
     {
       "id": "lang_fr_where",
@@ -922,8 +987,9 @@
       "transliteration": "",
       "translationRu": "Где?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_where.mp3"
     },
     {
       "id": "lang_fr_when",
@@ -935,8 +1001,9 @@
       "transliteration": "",
       "translationRu": "Когда?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_when.mp3"
     },
     {
       "id": "lang_fr_how_much",
@@ -948,8 +1015,9 @@
       "transliteration": "",
       "translationRu": "Сколько это стоит?",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_how_much.mp3"
     },
     {
       "id": "lang_fr_toilet",
@@ -961,8 +1029,9 @@
       "transliteration": "",
       "translationRu": "Туалет",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_toilet.mp3"
     },
     {
       "id": "lang_fr_hotel",
@@ -974,8 +1043,9 @@
       "transliteration": "",
       "translationRu": "Отель",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_hotel.mp3"
     },
     {
       "id": "lang_fr_hospital",
@@ -987,8 +1057,9 @@
       "transliteration": "",
       "translationRu": "Больница",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_hospital.mp3"
     },
     {
       "id": "lang_fr_police",
@@ -1000,8 +1071,9 @@
       "transliteration": "",
       "translationRu": "Полиция",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_police.mp3"
     },
     {
       "id": "lang_fr_pharmacy",
@@ -1013,8 +1085,9 @@
       "transliteration": "",
       "translationRu": "Аптека",
       "topic": "здоровье",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_pharmacy.mp3"
     },
     {
       "id": "lang_fr_water",
@@ -1026,8 +1099,9 @@
       "transliteration": "",
       "translationRu": "Вода",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_water.mp3"
     },
     {
       "id": "lang_fr_food",
@@ -1039,8 +1113,9 @@
       "transliteration": "",
       "translationRu": "Еда",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_food.mp3"
     },
     {
       "id": "lang_fr_bread",
@@ -1052,8 +1127,9 @@
       "transliteration": "",
       "translationRu": "Хлеб",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_bread.mp3"
     },
     {
       "id": "lang_fr_meat",
@@ -1065,8 +1141,9 @@
       "transliteration": "",
       "translationRu": "Мясо",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_meat.mp3"
     },
     {
       "id": "lang_fr_fish",
@@ -1078,8 +1155,9 @@
       "transliteration": "",
       "translationRu": "Рыба",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_fish.mp3"
     },
     {
       "id": "lang_fr_without_meat",
@@ -1091,8 +1169,9 @@
       "transliteration": "",
       "translationRu": "Без мяса",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_without_meat.mp3"
     },
     {
       "id": "lang_fr_coffee",
@@ -1104,8 +1183,9 @@
       "transliteration": "",
       "translationRu": "Кофе",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_coffee.mp3"
     },
     {
       "id": "lang_fr_tea",
@@ -1117,8 +1197,9 @@
       "transliteration": "",
       "translationRu": "Чай",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_tea.mp3"
     },
     {
       "id": "lang_fr_breakfast",
@@ -1130,8 +1211,9 @@
       "transliteration": "",
       "translationRu": "Завтрак",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_breakfast.mp3"
     },
     {
       "id": "lang_fr_bill",
@@ -1143,8 +1225,9 @@
       "transliteration": "",
       "translationRu": "Счёт, пожалуйста",
       "topic": "кафе",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_bill.mp3"
     },
     {
       "id": "lang_fr_buy_this",
@@ -1156,8 +1239,9 @@
       "transliteration": "",
       "translationRu": "Я хочу купить это",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_buy_this.mp3"
     },
     {
       "id": "lang_fr_money",
@@ -1169,8 +1253,9 @@
       "transliteration": "",
       "translationRu": "Деньги",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_money.mp3"
     },
     {
       "id": "lang_fr_bank_card",
@@ -1182,8 +1267,9 @@
       "transliteration": "",
       "translationRu": "Банковская карта",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_bank_card.mp3"
     },
     {
       "id": "lang_fr_train",
@@ -1195,8 +1281,9 @@
       "transliteration": "",
       "translationRu": "Поезд",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_train.mp3"
     },
     {
       "id": "lang_fr_bus",
@@ -1208,8 +1295,9 @@
       "transliteration": "",
       "translationRu": "Автобус",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_bus.mp3"
     },
     {
       "id": "lang_fr_taxi",
@@ -1221,8 +1309,9 @@
       "transliteration": "",
       "translationRu": "Такси",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_taxi.mp3"
     },
     {
       "id": "lang_fr_airport",
@@ -1234,8 +1323,9 @@
       "transliteration": "",
       "translationRu": "Аэропорт",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_airport.mp3"
     },
     {
       "id": "lang_fr_station",
@@ -1247,8 +1337,9 @@
       "transliteration": "",
       "translationRu": "Железнодорожный вокзал",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_station.mp3"
     },
     {
       "id": "lang_fr_left",
@@ -1260,8 +1351,9 @@
       "transliteration": "",
       "translationRu": "Налево",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_left.mp3"
     },
     {
       "id": "lang_fr_right",
@@ -1273,8 +1365,9 @@
       "transliteration": "",
       "translationRu": "Направо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_right.mp3"
     },
     {
       "id": "lang_fr_straight",
@@ -1286,8 +1379,9 @@
       "transliteration": "",
       "translationRu": "Прямо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_straight.mp3"
     },
     {
       "id": "lang_fr_today",
@@ -1299,8 +1393,9 @@
       "transliteration": "",
       "translationRu": "Сегодня",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_today.mp3"
     },
     {
       "id": "lang_fr_tomorrow",
@@ -1312,8 +1407,9 @@
       "transliteration": "",
       "translationRu": "Завтра",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_tomorrow.mp3"
     },
     {
       "id": "lang_fr_good",
@@ -1325,8 +1421,9 @@
       "transliteration": "",
       "translationRu": "Хорошо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_good.mp3"
     },
     {
       "id": "lang_fr_bad",
@@ -1338,8 +1435,9 @@
       "transliteration": "",
       "translationRu": "Плохо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_bad.mp3"
     },
     {
       "id": "lang_fr_may_i",
@@ -1351,8 +1449,9 @@
       "transliteration": "",
       "translationRu": "Можно?",
       "topic": "разрешение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_may_i.mp3"
     },
     {
       "id": "lang_fr_forbidden",
@@ -1364,8 +1463,9 @@
       "transliteration": "",
       "translationRu": "Нельзя",
       "topic": "запрет",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_fr_forbidden.mp3"
     },
     {
       "id": "lang_de_hello",
@@ -1377,8 +1477,9 @@
       "transliteration": "",
       "translationRu": "Привет",
       "topic": "приветствие",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_hello.mp3"
     },
     {
       "id": "lang_de_goodbye",
@@ -1390,8 +1491,9 @@
       "transliteration": "",
       "translationRu": "До свидания",
       "topic": "прощание",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_goodbye.mp3"
     },
     {
       "id": "lang_de_thanks",
@@ -1403,8 +1505,9 @@
       "transliteration": "",
       "translationRu": "Спасибо",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_thanks.mp3"
     },
     {
       "id": "lang_de_please",
@@ -1416,8 +1519,9 @@
       "transliteration": "",
       "translationRu": "Пожалуйста",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_please.mp3"
     },
     {
       "id": "lang_de_yes",
@@ -1429,8 +1533,9 @@
       "transliteration": "",
       "translationRu": "Да",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_yes.mp3"
     },
     {
       "id": "lang_de_no",
@@ -1442,8 +1547,9 @@
       "transliteration": "",
       "translationRu": "Нет",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_no.mp3"
     },
     {
       "id": "lang_de_excuse_me",
@@ -1455,8 +1561,9 @@
       "transliteration": "",
       "translationRu": "Извините",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_excuse_me.mp3"
     },
     {
       "id": "lang_de_sorry",
@@ -1468,8 +1575,9 @@
       "transliteration": "",
       "translationRu": "Простите",
       "topic": "извинение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_sorry.mp3"
     },
     {
       "id": "lang_de_help",
@@ -1481,8 +1589,9 @@
       "transliteration": "",
       "translationRu": "Помогите!",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_help.mp3"
     },
     {
       "id": "lang_de_careful",
@@ -1494,8 +1603,9 @@
       "transliteration": "",
       "translationRu": "Осторожно!",
       "topic": "предупреждение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_careful.mp3"
     },
     {
       "id": "lang_de_stop",
@@ -1507,8 +1617,9 @@
       "transliteration": "",
       "translationRu": "Стойте!",
       "topic": "команда",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_stop.mp3"
     },
     {
       "id": "lang_de_wait",
@@ -1520,8 +1631,9 @@
       "transliteration": "",
       "translationRu": "Подождите",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_wait.mp3"
     },
     {
       "id": "lang_de_dont_understand",
@@ -1533,8 +1645,9 @@
       "transliteration": "",
       "translationRu": "Я не понимаю",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_dont_understand.mp3"
     },
     {
       "id": "lang_de_repeat",
@@ -1546,8 +1659,9 @@
       "transliteration": "",
       "translationRu": "Повторите, пожалуйста",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_repeat.mp3"
     },
     {
       "id": "lang_de_speak_english",
@@ -1559,8 +1673,9 @@
       "transliteration": "",
       "translationRu": "Вы говорите по-английски?",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_speak_english.mp3"
     },
     {
       "id": "lang_de_where",
@@ -1572,8 +1687,9 @@
       "transliteration": "",
       "translationRu": "Где?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_where.mp3"
     },
     {
       "id": "lang_de_when",
@@ -1585,8 +1701,9 @@
       "transliteration": "",
       "translationRu": "Когда?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_when.mp3"
     },
     {
       "id": "lang_de_how_much",
@@ -1598,8 +1715,9 @@
       "transliteration": "",
       "translationRu": "Сколько это стоит?",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_how_much.mp3"
     },
     {
       "id": "lang_de_toilet",
@@ -1611,8 +1729,9 @@
       "transliteration": "",
       "translationRu": "Туалет",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_toilet.mp3"
     },
     {
       "id": "lang_de_hotel",
@@ -1624,8 +1743,9 @@
       "transliteration": "",
       "translationRu": "Отель",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_hotel.mp3"
     },
     {
       "id": "lang_de_hospital",
@@ -1637,8 +1757,9 @@
       "transliteration": "",
       "translationRu": "Больница",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_hospital.mp3"
     },
     {
       "id": "lang_de_police",
@@ -1650,8 +1771,9 @@
       "transliteration": "",
       "translationRu": "Полиция",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_police.mp3"
     },
     {
       "id": "lang_de_pharmacy",
@@ -1663,8 +1785,9 @@
       "transliteration": "",
       "translationRu": "Аптека",
       "topic": "здоровье",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_pharmacy.mp3"
     },
     {
       "id": "lang_de_water",
@@ -1676,8 +1799,9 @@
       "transliteration": "",
       "translationRu": "Вода",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_water.mp3"
     },
     {
       "id": "lang_de_food",
@@ -1689,8 +1813,9 @@
       "transliteration": "",
       "translationRu": "Еда",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_food.mp3"
     },
     {
       "id": "lang_de_bread",
@@ -1702,8 +1827,9 @@
       "transliteration": "",
       "translationRu": "Хлеб",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_bread.mp3"
     },
     {
       "id": "lang_de_meat",
@@ -1715,8 +1841,9 @@
       "transliteration": "",
       "translationRu": "Мясо",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_meat.mp3"
     },
     {
       "id": "lang_de_fish",
@@ -1728,8 +1855,9 @@
       "transliteration": "",
       "translationRu": "Рыба",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_fish.mp3"
     },
     {
       "id": "lang_de_without_meat",
@@ -1741,8 +1869,9 @@
       "transliteration": "",
       "translationRu": "Без мяса",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_without_meat.mp3"
     },
     {
       "id": "lang_de_coffee",
@@ -1754,8 +1883,9 @@
       "transliteration": "",
       "translationRu": "Кофе",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_coffee.mp3"
     },
     {
       "id": "lang_de_tea",
@@ -1767,8 +1897,9 @@
       "transliteration": "",
       "translationRu": "Чай",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_tea.mp3"
     },
     {
       "id": "lang_de_breakfast",
@@ -1780,8 +1911,9 @@
       "transliteration": "",
       "translationRu": "Завтрак",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_breakfast.mp3"
     },
     {
       "id": "lang_de_bill",
@@ -1793,8 +1925,9 @@
       "transliteration": "",
       "translationRu": "Счёт, пожалуйста",
       "topic": "кафе",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_bill.mp3"
     },
     {
       "id": "lang_de_buy_this",
@@ -1806,8 +1939,9 @@
       "transliteration": "",
       "translationRu": "Я хочу купить это",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_buy_this.mp3"
     },
     {
       "id": "lang_de_money",
@@ -1819,8 +1953,9 @@
       "transliteration": "",
       "translationRu": "Деньги",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_money.mp3"
     },
     {
       "id": "lang_de_bank_card",
@@ -1832,8 +1967,9 @@
       "transliteration": "",
       "translationRu": "Банковская карта",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_bank_card.mp3"
     },
     {
       "id": "lang_de_train",
@@ -1845,8 +1981,9 @@
       "transliteration": "",
       "translationRu": "Поезд",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_train.mp3"
     },
     {
       "id": "lang_de_bus",
@@ -1858,8 +1995,9 @@
       "transliteration": "",
       "translationRu": "Автобус",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_bus.mp3"
     },
     {
       "id": "lang_de_taxi",
@@ -1871,8 +2009,9 @@
       "transliteration": "",
       "translationRu": "Такси",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_taxi.mp3"
     },
     {
       "id": "lang_de_airport",
@@ -1884,8 +2023,9 @@
       "transliteration": "",
       "translationRu": "Аэропорт",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_airport.mp3"
     },
     {
       "id": "lang_de_station",
@@ -1897,8 +2037,9 @@
       "transliteration": "",
       "translationRu": "Железнодорожный вокзал",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_station.mp3"
     },
     {
       "id": "lang_de_left",
@@ -1910,8 +2051,9 @@
       "transliteration": "",
       "translationRu": "Налево",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_left.mp3"
     },
     {
       "id": "lang_de_right",
@@ -1923,8 +2065,9 @@
       "transliteration": "",
       "translationRu": "Направо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_right.mp3"
     },
     {
       "id": "lang_de_straight",
@@ -1936,8 +2079,9 @@
       "transliteration": "",
       "translationRu": "Прямо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_straight.mp3"
     },
     {
       "id": "lang_de_today",
@@ -1949,8 +2093,9 @@
       "transliteration": "",
       "translationRu": "Сегодня",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_today.mp3"
     },
     {
       "id": "lang_de_tomorrow",
@@ -1962,8 +2107,9 @@
       "transliteration": "",
       "translationRu": "Завтра",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_tomorrow.mp3"
     },
     {
       "id": "lang_de_good",
@@ -1975,8 +2121,9 @@
       "transliteration": "",
       "translationRu": "Хорошо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_good.mp3"
     },
     {
       "id": "lang_de_bad",
@@ -1988,8 +2135,9 @@
       "transliteration": "",
       "translationRu": "Плохо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_bad.mp3"
     },
     {
       "id": "lang_de_may_i",
@@ -2001,8 +2149,9 @@
       "transliteration": "",
       "translationRu": "Можно?",
       "topic": "разрешение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_may_i.mp3"
     },
     {
       "id": "lang_de_forbidden",
@@ -2014,8 +2163,9 @@
       "transliteration": "",
       "translationRu": "Нельзя",
       "topic": "запрет",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_de_forbidden.mp3"
     },
     {
       "id": "lang_it_hello",
@@ -2027,8 +2177,9 @@
       "transliteration": "",
       "translationRu": "Привет",
       "topic": "приветствие",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_hello.mp3"
     },
     {
       "id": "lang_it_goodbye",
@@ -2040,8 +2191,9 @@
       "transliteration": "",
       "translationRu": "До свидания",
       "topic": "прощание",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_goodbye.mp3"
     },
     {
       "id": "lang_it_thanks",
@@ -2053,8 +2205,9 @@
       "transliteration": "",
       "translationRu": "Спасибо",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_thanks.mp3"
     },
     {
       "id": "lang_it_please",
@@ -2066,8 +2219,9 @@
       "transliteration": "",
       "translationRu": "Пожалуйста",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_please.mp3"
     },
     {
       "id": "lang_it_yes",
@@ -2079,8 +2233,9 @@
       "transliteration": "",
       "translationRu": "Да",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_yes.mp3"
     },
     {
       "id": "lang_it_no",
@@ -2092,8 +2247,9 @@
       "transliteration": "",
       "translationRu": "Нет",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_no.mp3"
     },
     {
       "id": "lang_it_excuse_me",
@@ -2105,8 +2261,9 @@
       "transliteration": "",
       "translationRu": "Извините",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_excuse_me.mp3"
     },
     {
       "id": "lang_it_sorry",
@@ -2118,8 +2275,9 @@
       "transliteration": "",
       "translationRu": "Простите",
       "topic": "извинение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_sorry.mp3"
     },
     {
       "id": "lang_it_help",
@@ -2131,8 +2289,9 @@
       "transliteration": "",
       "translationRu": "Помогите!",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_help.mp3"
     },
     {
       "id": "lang_it_careful",
@@ -2144,8 +2303,9 @@
       "transliteration": "",
       "translationRu": "Осторожно!",
       "topic": "предупреждение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_careful.mp3"
     },
     {
       "id": "lang_it_stop",
@@ -2157,8 +2317,9 @@
       "transliteration": "",
       "translationRu": "Стойте!",
       "topic": "команда",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_stop.mp3"
     },
     {
       "id": "lang_it_wait",
@@ -2170,8 +2331,9 @@
       "transliteration": "",
       "translationRu": "Подождите",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_wait.mp3"
     },
     {
       "id": "lang_it_dont_understand",
@@ -2183,8 +2345,9 @@
       "transliteration": "",
       "translationRu": "Я не понимаю",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_dont_understand.mp3"
     },
     {
       "id": "lang_it_repeat",
@@ -2196,8 +2359,9 @@
       "transliteration": "",
       "translationRu": "Повторите, пожалуйста",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_repeat.mp3"
     },
     {
       "id": "lang_it_speak_english",
@@ -2209,8 +2373,9 @@
       "transliteration": "",
       "translationRu": "Вы говорите по-английски?",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_speak_english.mp3"
     },
     {
       "id": "lang_it_where",
@@ -2222,8 +2387,9 @@
       "transliteration": "",
       "translationRu": "Где?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_where.mp3"
     },
     {
       "id": "lang_it_when",
@@ -2235,8 +2401,9 @@
       "transliteration": "",
       "translationRu": "Когда?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_when.mp3"
     },
     {
       "id": "lang_it_how_much",
@@ -2248,8 +2415,9 @@
       "transliteration": "",
       "translationRu": "Сколько это стоит?",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_how_much.mp3"
     },
     {
       "id": "lang_it_toilet",
@@ -2261,8 +2429,9 @@
       "transliteration": "",
       "translationRu": "Туалет",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_toilet.mp3"
     },
     {
       "id": "lang_it_hotel",
@@ -2274,8 +2443,9 @@
       "transliteration": "",
       "translationRu": "Отель",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_hotel.mp3"
     },
     {
       "id": "lang_it_hospital",
@@ -2287,8 +2457,9 @@
       "transliteration": "",
       "translationRu": "Больница",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_hospital.mp3"
     },
     {
       "id": "lang_it_police",
@@ -2300,8 +2471,9 @@
       "transliteration": "",
       "translationRu": "Полиция",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_police.mp3"
     },
     {
       "id": "lang_it_pharmacy",
@@ -2313,8 +2485,9 @@
       "transliteration": "",
       "translationRu": "Аптека",
       "topic": "здоровье",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_pharmacy.mp3"
     },
     {
       "id": "lang_it_water",
@@ -2326,8 +2499,9 @@
       "transliteration": "",
       "translationRu": "Вода",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_water.mp3"
     },
     {
       "id": "lang_it_food",
@@ -2339,8 +2513,9 @@
       "transliteration": "",
       "translationRu": "Еда",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_food.mp3"
     },
     {
       "id": "lang_it_bread",
@@ -2352,8 +2527,9 @@
       "transliteration": "",
       "translationRu": "Хлеб",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_bread.mp3"
     },
     {
       "id": "lang_it_meat",
@@ -2365,8 +2541,9 @@
       "transliteration": "",
       "translationRu": "Мясо",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_meat.mp3"
     },
     {
       "id": "lang_it_fish",
@@ -2378,8 +2555,9 @@
       "transliteration": "",
       "translationRu": "Рыба",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_fish.mp3"
     },
     {
       "id": "lang_it_without_meat",
@@ -2391,8 +2569,9 @@
       "transliteration": "",
       "translationRu": "Без мяса",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_without_meat.mp3"
     },
     {
       "id": "lang_it_coffee",
@@ -2404,8 +2583,9 @@
       "transliteration": "",
       "translationRu": "Кофе",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_coffee.mp3"
     },
     {
       "id": "lang_it_tea",
@@ -2417,8 +2597,9 @@
       "transliteration": "",
       "translationRu": "Чай",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_tea.mp3"
     },
     {
       "id": "lang_it_breakfast",
@@ -2430,8 +2611,9 @@
       "transliteration": "",
       "translationRu": "Завтрак",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_breakfast.mp3"
     },
     {
       "id": "lang_it_bill",
@@ -2443,8 +2625,9 @@
       "transliteration": "",
       "translationRu": "Счёт, пожалуйста",
       "topic": "кафе",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_bill.mp3"
     },
     {
       "id": "lang_it_buy_this",
@@ -2456,8 +2639,9 @@
       "transliteration": "",
       "translationRu": "Я хочу купить это",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_buy_this.mp3"
     },
     {
       "id": "lang_it_money",
@@ -2469,8 +2653,9 @@
       "transliteration": "",
       "translationRu": "Деньги",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_money.mp3"
     },
     {
       "id": "lang_it_bank_card",
@@ -2482,8 +2667,9 @@
       "transliteration": "",
       "translationRu": "Банковская карта",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_bank_card.mp3"
     },
     {
       "id": "lang_it_train",
@@ -2495,8 +2681,9 @@
       "transliteration": "",
       "translationRu": "Поезд",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_train.mp3"
     },
     {
       "id": "lang_it_bus",
@@ -2508,8 +2695,9 @@
       "transliteration": "",
       "translationRu": "Автобус",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_bus.mp3"
     },
     {
       "id": "lang_it_taxi",
@@ -2521,8 +2709,9 @@
       "transliteration": "",
       "translationRu": "Такси",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_taxi.mp3"
     },
     {
       "id": "lang_it_airport",
@@ -2534,8 +2723,9 @@
       "transliteration": "",
       "translationRu": "Аэропорт",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_airport.mp3"
     },
     {
       "id": "lang_it_station",
@@ -2547,8 +2737,9 @@
       "transliteration": "",
       "translationRu": "Железнодорожный вокзал",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_station.mp3"
     },
     {
       "id": "lang_it_left",
@@ -2560,8 +2751,9 @@
       "transliteration": "",
       "translationRu": "Налево",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_left.mp3"
     },
     {
       "id": "lang_it_right",
@@ -2573,8 +2765,9 @@
       "transliteration": "",
       "translationRu": "Направо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_right.mp3"
     },
     {
       "id": "lang_it_straight",
@@ -2586,8 +2779,9 @@
       "transliteration": "",
       "translationRu": "Прямо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_straight.mp3"
     },
     {
       "id": "lang_it_today",
@@ -2599,8 +2793,9 @@
       "transliteration": "",
       "translationRu": "Сегодня",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_today.mp3"
     },
     {
       "id": "lang_it_tomorrow",
@@ -2612,8 +2807,9 @@
       "transliteration": "",
       "translationRu": "Завтра",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_tomorrow.mp3"
     },
     {
       "id": "lang_it_good",
@@ -2625,8 +2821,9 @@
       "transliteration": "",
       "translationRu": "Хорошо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_good.mp3"
     },
     {
       "id": "lang_it_bad",
@@ -2638,8 +2835,9 @@
       "transliteration": "",
       "translationRu": "Плохо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_bad.mp3"
     },
     {
       "id": "lang_it_may_i",
@@ -2651,8 +2849,9 @@
       "transliteration": "",
       "translationRu": "Можно?",
       "topic": "разрешение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_may_i.mp3"
     },
     {
       "id": "lang_it_forbidden",
@@ -2664,8 +2863,9 @@
       "transliteration": "",
       "translationRu": "Нельзя",
       "topic": "запрет",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_it_forbidden.mp3"
     },
     {
       "id": "lang_pt_hello",
@@ -2677,8 +2877,9 @@
       "transliteration": "",
       "translationRu": "Привет",
       "topic": "приветствие",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_hello.mp3"
     },
     {
       "id": "lang_pt_goodbye",
@@ -2690,8 +2891,9 @@
       "transliteration": "",
       "translationRu": "До свидания",
       "topic": "прощание",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_goodbye.mp3"
     },
     {
       "id": "lang_pt_thanks",
@@ -2703,8 +2905,9 @@
       "transliteration": "",
       "translationRu": "Спасибо",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": "Мужчина говорит «Obrigado», женщина — «Obrigada»."
+      "contentVersion": 2,
+      "usageNoteRu": "Мужчина говорит «Obrigado», женщина — «Obrigada».",
+      "audio": "./assets/languages/audio/lang_pt_thanks.mp3"
     },
     {
       "id": "lang_pt_please",
@@ -2716,8 +2919,9 @@
       "transliteration": "",
       "translationRu": "Пожалуйста",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_please.mp3"
     },
     {
       "id": "lang_pt_yes",
@@ -2729,8 +2933,9 @@
       "transliteration": "",
       "translationRu": "Да",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_yes.mp3"
     },
     {
       "id": "lang_pt_no",
@@ -2742,8 +2947,9 @@
       "transliteration": "",
       "translationRu": "Нет",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_no.mp3"
     },
     {
       "id": "lang_pt_excuse_me",
@@ -2755,8 +2961,9 @@
       "transliteration": "",
       "translationRu": "Извините",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_excuse_me.mp3"
     },
     {
       "id": "lang_pt_sorry",
@@ -2768,8 +2975,9 @@
       "transliteration": "",
       "translationRu": "Простите",
       "topic": "извинение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_sorry.mp3"
     },
     {
       "id": "lang_pt_help",
@@ -2781,8 +2989,9 @@
       "transliteration": "",
       "translationRu": "Помогите!",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_help.mp3"
     },
     {
       "id": "lang_pt_careful",
@@ -2794,8 +3003,9 @@
       "transliteration": "",
       "translationRu": "Осторожно!",
       "topic": "предупреждение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_careful.mp3"
     },
     {
       "id": "lang_pt_stop",
@@ -2807,8 +3017,9 @@
       "transliteration": "",
       "translationRu": "Стойте!",
       "topic": "команда",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_stop.mp3"
     },
     {
       "id": "lang_pt_wait",
@@ -2820,8 +3031,9 @@
       "transliteration": "",
       "translationRu": "Подождите",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_wait.mp3"
     },
     {
       "id": "lang_pt_dont_understand",
@@ -2833,8 +3045,9 @@
       "transliteration": "",
       "translationRu": "Я не понимаю",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_dont_understand.mp3"
     },
     {
       "id": "lang_pt_repeat",
@@ -2846,8 +3059,9 @@
       "transliteration": "",
       "translationRu": "Повторите, пожалуйста",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_repeat.mp3"
     },
     {
       "id": "lang_pt_speak_english",
@@ -2859,8 +3073,9 @@
       "transliteration": "",
       "translationRu": "Вы говорите по-английски?",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_speak_english.mp3"
     },
     {
       "id": "lang_pt_where",
@@ -2872,8 +3087,9 @@
       "transliteration": "",
       "translationRu": "Где?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_where.mp3"
     },
     {
       "id": "lang_pt_when",
@@ -2885,8 +3101,9 @@
       "transliteration": "",
       "translationRu": "Когда?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_when.mp3"
     },
     {
       "id": "lang_pt_how_much",
@@ -2898,8 +3115,9 @@
       "transliteration": "",
       "translationRu": "Сколько это стоит?",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_how_much.mp3"
     },
     {
       "id": "lang_pt_toilet",
@@ -2911,8 +3129,9 @@
       "transliteration": "",
       "translationRu": "Туалет",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_toilet.mp3"
     },
     {
       "id": "lang_pt_hotel",
@@ -2924,8 +3143,9 @@
       "transliteration": "",
       "translationRu": "Отель",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_hotel.mp3"
     },
     {
       "id": "lang_pt_hospital",
@@ -2937,8 +3157,9 @@
       "transliteration": "",
       "translationRu": "Больница",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_hospital.mp3"
     },
     {
       "id": "lang_pt_police",
@@ -2950,8 +3171,9 @@
       "transliteration": "",
       "translationRu": "Полиция",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_police.mp3"
     },
     {
       "id": "lang_pt_pharmacy",
@@ -2963,8 +3185,9 @@
       "transliteration": "",
       "translationRu": "Аптека",
       "topic": "здоровье",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_pharmacy.mp3"
     },
     {
       "id": "lang_pt_water",
@@ -2976,8 +3199,9 @@
       "transliteration": "",
       "translationRu": "Вода",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_water.mp3"
     },
     {
       "id": "lang_pt_food",
@@ -2989,8 +3213,9 @@
       "transliteration": "",
       "translationRu": "Еда",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_food.mp3"
     },
     {
       "id": "lang_pt_bread",
@@ -3002,8 +3227,9 @@
       "transliteration": "",
       "translationRu": "Хлеб",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_bread.mp3"
     },
     {
       "id": "lang_pt_meat",
@@ -3015,8 +3241,9 @@
       "transliteration": "",
       "translationRu": "Мясо",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_meat.mp3"
     },
     {
       "id": "lang_pt_fish",
@@ -3028,8 +3255,9 @@
       "transliteration": "",
       "translationRu": "Рыба",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_fish.mp3"
     },
     {
       "id": "lang_pt_without_meat",
@@ -3041,8 +3269,9 @@
       "transliteration": "",
       "translationRu": "Без мяса",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_without_meat.mp3"
     },
     {
       "id": "lang_pt_coffee",
@@ -3054,8 +3283,9 @@
       "transliteration": "",
       "translationRu": "Кофе",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_coffee.mp3"
     },
     {
       "id": "lang_pt_tea",
@@ -3067,8 +3297,9 @@
       "transliteration": "",
       "translationRu": "Чай",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_tea.mp3"
     },
     {
       "id": "lang_pt_breakfast",
@@ -3080,8 +3311,9 @@
       "transliteration": "",
       "translationRu": "Завтрак",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_breakfast.mp3"
     },
     {
       "id": "lang_pt_bill",
@@ -3093,8 +3325,9 @@
       "transliteration": "",
       "translationRu": "Счёт, пожалуйста",
       "topic": "кафе",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_bill.mp3"
     },
     {
       "id": "lang_pt_buy_this",
@@ -3106,8 +3339,9 @@
       "transliteration": "",
       "translationRu": "Я хочу купить это",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_buy_this.mp3"
     },
     {
       "id": "lang_pt_money",
@@ -3119,8 +3353,9 @@
       "transliteration": "",
       "translationRu": "Деньги",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_money.mp3"
     },
     {
       "id": "lang_pt_bank_card",
@@ -3132,8 +3367,9 @@
       "transliteration": "",
       "translationRu": "Банковская карта",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_bank_card.mp3"
     },
     {
       "id": "lang_pt_train",
@@ -3145,8 +3381,9 @@
       "transliteration": "",
       "translationRu": "Поезд",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_train.mp3"
     },
     {
       "id": "lang_pt_bus",
@@ -3158,8 +3395,9 @@
       "transliteration": "",
       "translationRu": "Автобус",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_bus.mp3"
     },
     {
       "id": "lang_pt_taxi",
@@ -3171,8 +3409,9 @@
       "transliteration": "",
       "translationRu": "Такси",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_taxi.mp3"
     },
     {
       "id": "lang_pt_airport",
@@ -3184,8 +3423,9 @@
       "transliteration": "",
       "translationRu": "Аэропорт",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_airport.mp3"
     },
     {
       "id": "lang_pt_station",
@@ -3197,8 +3437,9 @@
       "transliteration": "",
       "translationRu": "Железнодорожный вокзал",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_station.mp3"
     },
     {
       "id": "lang_pt_left",
@@ -3210,8 +3451,9 @@
       "transliteration": "",
       "translationRu": "Налево",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_left.mp3"
     },
     {
       "id": "lang_pt_right",
@@ -3223,8 +3465,9 @@
       "transliteration": "",
       "translationRu": "Направо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_right.mp3"
     },
     {
       "id": "lang_pt_straight",
@@ -3236,8 +3479,9 @@
       "transliteration": "",
       "translationRu": "Прямо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_straight.mp3"
     },
     {
       "id": "lang_pt_today",
@@ -3249,8 +3493,9 @@
       "transliteration": "",
       "translationRu": "Сегодня",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_today.mp3"
     },
     {
       "id": "lang_pt_tomorrow",
@@ -3262,8 +3507,9 @@
       "transliteration": "",
       "translationRu": "Завтра",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_tomorrow.mp3"
     },
     {
       "id": "lang_pt_good",
@@ -3275,8 +3521,9 @@
       "transliteration": "",
       "translationRu": "Хорошо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_good.mp3"
     },
     {
       "id": "lang_pt_bad",
@@ -3288,8 +3535,9 @@
       "transliteration": "",
       "translationRu": "Плохо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_bad.mp3"
     },
     {
       "id": "lang_pt_may_i",
@@ -3301,8 +3549,9 @@
       "transliteration": "",
       "translationRu": "Можно?",
       "topic": "разрешение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_may_i.mp3"
     },
     {
       "id": "lang_pt_forbidden",
@@ -3314,8 +3563,9 @@
       "transliteration": "",
       "translationRu": "Нельзя",
       "topic": "запрет",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_pt_forbidden.mp3"
     },
     {
       "id": "lang_zh_hello",
@@ -3327,8 +3577,9 @@
       "transliteration": "Nǐ hǎo",
       "translationRu": "Привет",
       "topic": "приветствие",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_hello.mp3"
     },
     {
       "id": "lang_zh_goodbye",
@@ -3340,8 +3591,9 @@
       "transliteration": "Zàijiàn",
       "translationRu": "До свидания",
       "topic": "прощание",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_goodbye.mp3"
     },
     {
       "id": "lang_zh_thanks",
@@ -3353,8 +3605,9 @@
       "transliteration": "Xièxie",
       "translationRu": "Спасибо",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_thanks.mp3"
     },
     {
       "id": "lang_zh_please",
@@ -3366,8 +3619,9 @@
       "transliteration": "Qǐng",
       "translationRu": "Пожалуйста",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_please.mp3"
     },
     {
       "id": "lang_zh_yes",
@@ -3379,8 +3633,9 @@
       "transliteration": "Shì de",
       "translationRu": "Да",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_yes.mp3"
     },
     {
       "id": "lang_zh_no",
@@ -3392,8 +3647,9 @@
       "transliteration": "Bú shì",
       "translationRu": "Нет",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_no.mp3"
     },
     {
       "id": "lang_zh_excuse_me",
@@ -3405,8 +3661,9 @@
       "transliteration": "Dǎrǎo yīxià",
       "translationRu": "Извините",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_excuse_me.mp3"
     },
     {
       "id": "lang_zh_sorry",
@@ -3418,8 +3675,9 @@
       "transliteration": "Duìbùqǐ",
       "translationRu": "Простите",
       "topic": "извинение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_sorry.mp3"
     },
     {
       "id": "lang_zh_help",
@@ -3431,8 +3689,9 @@
       "transliteration": "Jiùmìng!",
       "translationRu": "Помогите!",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_help.mp3"
     },
     {
       "id": "lang_zh_careful",
@@ -3444,8 +3703,9 @@
       "transliteration": "Xiǎoxīn!",
       "translationRu": "Осторожно!",
       "topic": "предупреждение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_careful.mp3"
     },
     {
       "id": "lang_zh_stop",
@@ -3457,8 +3717,9 @@
       "transliteration": "Tíng!",
       "translationRu": "Стойте!",
       "topic": "команда",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_stop.mp3"
     },
     {
       "id": "lang_zh_wait",
@@ -3470,8 +3731,9 @@
       "transliteration": "Qǐng děng yīxià",
       "translationRu": "Подождите",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_wait.mp3"
     },
     {
       "id": "lang_zh_dont_understand",
@@ -3483,8 +3745,9 @@
       "transliteration": "Wǒ bù míngbái",
       "translationRu": "Я не понимаю",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_dont_understand.mp3"
     },
     {
       "id": "lang_zh_repeat",
@@ -3496,8 +3759,9 @@
       "transliteration": "Qǐng zàishuō yībiàn",
       "translationRu": "Повторите, пожалуйста",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_repeat.mp3"
     },
     {
       "id": "lang_zh_speak_english",
@@ -3509,8 +3773,9 @@
       "transliteration": "Nǐ huì shuō yīngyǔ ma?",
       "translationRu": "Вы говорите по-английски?",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_speak_english.mp3"
     },
     {
       "id": "lang_zh_where",
@@ -3522,8 +3787,9 @@
       "transliteration": "Nǎlǐ?",
       "translationRu": "Где?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_where.mp3"
     },
     {
       "id": "lang_zh_when",
@@ -3535,8 +3801,9 @@
       "transliteration": "Shénme shíhòu?",
       "translationRu": "Когда?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_when.mp3"
     },
     {
       "id": "lang_zh_how_much",
@@ -3548,8 +3815,9 @@
       "transliteration": "Duōshǎo qián?",
       "translationRu": "Сколько это стоит?",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_how_much.mp3"
     },
     {
       "id": "lang_zh_toilet",
@@ -3561,8 +3829,9 @@
       "transliteration": "Cèsuǒ",
       "translationRu": "Туалет",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_toilet.mp3"
     },
     {
       "id": "lang_zh_hotel",
@@ -3574,8 +3843,9 @@
       "transliteration": "Jiǔdiàn",
       "translationRu": "Отель",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_hotel.mp3"
     },
     {
       "id": "lang_zh_hospital",
@@ -3587,8 +3857,9 @@
       "transliteration": "Yīyuàn",
       "translationRu": "Больница",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_hospital.mp3"
     },
     {
       "id": "lang_zh_police",
@@ -3600,8 +3871,9 @@
       "transliteration": "Jǐngchá",
       "translationRu": "Полиция",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_police.mp3"
     },
     {
       "id": "lang_zh_pharmacy",
@@ -3613,8 +3885,9 @@
       "transliteration": "Yàodiàn",
       "translationRu": "Аптека",
       "topic": "здоровье",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_pharmacy.mp3"
     },
     {
       "id": "lang_zh_water",
@@ -3626,8 +3899,9 @@
       "transliteration": "Shuǐ",
       "translationRu": "Вода",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_water.mp3"
     },
     {
       "id": "lang_zh_food",
@@ -3639,8 +3913,9 @@
       "transliteration": "Shíwù",
       "translationRu": "Еда",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_food.mp3"
     },
     {
       "id": "lang_zh_bread",
@@ -3652,8 +3927,9 @@
       "transliteration": "Miànbāo",
       "translationRu": "Хлеб",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_bread.mp3"
     },
     {
       "id": "lang_zh_meat",
@@ -3665,8 +3941,9 @@
       "transliteration": "Ròu",
       "translationRu": "Мясо",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_meat.mp3"
     },
     {
       "id": "lang_zh_fish",
@@ -3678,8 +3955,9 @@
       "transliteration": "Yú",
       "translationRu": "Рыба",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_fish.mp3"
     },
     {
       "id": "lang_zh_without_meat",
@@ -3691,8 +3969,9 @@
       "transliteration": "Bùyào ròu",
       "translationRu": "Без мяса",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_without_meat.mp3"
     },
     {
       "id": "lang_zh_coffee",
@@ -3704,8 +3983,9 @@
       "transliteration": "Kāfēi",
       "translationRu": "Кофе",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_coffee.mp3"
     },
     {
       "id": "lang_zh_tea",
@@ -3717,8 +3997,9 @@
       "transliteration": "Chá",
       "translationRu": "Чай",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_tea.mp3"
     },
     {
       "id": "lang_zh_breakfast",
@@ -3730,8 +4011,9 @@
       "transliteration": "Zǎocān",
       "translationRu": "Завтрак",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_breakfast.mp3"
     },
     {
       "id": "lang_zh_bill",
@@ -3743,8 +4025,9 @@
       "transliteration": "Qǐng jiézhàng",
       "translationRu": "Счёт, пожалуйста",
       "topic": "кафе",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_bill.mp3"
     },
     {
       "id": "lang_zh_buy_this",
@@ -3756,8 +4039,9 @@
       "transliteration": "Wǒ xiǎng mǎi zhège",
       "translationRu": "Я хочу купить это",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_buy_this.mp3"
     },
     {
       "id": "lang_zh_money",
@@ -3769,8 +4053,9 @@
       "transliteration": "Qián",
       "translationRu": "Деньги",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_money.mp3"
     },
     {
       "id": "lang_zh_bank_card",
@@ -3782,8 +4067,9 @@
       "transliteration": "Yínháng kǎ",
       "translationRu": "Банковская карта",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_bank_card.mp3"
     },
     {
       "id": "lang_zh_train",
@@ -3795,8 +4081,9 @@
       "transliteration": "Huǒchē",
       "translationRu": "Поезд",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_train.mp3"
     },
     {
       "id": "lang_zh_bus",
@@ -3808,8 +4095,9 @@
       "transliteration": "Gōnggòng qìchē",
       "translationRu": "Автобус",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_bus.mp3"
     },
     {
       "id": "lang_zh_taxi",
@@ -3821,8 +4109,9 @@
       "transliteration": "Chūzū chē",
       "translationRu": "Такси",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_taxi.mp3"
     },
     {
       "id": "lang_zh_airport",
@@ -3834,8 +4123,9 @@
       "transliteration": "Jīchǎng",
       "translationRu": "Аэропорт",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_airport.mp3"
     },
     {
       "id": "lang_zh_station",
@@ -3847,8 +4137,9 @@
       "transliteration": "Huǒchē zhàn",
       "translationRu": "Железнодорожный вокзал",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_station.mp3"
     },
     {
       "id": "lang_zh_left",
@@ -3860,8 +4151,9 @@
       "transliteration": "Xiàng zuǒ",
       "translationRu": "Налево",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_left.mp3"
     },
     {
       "id": "lang_zh_right",
@@ -3873,8 +4165,9 @@
       "transliteration": "Xiàng yòu",
       "translationRu": "Направо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_right.mp3"
     },
     {
       "id": "lang_zh_straight",
@@ -3886,8 +4179,9 @@
       "transliteration": "Zhí zǒu",
       "translationRu": "Прямо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_straight.mp3"
     },
     {
       "id": "lang_zh_today",
@@ -3899,8 +4193,9 @@
       "transliteration": "Jīntiān",
       "translationRu": "Сегодня",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_today.mp3"
     },
     {
       "id": "lang_zh_tomorrow",
@@ -3912,8 +4207,9 @@
       "transliteration": "Míngtiān",
       "translationRu": "Завтра",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_tomorrow.mp3"
     },
     {
       "id": "lang_zh_good",
@@ -3925,8 +4221,9 @@
       "transliteration": "Hǎo",
       "translationRu": "Хорошо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_good.mp3"
     },
     {
       "id": "lang_zh_bad",
@@ -3938,8 +4235,9 @@
       "transliteration": "Bù hǎo",
       "translationRu": "Плохо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_bad.mp3"
     },
     {
       "id": "lang_zh_may_i",
@@ -3951,8 +4249,9 @@
       "transliteration": "Kěyǐ ma?",
       "translationRu": "Можно?",
       "topic": "разрешение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_may_i.mp3"
     },
     {
       "id": "lang_zh_forbidden",
@@ -3964,8 +4263,9 @@
       "transliteration": "Jìnzhǐ",
       "translationRu": "Нельзя",
       "topic": "запрет",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_zh_forbidden.mp3"
     },
     {
       "id": "lang_ja_hello",
@@ -3977,8 +4277,9 @@
       "transliteration": "Konnichiwa",
       "translationRu": "Привет",
       "topic": "приветствие",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_hello.mp3"
     },
     {
       "id": "lang_ja_goodbye",
@@ -3990,8 +4291,9 @@
       "transliteration": "Sayōnara",
       "translationRu": "До свидания",
       "topic": "прощание",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_goodbye.mp3"
     },
     {
       "id": "lang_ja_thanks",
@@ -4003,8 +4305,9 @@
       "transliteration": "Arigatō",
       "translationRu": "Спасибо",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_thanks.mp3"
     },
     {
       "id": "lang_ja_please",
@@ -4016,8 +4319,9 @@
       "transliteration": "Onegai shimasu",
       "translationRu": "Пожалуйста",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_please.mp3"
     },
     {
       "id": "lang_ja_yes",
@@ -4029,8 +4333,9 @@
       "transliteration": "Hai",
       "translationRu": "Да",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_yes.mp3"
     },
     {
       "id": "lang_ja_no",
@@ -4042,8 +4347,9 @@
       "transliteration": "Īe",
       "translationRu": "Нет",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_no.mp3"
     },
     {
       "id": "lang_ja_excuse_me",
@@ -4055,8 +4361,9 @@
       "transliteration": "Sumimasen",
       "translationRu": "Извините",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_excuse_me.mp3"
     },
     {
       "id": "lang_ja_sorry",
@@ -4068,8 +4375,9 @@
       "transliteration": "Gomen'nasai",
       "translationRu": "Простите",
       "topic": "извинение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_sorry.mp3"
     },
     {
       "id": "lang_ja_help",
@@ -4081,8 +4389,9 @@
       "transliteration": "Tasukete!",
       "translationRu": "Помогите!",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_help.mp3"
     },
     {
       "id": "lang_ja_careful",
@@ -4094,8 +4403,9 @@
       "transliteration": "Kiwotsukete!",
       "translationRu": "Осторожно!",
       "topic": "предупреждение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_careful.mp3"
     },
     {
       "id": "lang_ja_stop",
@@ -4107,8 +4417,9 @@
       "transliteration": "Tomatte!",
       "translationRu": "Стойте!",
       "topic": "команда",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_stop.mp3"
     },
     {
       "id": "lang_ja_wait",
@@ -4120,8 +4431,9 @@
       "transliteration": "Mattekudasai",
       "translationRu": "Подождите",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_wait.mp3"
     },
     {
       "id": "lang_ja_dont_understand",
@@ -4133,8 +4445,9 @@
       "transliteration": "Wakarimasen",
       "translationRu": "Я не понимаю",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_dont_understand.mp3"
     },
     {
       "id": "lang_ja_repeat",
@@ -4146,8 +4459,9 @@
       "transliteration": "Mōichido onegaishimasu",
       "translationRu": "Повторите, пожалуйста",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_repeat.mp3"
     },
     {
       "id": "lang_ja_speak_english",
@@ -4159,8 +4473,9 @@
       "transliteration": "Eigo o hanasemasu ka?",
       "translationRu": "Вы говорите по-английски?",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_speak_english.mp3"
     },
     {
       "id": "lang_ja_where",
@@ -4172,8 +4487,9 @@
       "transliteration": "Doko?",
       "translationRu": "Где?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_where.mp3"
     },
     {
       "id": "lang_ja_when",
@@ -4185,8 +4501,9 @@
       "transliteration": "Itsu?",
       "translationRu": "Когда?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_when.mp3"
     },
     {
       "id": "lang_ja_how_much",
@@ -4198,8 +4515,9 @@
       "transliteration": "Ikuradesu ka?",
       "translationRu": "Сколько это стоит?",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_how_much.mp3"
     },
     {
       "id": "lang_ja_toilet",
@@ -4211,8 +4529,9 @@
       "transliteration": "Toire",
       "translationRu": "Туалет",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_toilet.mp3"
     },
     {
       "id": "lang_ja_hotel",
@@ -4224,8 +4543,9 @@
       "transliteration": "Hoteru",
       "translationRu": "Отель",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_hotel.mp3"
     },
     {
       "id": "lang_ja_hospital",
@@ -4237,8 +4557,9 @@
       "transliteration": "Byōin",
       "translationRu": "Больница",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_hospital.mp3"
     },
     {
       "id": "lang_ja_police",
@@ -4250,8 +4571,9 @@
       "transliteration": "Keisatsu",
       "translationRu": "Полиция",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_police.mp3"
     },
     {
       "id": "lang_ja_pharmacy",
@@ -4263,8 +4585,9 @@
       "transliteration": "Yakkyoku",
       "translationRu": "Аптека",
       "topic": "здоровье",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_pharmacy.mp3"
     },
     {
       "id": "lang_ja_water",
@@ -4276,8 +4599,9 @@
       "transliteration": "Mizu",
       "translationRu": "Вода",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_water.mp3"
     },
     {
       "id": "lang_ja_food",
@@ -4289,8 +4613,9 @@
       "transliteration": "Tabemono",
       "translationRu": "Еда",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_food.mp3"
     },
     {
       "id": "lang_ja_bread",
@@ -4302,8 +4627,9 @@
       "transliteration": "Pan",
       "translationRu": "Хлеб",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_bread.mp3"
     },
     {
       "id": "lang_ja_meat",
@@ -4315,8 +4641,9 @@
       "transliteration": "Niku",
       "translationRu": "Мясо",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_meat.mp3"
     },
     {
       "id": "lang_ja_fish",
@@ -4328,8 +4655,9 @@
       "transliteration": "Sakana",
       "translationRu": "Рыба",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_fish.mp3"
     },
     {
       "id": "lang_ja_without_meat",
@@ -4341,8 +4669,9 @@
       "transliteration": "Niku nashi",
       "translationRu": "Без мяса",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_without_meat.mp3"
     },
     {
       "id": "lang_ja_coffee",
@@ -4354,8 +4683,9 @@
       "transliteration": "Kōhī",
       "translationRu": "Кофе",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_coffee.mp3"
     },
     {
       "id": "lang_ja_tea",
@@ -4367,8 +4697,9 @@
       "transliteration": "Ocha",
       "translationRu": "Чай",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_tea.mp3"
     },
     {
       "id": "lang_ja_breakfast",
@@ -4380,8 +4711,9 @@
       "transliteration": "Asa gohan",
       "translationRu": "Завтрак",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_breakfast.mp3"
     },
     {
       "id": "lang_ja_bill",
@@ -4393,8 +4725,9 @@
       "transliteration": "O kaikei o onegaishimasu",
       "translationRu": "Счёт, пожалуйста",
       "topic": "кафе",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_bill.mp3"
     },
     {
       "id": "lang_ja_buy_this",
@@ -4406,8 +4739,9 @@
       "transliteration": "Kore o kaitaidesu",
       "translationRu": "Я хочу купить это",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_buy_this.mp3"
     },
     {
       "id": "lang_ja_money",
@@ -4419,8 +4753,9 @@
       "transliteration": "Okane",
       "translationRu": "Деньги",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_money.mp3"
     },
     {
       "id": "lang_ja_bank_card",
@@ -4432,8 +4767,9 @@
       "transliteration": "Ginkō kādo",
       "translationRu": "Банковская карта",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_bank_card.mp3"
     },
     {
       "id": "lang_ja_train",
@@ -4445,8 +4781,9 @@
       "transliteration": "Densha",
       "translationRu": "Поезд",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_train.mp3"
     },
     {
       "id": "lang_ja_bus",
@@ -4458,8 +4795,9 @@
       "transliteration": "Basu",
       "translationRu": "Автобус",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_bus.mp3"
     },
     {
       "id": "lang_ja_taxi",
@@ -4471,8 +4809,9 @@
       "transliteration": "Takushī",
       "translationRu": "Такси",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_taxi.mp3"
     },
     {
       "id": "lang_ja_airport",
@@ -4484,8 +4823,9 @@
       "transliteration": "Kūkō",
       "translationRu": "Аэропорт",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_airport.mp3"
     },
     {
       "id": "lang_ja_station",
@@ -4497,8 +4837,9 @@
       "transliteration": "Eki",
       "translationRu": "Железнодорожный вокзал",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_station.mp3"
     },
     {
       "id": "lang_ja_left",
@@ -4510,8 +4851,9 @@
       "transliteration": "Hidari e",
       "translationRu": "Налево",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_left.mp3"
     },
     {
       "id": "lang_ja_right",
@@ -4523,8 +4865,9 @@
       "transliteration": "Migi e",
       "translationRu": "Направо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_right.mp3"
     },
     {
       "id": "lang_ja_straight",
@@ -4536,8 +4879,9 @@
       "transliteration": "Massugu",
       "translationRu": "Прямо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_straight.mp3"
     },
     {
       "id": "lang_ja_today",
@@ -4549,8 +4893,9 @@
       "transliteration": "Kyō",
       "translationRu": "Сегодня",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_today.mp3"
     },
     {
       "id": "lang_ja_tomorrow",
@@ -4562,8 +4907,9 @@
       "transliteration": "Ashita",
       "translationRu": "Завтра",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_tomorrow.mp3"
     },
     {
       "id": "lang_ja_good",
@@ -4575,8 +4921,9 @@
       "transliteration": "Ī",
       "translationRu": "Хорошо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_good.mp3"
     },
     {
       "id": "lang_ja_bad",
@@ -4588,8 +4935,9 @@
       "transliteration": "Warui",
       "translationRu": "Плохо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_bad.mp3"
     },
     {
       "id": "lang_ja_may_i",
@@ -4601,8 +4949,9 @@
       "transliteration": "Īdesu ka?",
       "translationRu": "Можно?",
       "topic": "разрешение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_may_i.mp3"
     },
     {
       "id": "lang_ja_forbidden",
@@ -4614,8 +4963,9 @@
       "transliteration": "Kinshi",
       "translationRu": "Нельзя",
       "topic": "запрет",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ja_forbidden.mp3"
     },
     {
       "id": "lang_ko_hello",
@@ -4627,8 +4977,9 @@
       "transliteration": "Annyeonghaseyo",
       "translationRu": "Привет",
       "topic": "приветствие",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_hello.mp3"
     },
     {
       "id": "lang_ko_goodbye",
@@ -4640,8 +4991,9 @@
       "transliteration": "Annyeonghi gaseyo",
       "translationRu": "До свидания",
       "topic": "прощание",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_goodbye.mp3"
     },
     {
       "id": "lang_ko_thanks",
@@ -4653,8 +5005,9 @@
       "transliteration": "Gamsahamnida",
       "translationRu": "Спасибо",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_thanks.mp3"
     },
     {
       "id": "lang_ko_please",
@@ -4666,8 +5019,9 @@
       "transliteration": "Butakhamnida",
       "translationRu": "Пожалуйста",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_please.mp3"
     },
     {
       "id": "lang_ko_yes",
@@ -4679,8 +5033,9 @@
       "transliteration": "Ne",
       "translationRu": "Да",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_yes.mp3"
     },
     {
       "id": "lang_ko_no",
@@ -4692,8 +5047,9 @@
       "transliteration": "Aniyo",
       "translationRu": "Нет",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_no.mp3"
     },
     {
       "id": "lang_ko_excuse_me",
@@ -4705,8 +5061,9 @@
       "transliteration": "Sillyehamnida",
       "translationRu": "Извините",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_excuse_me.mp3"
     },
     {
       "id": "lang_ko_sorry",
@@ -4718,8 +5075,9 @@
       "transliteration": "Joesonghamnida",
       "translationRu": "Простите",
       "topic": "извинение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_sorry.mp3"
     },
     {
       "id": "lang_ko_help",
@@ -4731,8 +5089,9 @@
       "transliteration": "Dowajuseyo!",
       "translationRu": "Помогите!",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_help.mp3"
     },
     {
       "id": "lang_ko_careful",
@@ -4744,8 +5103,9 @@
       "transliteration": "Josimhaseyo!",
       "translationRu": "Осторожно!",
       "topic": "предупреждение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_careful.mp3"
     },
     {
       "id": "lang_ko_stop",
@@ -4757,8 +5117,9 @@
       "transliteration": "Meomchuseyo!",
       "translationRu": "Стойте!",
       "topic": "команда",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_stop.mp3"
     },
     {
       "id": "lang_ko_wait",
@@ -4770,8 +5131,9 @@
       "transliteration": "Gidaryeo juseyo",
       "translationRu": "Подождите",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_wait.mp3"
     },
     {
       "id": "lang_ko_dont_understand",
@@ -4783,8 +5145,9 @@
       "transliteration": "Ihaehaji mothaeyo",
       "translationRu": "Я не понимаю",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_dont_understand.mp3"
     },
     {
       "id": "lang_ko_repeat",
@@ -4796,8 +5159,9 @@
       "transliteration": "Dasi malhae juseyo",
       "translationRu": "Повторите, пожалуйста",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_repeat.mp3"
     },
     {
       "id": "lang_ko_speak_english",
@@ -4809,8 +5173,9 @@
       "transliteration": "Yeongeoreul hal su isseoyo?",
       "translationRu": "Вы говорите по-английски?",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_speak_english.mp3"
     },
     {
       "id": "lang_ko_where",
@@ -4822,8 +5187,9 @@
       "transliteration": "Eodiyeyo?",
       "translationRu": "Где?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_where.mp3"
     },
     {
       "id": "lang_ko_when",
@@ -4835,8 +5201,9 @@
       "transliteration": "Eonjeyeyo?",
       "translationRu": "Когда?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_when.mp3"
     },
     {
       "id": "lang_ko_how_much",
@@ -4848,8 +5215,9 @@
       "transliteration": "Eolmayeyo?",
       "translationRu": "Сколько это стоит?",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_how_much.mp3"
     },
     {
       "id": "lang_ko_toilet",
@@ -4861,8 +5229,9 @@
       "transliteration": "hwajangsil",
       "translationRu": "Туалет",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_toilet.mp3"
     },
     {
       "id": "lang_ko_hotel",
@@ -4874,8 +5243,9 @@
       "transliteration": "hotel",
       "translationRu": "Отель",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_hotel.mp3"
     },
     {
       "id": "lang_ko_hospital",
@@ -4887,8 +5257,9 @@
       "transliteration": "Byeongwon",
       "translationRu": "Больница",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_hospital.mp3"
     },
     {
       "id": "lang_ko_police",
@@ -4900,8 +5271,9 @@
       "transliteration": "gyeongchal",
       "translationRu": "Полиция",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_police.mp3"
     },
     {
       "id": "lang_ko_pharmacy",
@@ -4913,8 +5285,9 @@
       "transliteration": "Yakguk",
       "translationRu": "Аптека",
       "topic": "здоровье",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_pharmacy.mp3"
     },
     {
       "id": "lang_ko_water",
@@ -4926,8 +5299,9 @@
       "transliteration": "mul",
       "translationRu": "Вода",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_water.mp3"
     },
     {
       "id": "lang_ko_food",
@@ -4939,8 +5313,9 @@
       "transliteration": "Eumsik",
       "translationRu": "Еда",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_food.mp3"
     },
     {
       "id": "lang_ko_bread",
@@ -4952,8 +5327,9 @@
       "transliteration": "ppang",
       "translationRu": "Хлеб",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_bread.mp3"
     },
     {
       "id": "lang_ko_meat",
@@ -4965,8 +5341,9 @@
       "transliteration": "gogi",
       "translationRu": "Мясо",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_meat.mp3"
     },
     {
       "id": "lang_ko_fish",
@@ -4978,8 +5355,9 @@
       "transliteration": "Saengseon",
       "translationRu": "Рыба",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_fish.mp3"
     },
     {
       "id": "lang_ko_without_meat",
@@ -4991,8 +5369,9 @@
       "transliteration": "Gogi eopsi",
       "translationRu": "Без мяса",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_without_meat.mp3"
     },
     {
       "id": "lang_ko_coffee",
@@ -5004,8 +5383,9 @@
       "transliteration": "keopi",
       "translationRu": "Кофе",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_coffee.mp3"
     },
     {
       "id": "lang_ko_tea",
@@ -5017,8 +5397,9 @@
       "transliteration": "cha",
       "translationRu": "Чай",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_tea.mp3"
     },
     {
       "id": "lang_ko_breakfast",
@@ -5030,8 +5411,9 @@
       "transliteration": "achim sigsa",
       "translationRu": "Завтрак",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_breakfast.mp3"
     },
     {
       "id": "lang_ko_bill",
@@ -5043,8 +5425,9 @@
       "transliteration": "Gyesanseo juseyo",
       "translationRu": "Счёт, пожалуйста",
       "topic": "кафе",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_bill.mp3"
     },
     {
       "id": "lang_ko_buy_this",
@@ -5056,8 +5439,9 @@
       "transliteration": "Igeoseul sago sipeoyo",
       "translationRu": "Я хочу купить это",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_buy_this.mp3"
     },
     {
       "id": "lang_ko_money",
@@ -5069,8 +5453,9 @@
       "transliteration": "don",
       "translationRu": "Деньги",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_money.mp3"
     },
     {
       "id": "lang_ko_bank_card",
@@ -5082,8 +5467,9 @@
       "transliteration": "eunhaeng kadeu",
       "translationRu": "Банковская карта",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_bank_card.mp3"
     },
     {
       "id": "lang_ko_train",
@@ -5095,8 +5481,9 @@
       "transliteration": "gicha",
       "translationRu": "Поезд",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_train.mp3"
     },
     {
       "id": "lang_ko_bus",
@@ -5108,8 +5495,9 @@
       "transliteration": "beoseu",
       "translationRu": "Автобус",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_bus.mp3"
     },
     {
       "id": "lang_ko_taxi",
@@ -5121,8 +5509,9 @@
       "transliteration": "taegsi",
       "translationRu": "Такси",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_taxi.mp3"
     },
     {
       "id": "lang_ko_airport",
@@ -5134,8 +5523,9 @@
       "transliteration": "gonghang",
       "translationRu": "Аэропорт",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_airport.mp3"
     },
     {
       "id": "lang_ko_station",
@@ -5147,8 +5537,9 @@
       "transliteration": "Gichayeok",
       "translationRu": "Железнодорожный вокзал",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_station.mp3"
     },
     {
       "id": "lang_ko_left",
@@ -5160,8 +5551,9 @@
       "transliteration": "Oenjjogeuro",
       "translationRu": "Налево",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_left.mp3"
     },
     {
       "id": "lang_ko_right",
@@ -5173,8 +5565,9 @@
       "transliteration": "Oreunjjogeuro",
       "translationRu": "Направо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_right.mp3"
     },
     {
       "id": "lang_ko_straight",
@@ -5186,8 +5579,9 @@
       "transliteration": "jigjin",
       "translationRu": "Прямо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_straight.mp3"
     },
     {
       "id": "lang_ko_today",
@@ -5199,8 +5593,9 @@
       "transliteration": "oneul",
       "translationRu": "Сегодня",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_today.mp3"
     },
     {
       "id": "lang_ko_tomorrow",
@@ -5212,8 +5607,9 @@
       "transliteration": "naeil",
       "translationRu": "Завтра",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_tomorrow.mp3"
     },
     {
       "id": "lang_ko_good",
@@ -5225,8 +5621,9 @@
       "transliteration": "Joayo",
       "translationRu": "Хорошо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_good.mp3"
     },
     {
       "id": "lang_ko_bad",
@@ -5238,8 +5635,9 @@
       "transliteration": "Nappayo",
       "translationRu": "Плохо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_bad.mp3"
     },
     {
       "id": "lang_ko_may_i",
@@ -5251,8 +5649,9 @@
       "transliteration": "haedo dwaeyo?",
       "translationRu": "Можно?",
       "topic": "разрешение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_may_i.mp3"
     },
     {
       "id": "lang_ko_forbidden",
@@ -5264,8 +5663,9 @@
       "transliteration": "geumji",
       "translationRu": "Нельзя",
       "topic": "запрет",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ko_forbidden.mp3"
     },
     {
       "id": "lang_ar_hello",
@@ -5277,8 +5677,9 @@
       "transliteration": "Marḥaban",
       "translationRu": "Привет",
       "topic": "приветствие",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_hello.mp3"
     },
     {
       "id": "lang_ar_goodbye",
@@ -5290,8 +5691,9 @@
       "transliteration": "Maʿa s-salāma",
       "translationRu": "До свидания",
       "topic": "прощание",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_goodbye.mp3"
     },
     {
       "id": "lang_ar_thanks",
@@ -5303,8 +5705,9 @@
       "transliteration": "Shukran",
       "translationRu": "Спасибо",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_thanks.mp3"
     },
     {
       "id": "lang_ar_please",
@@ -5316,8 +5719,9 @@
       "transliteration": "Min faḍlik",
       "translationRu": "Пожалуйста",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_please.mp3"
     },
     {
       "id": "lang_ar_yes",
@@ -5329,8 +5733,9 @@
       "transliteration": "Naʿam",
       "translationRu": "Да",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_yes.mp3"
     },
     {
       "id": "lang_ar_no",
@@ -5342,8 +5747,9 @@
       "transliteration": "Lā",
       "translationRu": "Нет",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_no.mp3"
     },
     {
       "id": "lang_ar_excuse_me",
@@ -5355,8 +5761,9 @@
       "transliteration": "ʿUdhran",
       "translationRu": "Извините",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_excuse_me.mp3"
     },
     {
       "id": "lang_ar_sorry",
@@ -5368,8 +5775,9 @@
       "transliteration": "Anā āsif",
       "translationRu": "Простите",
       "topic": "извинение",
-      "contentVersion": 1,
-      "usageNoteRu": "Мужчина говорит «أنا آسف», женщина — «أنا آسفة»."
+      "contentVersion": 2,
+      "usageNoteRu": "Мужчина говорит «أنا آسف», женщина — «أنا آسفة».",
+      "audio": "./assets/languages/audio/lang_ar_sorry.mp3"
     },
     {
       "id": "lang_ar_help",
@@ -5381,8 +5789,9 @@
       "transliteration": "An-najda!",
       "translationRu": "Помогите!",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_help.mp3"
     },
     {
       "id": "lang_ar_careful",
@@ -5394,8 +5803,9 @@
       "transliteration": "Intabih!",
       "translationRu": "Осторожно!",
       "topic": "предупреждение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_careful.mp3"
     },
     {
       "id": "lang_ar_stop",
@@ -5407,8 +5817,9 @@
       "transliteration": "Tawaqqaf!",
       "translationRu": "Стойте!",
       "topic": "команда",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_stop.mp3"
     },
     {
       "id": "lang_ar_wait",
@@ -5420,8 +5831,9 @@
       "transliteration": "Intazir min faḍlik",
       "translationRu": "Подождите",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_wait.mp3"
     },
     {
       "id": "lang_ar_dont_understand",
@@ -5433,8 +5845,9 @@
       "transliteration": "Lā afham",
       "translationRu": "Я не понимаю",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_dont_understand.mp3"
     },
     {
       "id": "lang_ar_repeat",
@@ -5446,8 +5859,9 @@
       "transliteration": "Karrir min faḍlik",
       "translationRu": "Повторите, пожалуйста",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_repeat.mp3"
     },
     {
       "id": "lang_ar_speak_english",
@@ -5459,8 +5873,9 @@
       "transliteration": "Hal tataḥaddath al-inglīziyya?",
       "translationRu": "Вы говорите по-английски?",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_speak_english.mp3"
     },
     {
       "id": "lang_ar_where",
@@ -5472,8 +5887,9 @@
       "transliteration": "Ayna?",
       "translationRu": "Где?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_where.mp3"
     },
     {
       "id": "lang_ar_when",
@@ -5485,8 +5901,9 @@
       "transliteration": "Matā?",
       "translationRu": "Когда?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_when.mp3"
     },
     {
       "id": "lang_ar_how_much",
@@ -5498,8 +5915,9 @@
       "transliteration": "Kam as-siʿr?",
       "translationRu": "Сколько это стоит?",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_how_much.mp3"
     },
     {
       "id": "lang_ar_toilet",
@@ -5511,8 +5929,9 @@
       "transliteration": "Mirḥāḍ",
       "translationRu": "Туалет",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_toilet.mp3"
     },
     {
       "id": "lang_ar_hotel",
@@ -5524,8 +5943,9 @@
       "transliteration": "funduq",
       "translationRu": "Отель",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_hotel.mp3"
     },
     {
       "id": "lang_ar_hospital",
@@ -5537,8 +5957,9 @@
       "transliteration": "Mustashfā",
       "translationRu": "Больница",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_hospital.mp3"
     },
     {
       "id": "lang_ar_police",
@@ -5550,8 +5971,9 @@
       "transliteration": "Shurṭa",
       "translationRu": "Полиция",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_police.mp3"
     },
     {
       "id": "lang_ar_pharmacy",
@@ -5563,8 +5985,9 @@
       "transliteration": "Ṣaydaliyya",
       "translationRu": "Аптека",
       "topic": "здоровье",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_pharmacy.mp3"
     },
     {
       "id": "lang_ar_water",
@@ -5576,8 +5999,9 @@
       "transliteration": "Māʾ",
       "translationRu": "Вода",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_water.mp3"
     },
     {
       "id": "lang_ar_food",
@@ -5589,8 +6013,9 @@
       "transliteration": "Ṭaʿām",
       "translationRu": "Еда",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_food.mp3"
     },
     {
       "id": "lang_ar_bread",
@@ -5602,8 +6027,9 @@
       "transliteration": "khubz",
       "translationRu": "Хлеб",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_bread.mp3"
     },
     {
       "id": "lang_ar_meat",
@@ -5615,8 +6041,9 @@
       "transliteration": "lahm",
       "translationRu": "Мясо",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_meat.mp3"
     },
     {
       "id": "lang_ar_fish",
@@ -5628,8 +6055,9 @@
       "transliteration": "samak",
       "translationRu": "Рыба",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_fish.mp3"
     },
     {
       "id": "lang_ar_without_meat",
@@ -5641,8 +6069,9 @@
       "transliteration": "bidun lahm",
       "translationRu": "Без мяса",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_without_meat.mp3"
     },
     {
       "id": "lang_ar_coffee",
@@ -5654,8 +6083,9 @@
       "transliteration": "qahwa",
       "translationRu": "Кофе",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_coffee.mp3"
     },
     {
       "id": "lang_ar_tea",
@@ -5667,8 +6097,9 @@
       "transliteration": "shay",
       "translationRu": "Чай",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_tea.mp3"
     },
     {
       "id": "lang_ar_breakfast",
@@ -5680,8 +6111,9 @@
       "transliteration": "Fuṭūr",
       "translationRu": "Завтрак",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_breakfast.mp3"
     },
     {
       "id": "lang_ar_bill",
@@ -5693,8 +6125,9 @@
       "transliteration": "Al-ḥisāb min faḍlik",
       "translationRu": "Счёт, пожалуйста",
       "topic": "кафе",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_bill.mp3"
     },
     {
       "id": "lang_ar_buy_this",
@@ -5706,8 +6139,9 @@
       "transliteration": "Urīdu shirāʾ hādhā",
       "translationRu": "Я хочу купить это",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_buy_this.mp3"
     },
     {
       "id": "lang_ar_money",
@@ -5719,8 +6153,9 @@
       "transliteration": "Nuqūd",
       "translationRu": "Деньги",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_money.mp3"
     },
     {
       "id": "lang_ar_bank_card",
@@ -5732,8 +6167,9 @@
       "transliteration": "Biṭāqa maṣrafiyya",
       "translationRu": "Банковская карта",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_bank_card.mp3"
     },
     {
       "id": "lang_ar_train",
@@ -5745,8 +6181,9 @@
       "transliteration": "Qiṭār",
       "translationRu": "Поезд",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_train.mp3"
     },
     {
       "id": "lang_ar_bus",
@@ -5758,8 +6195,9 @@
       "transliteration": "Ḥāfila",
       "translationRu": "Автобус",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_bus.mp3"
     },
     {
       "id": "lang_ar_taxi",
@@ -5771,8 +6209,9 @@
       "transliteration": "Sayyārat ujra",
       "translationRu": "Такси",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_taxi.mp3"
     },
     {
       "id": "lang_ar_airport",
@@ -5784,8 +6223,9 @@
       "transliteration": "Maṭār",
       "translationRu": "Аэропорт",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_airport.mp3"
     },
     {
       "id": "lang_ar_station",
@@ -5797,8 +6237,9 @@
       "transliteration": "Maḥaṭṭat al-qiṭār",
       "translationRu": "Железнодорожный вокзал",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_station.mp3"
     },
     {
       "id": "lang_ar_left",
@@ -5810,8 +6251,9 @@
       "transliteration": "Ilā al-yasār",
       "translationRu": "Налево",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_left.mp3"
     },
     {
       "id": "lang_ar_right",
@@ -5823,8 +6265,9 @@
       "transliteration": "Ilā al-yamīn",
       "translationRu": "Направо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_right.mp3"
     },
     {
       "id": "lang_ar_straight",
@@ -5836,8 +6279,9 @@
       "transliteration": "Mubāsharatan",
       "translationRu": "Прямо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_straight.mp3"
     },
     {
       "id": "lang_ar_today",
@@ -5849,8 +6293,9 @@
       "transliteration": "Al-yawm",
       "translationRu": "Сегодня",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_today.mp3"
     },
     {
       "id": "lang_ar_tomorrow",
@@ -5862,8 +6307,9 @@
       "transliteration": "Ghadan",
       "translationRu": "Завтра",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_tomorrow.mp3"
     },
     {
       "id": "lang_ar_good",
@@ -5875,8 +6321,9 @@
       "transliteration": "Jayyid",
       "translationRu": "Хорошо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_good.mp3"
     },
     {
       "id": "lang_ar_bad",
@@ -5888,8 +6335,9 @@
       "transliteration": "Sayyiʾ",
       "translationRu": "Плохо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_bad.mp3"
     },
     {
       "id": "lang_ar_may_i",
@@ -5901,8 +6349,9 @@
       "transliteration": "Hal yumkin?",
       "translationRu": "Можно?",
       "topic": "разрешение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_may_i.mp3"
     },
     {
       "id": "lang_ar_forbidden",
@@ -5914,8 +6363,9 @@
       "transliteration": "Mamnūʿ",
       "translationRu": "Нельзя",
       "topic": "запрет",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_ar_forbidden.mp3"
     },
     {
       "id": "lang_tr_hello",
@@ -5927,8 +6377,9 @@
       "transliteration": "",
       "translationRu": "Привет",
       "topic": "приветствие",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_hello.mp3"
     },
     {
       "id": "lang_tr_goodbye",
@@ -5940,8 +6391,9 @@
       "transliteration": "",
       "translationRu": "До свидания",
       "topic": "прощание",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_goodbye.mp3"
     },
     {
       "id": "lang_tr_thanks",
@@ -5953,8 +6405,9 @@
       "transliteration": "",
       "translationRu": "Спасибо",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_thanks.mp3"
     },
     {
       "id": "lang_tr_please",
@@ -5966,8 +6419,9 @@
       "transliteration": "",
       "translationRu": "Пожалуйста",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_please.mp3"
     },
     {
       "id": "lang_tr_yes",
@@ -5979,8 +6433,9 @@
       "transliteration": "",
       "translationRu": "Да",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_yes.mp3"
     },
     {
       "id": "lang_tr_no",
@@ -5992,8 +6447,9 @@
       "transliteration": "",
       "translationRu": "Нет",
       "topic": "ответ",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_no.mp3"
     },
     {
       "id": "lang_tr_excuse_me",
@@ -6005,8 +6461,9 @@
       "transliteration": "",
       "translationRu": "Извините",
       "topic": "вежливость",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_excuse_me.mp3"
     },
     {
       "id": "lang_tr_sorry",
@@ -6018,8 +6475,9 @@
       "transliteration": "",
       "translationRu": "Простите",
       "topic": "извинение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_sorry.mp3"
     },
     {
       "id": "lang_tr_help",
@@ -6031,8 +6489,9 @@
       "transliteration": "",
       "translationRu": "Помогите!",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_help.mp3"
     },
     {
       "id": "lang_tr_careful",
@@ -6044,8 +6503,9 @@
       "transliteration": "",
       "translationRu": "Осторожно!",
       "topic": "предупреждение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_careful.mp3"
     },
     {
       "id": "lang_tr_stop",
@@ -6057,8 +6517,9 @@
       "transliteration": "",
       "translationRu": "Стойте!",
       "topic": "команда",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_stop.mp3"
     },
     {
       "id": "lang_tr_wait",
@@ -6070,8 +6531,9 @@
       "transliteration": "",
       "translationRu": "Подождите",
       "topic": "просьба",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_wait.mp3"
     },
     {
       "id": "lang_tr_dont_understand",
@@ -6083,8 +6545,9 @@
       "transliteration": "",
       "translationRu": "Я не понимаю",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_dont_understand.mp3"
     },
     {
       "id": "lang_tr_repeat",
@@ -6096,8 +6559,9 @@
       "transliteration": "",
       "translationRu": "Повторите, пожалуйста",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_repeat.mp3"
     },
     {
       "id": "lang_tr_speak_english",
@@ -6109,8 +6573,9 @@
       "transliteration": "",
       "translationRu": "Вы говорите по-английски?",
       "topic": "общение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_speak_english.mp3"
     },
     {
       "id": "lang_tr_where",
@@ -6122,8 +6587,9 @@
       "transliteration": "",
       "translationRu": "Где?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_where.mp3"
     },
     {
       "id": "lang_tr_when",
@@ -6135,8 +6601,9 @@
       "transliteration": "",
       "translationRu": "Когда?",
       "topic": "вопрос",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_when.mp3"
     },
     {
       "id": "lang_tr_how_much",
@@ -6148,8 +6615,9 @@
       "transliteration": "",
       "translationRu": "Сколько это стоит?",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_how_much.mp3"
     },
     {
       "id": "lang_tr_toilet",
@@ -6161,8 +6629,9 @@
       "transliteration": "",
       "translationRu": "Туалет",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_toilet.mp3"
     },
     {
       "id": "lang_tr_hotel",
@@ -6174,8 +6643,9 @@
       "transliteration": "",
       "translationRu": "Отель",
       "topic": "место",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_hotel.mp3"
     },
     {
       "id": "lang_tr_hospital",
@@ -6187,8 +6657,9 @@
       "transliteration": "",
       "translationRu": "Больница",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_hospital.mp3"
     },
     {
       "id": "lang_tr_police",
@@ -6200,8 +6671,9 @@
       "transliteration": "",
       "translationRu": "Полиция",
       "topic": "экстренная ситуация",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_police.mp3"
     },
     {
       "id": "lang_tr_pharmacy",
@@ -6213,8 +6685,9 @@
       "transliteration": "",
       "translationRu": "Аптека",
       "topic": "здоровье",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_pharmacy.mp3"
     },
     {
       "id": "lang_tr_water",
@@ -6226,8 +6699,9 @@
       "transliteration": "",
       "translationRu": "Вода",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_water.mp3"
     },
     {
       "id": "lang_tr_food",
@@ -6239,8 +6713,9 @@
       "transliteration": "",
       "translationRu": "Еда",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_food.mp3"
     },
     {
       "id": "lang_tr_bread",
@@ -6252,8 +6727,9 @@
       "transliteration": "",
       "translationRu": "Хлеб",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_bread.mp3"
     },
     {
       "id": "lang_tr_meat",
@@ -6265,8 +6741,9 @@
       "transliteration": "",
       "translationRu": "Мясо",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_meat.mp3"
     },
     {
       "id": "lang_tr_fish",
@@ -6278,8 +6755,9 @@
       "transliteration": "",
       "translationRu": "Рыба",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_fish.mp3"
     },
     {
       "id": "lang_tr_without_meat",
@@ -6291,8 +6769,9 @@
       "transliteration": "",
       "translationRu": "Без мяса",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_without_meat.mp3"
     },
     {
       "id": "lang_tr_coffee",
@@ -6304,8 +6783,9 @@
       "transliteration": "",
       "translationRu": "Кофе",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_coffee.mp3"
     },
     {
       "id": "lang_tr_tea",
@@ -6317,8 +6797,9 @@
       "transliteration": "",
       "translationRu": "Чай",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_tea.mp3"
     },
     {
       "id": "lang_tr_breakfast",
@@ -6330,8 +6811,9 @@
       "transliteration": "",
       "translationRu": "Завтрак",
       "topic": "еда и напитки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_breakfast.mp3"
     },
     {
       "id": "lang_tr_bill",
@@ -6343,8 +6825,9 @@
       "transliteration": "",
       "translationRu": "Счёт, пожалуйста",
       "topic": "кафе",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_bill.mp3"
     },
     {
       "id": "lang_tr_buy_this",
@@ -6356,8 +6839,9 @@
       "transliteration": "",
       "translationRu": "Я хочу купить это",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_buy_this.mp3"
     },
     {
       "id": "lang_tr_money",
@@ -6369,8 +6853,9 @@
       "transliteration": "",
       "translationRu": "Деньги",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_money.mp3"
     },
     {
       "id": "lang_tr_bank_card",
@@ -6382,8 +6867,9 @@
       "transliteration": "",
       "translationRu": "Банковская карта",
       "topic": "покупки",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_bank_card.mp3"
     },
     {
       "id": "lang_tr_train",
@@ -6395,8 +6881,9 @@
       "transliteration": "",
       "translationRu": "Поезд",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_train.mp3"
     },
     {
       "id": "lang_tr_bus",
@@ -6408,8 +6895,9 @@
       "transliteration": "",
       "translationRu": "Автобус",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_bus.mp3"
     },
     {
       "id": "lang_tr_taxi",
@@ -6421,8 +6909,9 @@
       "transliteration": "",
       "translationRu": "Такси",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_taxi.mp3"
     },
     {
       "id": "lang_tr_airport",
@@ -6434,8 +6923,9 @@
       "transliteration": "",
       "translationRu": "Аэропорт",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_airport.mp3"
     },
     {
       "id": "lang_tr_station",
@@ -6447,8 +6937,9 @@
       "transliteration": "",
       "translationRu": "Железнодорожный вокзал",
       "topic": "транспорт",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_station.mp3"
     },
     {
       "id": "lang_tr_left",
@@ -6460,8 +6951,9 @@
       "transliteration": "",
       "translationRu": "Налево",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_left.mp3"
     },
     {
       "id": "lang_tr_right",
@@ -6473,8 +6965,9 @@
       "transliteration": "",
       "translationRu": "Направо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_right.mp3"
     },
     {
       "id": "lang_tr_straight",
@@ -6486,8 +6979,9 @@
       "transliteration": "",
       "translationRu": "Прямо",
       "topic": "направление",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_straight.mp3"
     },
     {
       "id": "lang_tr_today",
@@ -6499,8 +6993,9 @@
       "transliteration": "",
       "translationRu": "Сегодня",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_today.mp3"
     },
     {
       "id": "lang_tr_tomorrow",
@@ -6512,8 +7007,9 @@
       "transliteration": "",
       "translationRu": "Завтра",
       "topic": "время",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_tomorrow.mp3"
     },
     {
       "id": "lang_tr_good",
@@ -6525,8 +7021,9 @@
       "transliteration": "",
       "translationRu": "Хорошо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_good.mp3"
     },
     {
       "id": "lang_tr_bad",
@@ -6538,8 +7035,9 @@
       "transliteration": "",
       "translationRu": "Плохо",
       "topic": "оценка",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_bad.mp3"
     },
     {
       "id": "lang_tr_may_i",
@@ -6551,8 +7049,9 @@
       "transliteration": "",
       "translationRu": "Можно?",
       "topic": "разрешение",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_may_i.mp3"
     },
     {
       "id": "lang_tr_forbidden",
@@ -6564,8 +7063,22 @@
       "transliteration": "",
       "translationRu": "Нельзя",
       "topic": "запрет",
-      "contentVersion": 1,
-      "usageNoteRu": ""
+      "contentVersion": 2,
+      "usageNoteRu": "",
+      "audio": "./assets/languages/audio/lang_tr_forbidden.mp3"
     }
-  ]
+  ],
+  "audioMode": "static-mp3-with-speech-synthesis-fallback",
+  "audioVoices": {
+    "es": "es-ES-ElviraNeural",
+    "fr": "fr-FR-DeniseNeural",
+    "de": "de-DE-KatjaNeural",
+    "it": "it-IT-ElsaNeural",
+    "pt": "pt-PT-RaquelNeural",
+    "zh": "zh-CN-XiaoxiaoNeural",
+    "ja": "ja-JP-NanamiNeural",
+    "ko": "ko-KR-SunHiNeural",
+    "ar": "ar-SA-ZariyahNeural",
+    "tr": "tr-TR-EmelNeural"
+  }
 }

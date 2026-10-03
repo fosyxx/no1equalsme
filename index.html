@@ -2191,6 +2191,7 @@ function answer(remembered){
       r.advanced=res.advanced;
       r.graduatedNow=res.graduated;
       r.done=true;
+      r.tomorrow=false;             // повтор в этой же тренировке удался — на завтра не уходит
     }
     state.queue.shift();
     state.cardScreen='question';
@@ -2227,10 +2228,17 @@ function continueFromDefinition(dir){
   lock=true;
   var c=currentCard(); if(!c){ lock=false; return; }
   var r=state.sessionResults[c.id];
-  // Правило 5 «не показывать дважды в день»: nextReviewDate уже перенесён на завтра,
-  // поэтому слово просто уходит из очереди — без повторного показа сегодня.
-  if(r && !r.done){ r.done=true; if(!state.practice) r.tomorrow=true; }
-  state.queue.shift();
+  /* После «Не помню» слово нельзя просто пропустить «дальше»: оно
+     возвращается в КОНЕЦ очереди ЭТОЙ ЖЕ тренировки и показывается заново
+     (один повтор). Повторный провал закрывает слово как раньше. */
+  if(r && !r.done && !r.requeued){
+    r.requeued=true;
+    if(!state.practice) r.tomorrow=true;  // если тренировку оборвут — слово честно останется «на завтра»
+    state.queue.push(state.queue.shift()); // слово — в конец текущей очереди
+  } else {
+    if(r && !r.done){ r.done=true; if(!state.practice) r.tomorrow=true; }
+    state.queue.shift();
+  }
   state.cardScreen='question';
   save();
   flyCard(dir||1,function(){
@@ -4804,6 +4812,7 @@ function startHoldFill(){
   var step=function(){
     if(mz.t0===null){ if(fill) fill.style.width='0'; return; }
     var el=Date.now()-mz.t0;
+    if(!mz.cancelled && el>=MORSE_CANCEL_MS){ triggerMorseCancel(); return; } // страховка отмены
     if(fill) fill.style.width=(Math.min(1, el/MORSE_DOT_MS)*100)+'%';
     mz.raf=requestAnimationFrame(step);
   };
@@ -4822,8 +4831,36 @@ function endHoldVisual(){
     zone.classList.remove('press');
     var fill=$('morseHoldFill');
     if(fill) fill.style.width='0';
-    if(morseState && morseState.mode==='input') $('morseZoneMain').textContent='Удерживай';
+    // после отмены подпись остаётся «Отмена» — она не должна пропасть при отпускании
+    if(morseState && morseState.mode==='input')
+      $('morseZoneMain').textContent=mz.cancelled?'Отмена':'Удерживай';
   }
+}
+/* Полная отмена ввода буквы (удержание ≥3.5 с): НЕ только логика буфера,
+   но и ВИЗУАЛ/ТАКТИЛЬНОСТЬ — вибрация, тон, полоска и нажатие прекращаются
+   немедленно, подпись становится «Отмена». Вызывается и из таймера, и из
+   rAF-цикла удержания (страховка, если таймер устройства «заснёт»). */
+function triggerMorseCancel(){
+  if(mz.t0===null || mz.cancelled) return;
+  mz.cancelled=true;
+  stopMorseTone();
+  stopMorseVibe();                    // палец ещё держит — но мотор уже остановлен
+  if(mz.raf){ cancelAnimationFrame(mz.raf); mz.raf=null; }
+  if(mz.threshTimer){ clearTimeout(mz.threshTimer); mz.threshTimer=null; }
+  var zone=$('morseZone');
+  if(zone){
+    zone.classList.remove('press');   // «кнопка» отпустилась в момент отмены
+    var fill=$('morseHoldFill');
+    if(fill) fill.style.width='0';
+  }
+  if(morseState.sequence){
+    morseState.sequence='';
+    cancelMorseCheck();
+    saveMorse();
+    renderMorse();
+  }
+  var z=$('morseZoneMain'); if(z) z.textContent='Отмена';  // ПОСЛЕ renderMorse — чтобы не затерлось
+  haptic('done');
 }
 function onMorseDown(e){
   if(typeof state==='undefined' || !state || state.view!=='morse') return;
@@ -4838,21 +4875,8 @@ function onMorseDown(e){
   mz.pointerId=e.pointerId;
   mz.cancelled=false;
   if(mz.cancelTimer) clearTimeout(mz.cancelTimer);
-  mz.cancelTimer=setTimeout(function(){
-    /* ≥3.5 с удержания = «хочу отменить ввод буквы»: стрик и попытки НЕ
-       трогаются, результат НЕ показывается — просто стираем накопленный ввод,
-       и пользователь вводит букву заново. */
-    if(mz.t0===null) return;
-    mz.cancelled=true;
-    if(morseState.sequence){
-      morseState.sequence='';
-      cancelMorseCheck();
-      saveMorse();
-      renderMorse();
-    }
-    var z=$('morseZoneMain'); if(z) z.textContent='Отмена';
-    haptic('done');   // не 'light': у отмены свой тактильный отклик (20.7в держит порог тире без light)
-  }, MORSE_CANCEL_MS);
+  /* Вся визуализация отмены — в triggerMorseCancel (таймер + rAF-страховка) */
+  mz.cancelTimer=setTimeout(triggerMorseCancel, MORSE_CANCEL_MS);
   try{ if(e.target && typeof e.target.setPointerCapture==='function') e.target.setPointerCapture(e.pointerId); }catch(_){}
   $('morseZone').classList.add('press');  // визуальная реакция на нажатие
   $('morseZoneMain').textContent='Точка'; // до порога нажатие читается как точка
@@ -4871,7 +4895,10 @@ function onMorseUp(e){
   var wasCancel=mz.cancelled;   // читаем ДО endHoldVisual — там жест сбрасывается
   endHoldVisual();
   try{ if(e.target && typeof e.target.releasePointerCapture==='function') e.target.releasePointerCapture(e.pointerId); }catch(_){}
-  if(wasCancel) return;         // отмена уже выполнена: ни символа, ни проверки, ни стрика
+  if(wasCancel){                // отмена уже выполнена: ни символа, ни проверки, ни стрика
+    var zc=$('morseZoneMain'); if(zc) zc.textContent='Отмена';
+    return;
+  }
   if(morseLocked()) return;
   if(dur<MORSE_MIN_MS){
     // случайное касание — игнорируем, но накопленный ввод не должен остаться без проверки
@@ -5538,10 +5565,23 @@ function langLogSound(where, info){
   langSoundLastError=where+(code ? ' (код: '+code+')' : '');
   try{ console.warn('No1EqualsMe: озвучка [' + where + ']', info); }catch(e){}
 }
+/* Синтез речи: поддерживаем и старый webkit-префикс (часть Android WebView
+   отдаёт только webkitSpeechSynthesis/…Utterance). */
+function langSynth(){
+  if(typeof speechSynthesis!=='undefined' && speechSynthesis && typeof speechSynthesis.speak==='function') return speechSynthesis;
+  if(typeof webkitSpeechSynthesis!=='undefined' && webkitSpeechSynthesis && typeof webkitSpeechSynthesis.speak==='function') return webkitSpeechSynthesis;
+  return null;
+}
+function langUttCtor(){
+  if(typeof SpeechSynthesisUtterance==='function') return SpeechSynthesisUtterance;
+  if(typeof webkitSpeechSynthesisUtterance==='function') return webkitSpeechSynthesisUtterance;
+  return null;
+}
 function langVoicesRaw(){
   try{
-    if(typeof speechSynthesis==='undefined' || !speechSynthesis.getVoices) return [];
-    return speechSynthesis.getVoices()||[];
+    var s=langSynth();
+    if(!s || !s.getVoices) return [];
+    return s.getVoices()||[];
   }catch(e){ return []; }
 }
 function langPickVoice(vs, bcp47){
@@ -5552,18 +5592,22 @@ function langPickVoice(vs, bcp47){
   return null;
 }
 function speakLang(text, bcp47){
-  var hasSynth=(typeof speechSynthesis!=='undefined' && typeof speechSynthesis.speak==='function');
-  var hasUtt=(typeof SpeechSynthesisUtterance==='function');
-  if(!hasSynth || !hasUtt){
+  var synth=langSynth();                              // speechSynthesis или webkitSpeechSynthesis
+  var Utt=langUttCtor();                              // SpeechSynthesisUtterance или webkit-версия
+  if(!synth || !Utt){
     langLogSound('нет Web Speech API', {
-      speechSynthesis:hasSynth, utterance:hasUtt,
+      speechSynthesis:!!synth, utterance:!!Utt,
       ua:(typeof navigator!=='undefined' && navigator.userAgent)||''
     });
-    toast('Озвучка не поддерживается на этом устройстве (код: no-speech-api)');
+    /* Тост называет, чего именно не хватает, и что можно сделать —
+       пользователю не нужно открывать консоль. */
+    toast('Озвучка не поддерживается этим браузером (код: no-speech-api: synthesis='+
+      (synth?'да':'нет')+', utterance='+(Utt?'да':'нет')+
+      '). Откройте в Chrome или обновите приложение.');
     return false;
   }
-  try{ speechSynthesis.cancel(); }catch(e){}          // новое воспроизведение — старое гасим
-  try{ speechSynthesis.resume(); }catch(e){}          // iOS-квирк: синтез может «залипнуть» в paused
+  try{ synth.cancel(); }catch(e){}                    // новое воспроизведение — старое гасим
+  try{ synth.resume(); }catch(e){}                    // iOS-квирк: синтез может «залипнуть» в paused
   var vs=langVoicesRaw();
   var v=langPickVoice(vs, bcp47);
   if(vs.length && !v){
@@ -5578,7 +5622,7 @@ function speakLang(text, bcp47){
   /* Список голосов может быть ещё пуст (грузятся асинхронно): произносим по
      lang — движок сам выберет голос; реальные ошибки придёт из onerror. */
   try{
-    var u=new SpeechSynthesisUtterance(text);
+    var u=new Utt(text);
     u.lang=bcp47; u.rate=0.85; u.pitch=1;
     if(v) u.voice=v;
     u.onerror=function(ev){
@@ -5600,8 +5644,8 @@ function speakLang(text, bcp47){
         toast('Не удалось воспроизвести звук — попробуйте ещё раз (код: '+code+').');
       }
     };
-    speechSynthesis.speak(u);
-    try{ speechSynthesis.resume(); }catch(e){}        // тот же iOS-квирк после запуска
+    synth.speak(u);
+    try{ synth.resume(); }catch(e){}                  // тот же iOS-квирк после запуска
     if(!vs.length) langLogSound('голоса ещё не загружены — произносим по lang', {target:bcp47});
     return true;
   }catch(e){
@@ -5609,19 +5653,20 @@ function speakLang(text, bcp47){
       message:String((e && e.message) || e), lang:bcp47,
       ua:(typeof navigator!=='undefined' && navigator.userAgent)||''
     });
-    toast('Озвучка не поддерживается на этом устройстве (код: speak-exception)');
+    toast('Озвучка не поддерживается этим браузером (код: speak-exception)');
     return false;
   }
 }
 function stopLangSpeech(){
-  try{ if(typeof speechSynthesis!=='undefined') speechSynthesis.cancel(); }catch(e){}
+  try{ var s=langSynth(); if(s) s.cancel(); }catch(e){}
 }
 /* Прогрев голосов: подписываемся сразу (в т.ч. свойством — старый WebKit) */
 try{
-  if(typeof speechSynthesis!=='undefined'){
+  var warmSynth=langSynth();
+  if(warmSynth){
     var warmVoices=function(){ try{ langVoicesRaw(); }catch(e){} };
-    if(typeof speechSynthesis.addEventListener==='function') speechSynthesis.addEventListener('voiceschanged', warmVoices);
-    speechSynthesis.onvoiceschanged=warmVoices;
+    if(typeof warmSynth.addEventListener==='function') warmSynth.addEventListener('voiceschanged', warmVoices);
+    warmSynth.onvoiceschanged=warmVoices;
   }
 }catch(e){}
 document.addEventListener('visibilitychange', function(){ if(document.hidden) stopLangSpeech(); });

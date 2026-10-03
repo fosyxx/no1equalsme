@@ -321,8 +321,8 @@ html.rm .ms-streak.rec svg{animation:none}
 .det-tab{flex:1;min-height:44px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--muted);font:inherit;font-weight:650;font-size:14px;transition:background .15s ease,border-color .15s ease,color .15s ease}
 .det-tab.active{background:var(--violet-soft);border-color:var(--violet-line);color:var(--text)}
 .det-main{flex:1;min-height:0;overflow:hidden}
-.det-track{display:flex;width:200%;height:100%;transform:translateX(0);transition:transform .28s ease;touch-action:pan-y}
-.det-page{width:50%;flex:none;height:100%;overflow-y:auto;overscroll-behavior:contain;padding:8px 2px 20px;display:flex;flex-direction:column;gap:14px}
+.det-track{display:flex;width:300%;height:100%;transform:translateX(0);transition:transform .28s ease;touch-action:pan-y}
+.det-page{width:calc(100% / 3);flex:none;height:100%;overflow-y:auto;overscroll-behavior:contain;padding:8px 2px 20px;display:flex;flex-direction:column;gap:14px}
 .det-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 12px 12px}
 .det-legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--muted);margin-bottom:8px}
 .det-legend span{display:inline-flex;align-items:center;gap:6px}
@@ -417,6 +417,15 @@ html.rm .ms-streak.rec svg{animation:none}
 .test-grid .tb:disabled{opacity:.45;pointer-events:none}
 .test-grid .wide{grid-column:span 3}
 .test-lock{font-size:12.5px;color:var(--red)}
+.arch-sorts{display:flex;flex-wrap:wrap;gap:8px;padding:2px 0 4px}
+.sort-chip{cursor:pointer;user-select:none;font-size:13px}
+.sort-chip.on{background:var(--violet-soft);border-color:var(--violet-line);color:var(--violet)}
+/* Оборот карточки языков: перевод/транслитерация — ПО СЕРЕДИНЕ стороны,
+   а не прижаты к верху (первая строка языка — метка, её отодвигаем вверх) */
+#lsBack .back-scroll{display:flex;flex-direction:column;padding-top:16px}
+#lsBack .back-scroll>:first-child{margin-top:auto}
+#lsBack .back-scroll>:last-child{margin-bottom:auto}
+.arch-more{color:var(--muted);font-size:13px;padding:6px 2px}
 .reset-zone{padding:14px 4px 2px;border-top:1px solid var(--line)}
 .reset-zone h3{font-size:13px;font-weight:650;color:var(--muted);margin-bottom:10px;letter-spacing:.04em}
 .btn-danger{width:100%;min-height:50px;border-radius:15px;border:1px solid var(--red-line);color:var(--red);background:var(--red-soft);font-weight:650;font-size:15px}
@@ -650,8 +659,14 @@ html.rm .card-drag.flipped .card-front{opacity:0}
     </header>
     <main class="arch-scroll">
       <p class="arch-count" id="archCount">Освоено слов: 0</p>
+      <div class="arch-sorts" id="archSorts">
+        <button class="chip sort-chip on" type="button" data-sort="pdesc">Наибольший прогресс</button>
+        <button class="chip sort-chip" type="button" data-sort="pasc">Наименьший прогресс</button>
+        <button class="chip sort-chip" type="button" data-sort="old">Самые старые</button>
+        <button class="chip sort-chip" type="button" data-sort="new">Самые новые</button>
+      </div>
       <ul class="arch-list" id="archList"></ul>
-      <p class="arch-empty" id="archEmpty" hidden>Пока пусто. Слова появятся здесь после полного цикла повторений 1 · 3 · 7 · 15 · 30 дней.</p>
+      <p class="arch-empty" id="archEmpty" hidden>Пока пусто. Слово появится здесь после первого показа. Полный цикл: 1 · 3 · 7 · 30 дней · 3 месяца · 7 месяцев · год.</p>
     </main>
   </section>
 
@@ -733,6 +748,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
     <div class="det-tabs" id="detTabs">
       <button class="det-tab active" type="button" data-tab="0">Слова</button>
       <button class="det-tab" type="button" data-tab="1">Морзе + Дактиль</button>
+      <button class="det-tab" type="button" data-tab="2">Языки</button>
     </div>
     <main class="det-main">
       <div class="det-track" id="detTrack">
@@ -764,6 +780,29 @@ html.rm .card-drag.flipped .card-front{opacity:0}
           </div>
           <div class="det-foot" id="detMorseFoot"></div>
 
+        </div>
+        <div class="det-page">
+          <div class="det-card">
+            <div class="det-legend">
+              <span><i class="lg lg-violet"></i>Изучено</span>
+              <span><i class="lg lg-green"></i>Показано новых</span>
+              <span><i class="lg lg-muted"></i>Повторено</span>
+            </div>
+            <div class="dt-chart" id="dtLangChart"></div>
+            <p class="dt-detail" id="dtLangDetail"></p>
+          </div>
+          <div class="det-foot" id="detLangFoot"></div>
+          <div class="det-card">
+            <p class="arch-count" id="langArchCount">Карточки с прогрессом: 0</p>
+            <div class="arch-sorts" id="langArchSorts">
+              <button class="chip sort-chip on" type="button" data-sort="pdesc">Наибольший прогресс</button>
+              <button class="chip sort-chip" type="button" data-sort="pasc">Наименьший прогресс</button>
+              <button class="chip sort-chip" type="button" data-sort="old">Самые старые</button>
+              <button class="chip sort-chip" type="button" data-sort="new">Самые новые</button>
+            </div>
+            <ul class="arch-list" id="langArchList"></ul>
+            <p class="arch-empty" id="langArchEmpty" hidden>Пока нет языков с прогрессом — они появятся после первых тренировок.</p>
+          </div>
         </div>
       </div>
     </main>
@@ -833,7 +872,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
             </div>
             <div class="card-face card-back" id="lsBack">
               <span class="badge" id="lsBadgePeek" hidden>Проверка себя</span>
-              <div class="back-scroll" id="lsBackScroll">
+              <div class="back-scroll" id="lsBackScroll"><!-- содержимое центрируется ниже по #lsBack -->
                 <span class="ls-lang" id="lsBackLang"></span>
                 <h2 class="back-word" id="lsBackHead"></h2>
                 <p class="def" id="lsBackSub"></p>
@@ -1195,7 +1234,7 @@ var BACKUP_PREFIX = 'no1equalsme_state_v2_backup_';
    - слово проходит 4 успешные проверки (1→2→3→4) и становится "learned";
    - жёсткий лимит — 15 слов в день, никогда больше;
    - повторения всегда имеют приоритет над новыми словами. */
-var STEP_INTERVAL = {1:1, 2:3, 3:7, 4:15, 5:30};   // дневные стадии цикла; 6–8 — календарные месяцы (см. applyKnow)
+var STEP_INTERVAL = {1:1, 2:3, 3:7, 4:30};   // дневные стадии цикла; 5–7 — календарные месяцы (см. applyKnow)
 var MAX_DAILY = 15;   // дневной лимит: план дня и очередь сессии больше не бывают
 var MAX_SESSION = 15; // (используется также для обрезки очередей из облака/бэкапа)
 
@@ -1345,7 +1384,7 @@ function makeTestCards(){
 
 function freshState(){
   return {
-    schemaVersion:4,        // 4 = длинный цикл (1·3·7·15·30 дней + 3/7 мес. + год); было 3 и 2
+    schemaVersion:5,        // 5 = цикл из 7 этапов (1·3·7·30 дней, 3/7 мес., год); было 4, 3 и 2
     status:'idle',           // idle | active | completed
     sessionDate:null,        // учебная дата текущей сессии
     practice:false,          // свободная тренировка после нормы дня (интервалы слов не меняет)
@@ -1389,8 +1428,6 @@ function normalizeProgV2(o){
   } else {
     out={status:'new', currentStep:0, nextReviewDate:null, createdAt:null};
   }
-  if(out.status==='learning' && out.currentStep===4) out.currentStep=5;
-  // 4-й шаг старой системы — это 30-дневная проверка = шаг 5 нового цикла
   out.updatedAt=(typeof o.updatedAt==='number' && isFinite(o.updatedAt) && o.updatedAt>=0) ? o.updatedAt : 0;
   return out;
 }
@@ -1435,7 +1472,7 @@ function isValidProgV2(p){
 function isValidState(s, v3){
   try{
     if(!s || typeof s!=='object') return false;
-    if(v3 ? (s.schemaVersion!==3 && s.schemaVersion!==4) : s.schemaVersion!==2) return false;
+    if(v3 ? (s.schemaVersion!==3 && s.schemaVersion!==4 && s.schemaVersion!==5) : s.schemaVersion!==2) return false;
     if(['idle','active','completed'].indexOf(s.status)<0) return false;
     if(['home','session','result','archive','morse','details','langs','langsession'].indexOf(s.view)<0) return false;
     if(['question','peek','definition'].indexOf(s.cardScreen)<0) return false;
@@ -1500,20 +1537,24 @@ function migrateStateV2(s){
 }
 
 var state, testState={enabled:false, offset:0}, hadCorruption=false, freshInstall=false;
-/* Однократная миграция схемы слов 3 → 4 (длинный цикл). Идемпотентна:
-   срабатывает только при schemaVersion 3 и сразу выставляет 4, поэтому
+/* Однократная миграция состояния слов к циклу из 7 этапов. Идемпотентна:
+   срабатывает только на schemaVersion 3 или 4 и сразу выставляет 5, поэтому
    повторный запуск данные больше не меняет.
-   - шаг 4 (ожидание 30 дней) → шаг 5: в схеме 4 шаг 4 = 15 дней, а у
-     существующих циклов 15-дневной стадии не было — дата НЕ двигается;
-   - «выученные» карточки (архив) не возвращаются и не трогаются;
-   - даты, ошибки, createdAt и всё остальное остаётся как было. */
-function migrateWordsV4(){
-  if(!state || state.schemaVersion!==3) return;
-  Object.keys(state.cards||{}).forEach(function(id){
-    var p=state.cards[id];
-    if(p && p.status==='learning' && p.currentStep===4) p.currentStep=5;
-  });
-  state.schemaVersion=4;
+   - schemaVersion 3 (дневные шаги 1,3,7,30) — нумерация уже совпадает:
+     меняется только версия;
+   - schemaVersion 4 (период с 15-дневной стадией): лишняя стадия убирается —
+     шаг 4 (ожидал 15 дней) → шаг 3 (следующий станет 30-дневным), шаги 5..8
+     сдвигаются на 4..7; даты, ошибки и «выученные» не трогаются. */
+function migrateWordsV5(){
+  if(!state || (state.schemaVersion!==3 && state.schemaVersion!==4)) return;
+  if(state.schemaVersion===4){
+    var SHIFT={4:3, 5:4, 6:5, 7:6, 8:7};
+    Object.keys(state.cards||{}).forEach(function(id){
+      var p=state.cards[id];
+      if(p && p.status==='learning' && SHIFT[p.currentStep]) p.currentStep=SHIFT[p.currentStep];
+    });
+  }
+  state.schemaVersion=5;
   state.updatedAt=Date.now();
 }
 function loadState(){
@@ -1530,7 +1571,7 @@ function loadState(){
     var s=JSON.parse(raw);
     if(isValidState(s, true)){
       state=s;
-      if(state.schemaVersion===3){ migrateWordsV4(); save(); }
+      if(state.schemaVersion===3 || state.schemaVersion===4){ migrateWordsV5(); save(); }
       return;
     }
     // старая схема (schemaVersion 2) — мигрируем, прогресс не теряем
@@ -1581,11 +1622,11 @@ function addCalMonthsStr(dateStr, months){
   return t.getFullYear()+'-'+(mm<10?'0':'')+mm+'-'+(dd<10?'0':'')+dd;
 }
 /* ═══ «ЗНАЮ» ═══
-   Полный цикл (одинаковый для Слов и Языков):
-   1 · 3 · 7 · 15 · 30 дней → 3 календарных месяца → 7 месяцев → год → архив.
+   Полный цикл — 7 этапов (одинаковый для Слов и Языков):
+   1 · 3 · 7 · 30 дней → 3 календарных месяца → 7 месяцев → год → архив.
    Увеличиваем currentStep и назначаем дату следующей проверки по новому шагу;
-   шаги 6–8 считаются календарно (addCalMonthsStr). После успешной годовой
-   проверки (шаг 8) слово уходит в архив: status="learned", дата=null. */
+   шаги 5–7 считаются календарно (addCalMonthsStr). После успешной годовой
+   проверки (шаг 7) слово уходит в архив: status="learned", дата=null. */
 function applyKnow(id, studyDate){
   var p=cardProg(id);
   if(p.status==='learned') return {advanced:false, graduated:false};
@@ -1597,17 +1638,17 @@ function applyKnow(id, studyDate){
     p.nextReviewDate=addDaysStr(studyDate,1);
   }
   var ns=p.currentStep+1;
-  if(ns>=9){ // пройдена годовая проверка — слово уходит в архив навсегда
+  if(ns>=8){ // пройдена годовая проверка (7-я) — слово уходит в архив навсегда
     p.status='learned';
-    p.currentStep=9;
+    p.currentStep=8;
     p.nextReviewDate=null;
     p.updatedAt=Date.now();
     return {advanced:true, graduated:true};
   }
   p.currentStep=ns;
-  if(ns===6) p.nextReviewDate=addCalMonthsStr(studyDate,3);       // 3 календарных месяца
-  else if(ns===7) p.nextReviewDate=addCalMonthsStr(studyDate,7);  // 7 календарных месяцев
-  else if(ns===8) p.nextReviewDate=addCalMonthsStr(studyDate,12); // 1 календарный год
+  if(ns===5) p.nextReviewDate=addCalMonthsStr(studyDate,3);       // 3 календарных месяца
+  else if(ns===6) p.nextReviewDate=addCalMonthsStr(studyDate,7);  // 7 календарных месяцев
+  else if(ns===7) p.nextReviewDate=addCalMonthsStr(studyDate,12); // 1 календарный год
   else p.nextReviewDate=addDaysStr(studyDate, STEP_INTERVAL[ns]||1);
   p.updatedAt=Date.now();
   return {advanced:true, graduated:false};
@@ -1943,28 +1984,64 @@ function renderResult(){
 }
 
 /* ================= Рендер: архив ================= */
+/* «Освоено слов»: все слова с НЕНУЛЕВЫМ прогрессом (этап 1..7 из 7),
+   полностью освоенные — 7/7. Слова без прогресса (никогда не показывались)
+   не отображаются. Сортировки: прогресс ↓/↑, самые старые/новые (по дате
+   первого знакомства). */
+var archSort='pdesc';
+function archSortItems(items, sortKey){
+  var s=sortKey||archSort;
+  items.sort(function(a, b){
+    if(s==='pdesc') return (b.prog-a.prog) || String(a.word).localeCompare(String(b.word),'ru');
+    if(s==='pasc')  return (a.prog-b.prog) || String(a.word).localeCompare(String(b.word),'ru');
+    var ca=a.created||'', cb=b.created||'';
+    if(s==='old') return (ca<cb?-1:ca>cb?1:(b.prog-a.prog));   // без даты — в конец
+    if(s==='new') return (ca>cb?-1:ca<cb?1:(b.prog-a.prog));
+    return 0;
+  });
+  return items;
+}
 function renderArchive(){
-  var items=[];
+  var items=[], learnedN=0;
   CARDS.forEach(function(c){
     var p=state.cards[c.id];
-    // Архив = все слова со status "learned" (правило 1: они больше не показываются)
-    if(p && p.status==='learned'){
-      // дата «освоено» — момент последнего изменения прогресса; 0 (старые данные) не показываем
-      items.push({word:c.stress, date:(p.updatedAt ? dateToYMD(new Date(p.updatedAt)) : null)});
-    }
+    if(!p || p.status==='new') return;                    // прогресс нулевой — не показываем
+    var learned=(p.status==='learned');
+    if(learned) learnedN++;
+    var step=learned ? 7 : Math.max(1, Math.min(7, p.currentStep|0));
+    items.push({word:c.stress, prog:step, learned:learned,
+                created:(typeof p.createdAt==='string')?p.createdAt:'',
+                date:(p.updatedAt ? dateToYMD(new Date(p.updatedAt)) : null)});
   });
-  elArchCount.textContent='Освоено слов: '+items.length;
-  elArchSettingsCount.textContent=String(items.length);
+  archSortItems(items, archSort);
+  elArchCount.textContent='Слов с прогрессом: '+items.length+' · освоено полностью: '+learnedN;
+  elArchSettingsCount.textContent=String(learnedN);        // в настройках — только «Освоено»
   elArchList.innerHTML='';
   elArchEmpty.hidden=items.length>0;
   items.forEach(function(it){
     var li=document.createElement('li');
     var w=document.createElement('span'); w.className='aw'; w.textContent=it.word;
-    var d=document.createElement('span'); d.className='ad'; d.textContent=it.date?('освоено · '+fmtHuman(it.date)):'освоено';
+    var d=document.createElement('span'); d.className='ad';
+    d.textContent=it.prog+'/7'+(it.learned && it.date ? ' · освоено '+fmtHuman(it.date) : '');
     li.appendChild(w); li.appendChild(d);
     elArchList.appendChild(li);
   });
 }
+/* Переключатели сортировки (делегирование — обработчик один на блок) */
+function bindSortBox(boxId, setter, refresh){
+  var box=$(boxId); if(!box) return;
+  box.addEventListener('click', function(e){
+    var b=e.target && e.target.closest ? e.target.closest('.sort-chip') : null;
+    if(!b) return;
+    setter(b.getAttribute('data-sort')||'pdesc');
+    Array.prototype.forEach.call(box.querySelectorAll('.sort-chip'), function(x){
+      x.classList.toggle('on', x===b);
+    });
+    refresh();
+  });
+}
+bindSortBox('archSorts', function(v){ archSort=v; }, renderArchive);
+bindSortBox('langArchSorts', function(v){ langArchSort=v; }, function(){ renderLangArch(); });
 
 /* ================= Навигация ================= */
 function updateTgBack(){
@@ -3360,8 +3437,8 @@ $('btnFreshStart').addEventListener('click', function(){
 function buildBackupText(){
   var data={
     app:'no1equalsme',
-    exportVersion:5,
-    schemaVersion:4,
+    exportVersion:6,
+    schemaVersion:5,
     createdAt:new Date().toISOString(),
     cards:state.cards,
     settings:{haptics:!!state.settings.haptics, theme:state.settings.theme||'evening', accent:currentAccent(), swipeSens:swipeSens(), sndVol:(typeof state.settings.sndVol==='number'?state.settings.sndVol:100), updatedAt:state.settings.updatedAt||0},
@@ -3992,6 +4069,7 @@ var MORSE_STATE_KEY='nem_morse_practice_v1';
 var MORSE_GOAL=10;          // дневная цель: триггер экрана цели, НЕ потолок счётчика
 var MORSE_MAX_INPUT=5;      // максимум элементов кода (больше пяти не вводим)
 var MORSE_DOT_MS=192;       // <192 мс — точка, ≥192 мс — тире (80% от прежних 240 мс)
+var MORSE_CANCEL_MS=3500;   // удержание тире ≥3.5 с = «отмена»: ввод буквы стирается
 var MORSE_MIN_MS=40;        // короче 40 мс — случайное касание, игнорируем
 var MORSE_CHECK_MS=500;     // пауза покоя перед автопроверкой
 var MORSE_RESULT_MS=1000;   // сколько держим экран результата
@@ -4014,7 +4092,7 @@ var morseImgObj={};      // id → objectURL готового жеста: пок
 var morseCheckTimer=null;   // единственный активный таймер автопроверки
 var morseHoldTimer=null;    // таймер показа результата
 var morseHoldInterrupted=false;
-var mz={t0:null, pointerId:null, threshTimer:null, raf:null}; // состояние удержания зоны
+var mz={t0:null, pointerId:null, threshTimer:null, raf:null, cancelTimer:null, cancelled:false}; // состояние удержания зоны
 
 /* ---------- Данные: загрузка и проверка ---------- */
 function isRelImagePath(p){
@@ -4732,6 +4810,7 @@ function startHoldFill(){
   mz.raf=requestAnimationFrame(step);
 }
 function endHoldVisual(){
+  if(mz.cancelTimer){ clearTimeout(mz.cancelTimer); mz.cancelTimer=null; }
   if(mz.threshTimer){ clearTimeout(mz.threshTimer); mz.threshTimer=null; }
   if(mz.raf){ cancelAnimationFrame(mz.raf); mz.raf=null; }
   stopMorseTone();
@@ -4757,6 +4836,23 @@ function onMorseDown(e){
   var whEl=$('morseWrongHint'); if(whEl) whEl.hidden=true;
   mz.t0=Date.now();
   mz.pointerId=e.pointerId;
+  mz.cancelled=false;
+  if(mz.cancelTimer) clearTimeout(mz.cancelTimer);
+  mz.cancelTimer=setTimeout(function(){
+    /* ≥3.5 с удержания = «хочу отменить ввод буквы»: стрик и попытки НЕ
+       трогаются, результат НЕ показывается — просто стираем накопленный ввод,
+       и пользователь вводит букву заново. */
+    if(mz.t0===null) return;
+    mz.cancelled=true;
+    if(morseState.sequence){
+      morseState.sequence='';
+      cancelMorseCheck();
+      saveMorse();
+      renderMorse();
+    }
+    var z=$('morseZoneMain'); if(z) z.textContent='Отмена';
+    haptic('done');   // не 'light': у отмены свой тактильный отклик (20.7в держит порог тире без light)
+  }, MORSE_CANCEL_MS);
   try{ if(e.target && typeof e.target.setPointerCapture==='function') e.target.setPointerCapture(e.pointerId); }catch(_){}
   $('morseZone').classList.add('press');  // визуальная реакция на нажатие
   $('morseZoneMain').textContent='Точка'; // до порога нажатие читается как точка
@@ -4772,8 +4868,10 @@ function onMorseDown(e){
 function onMorseUp(e){
   if(mz.t0===null || e.pointerId!==mz.pointerId) return;
   var dur=Date.now()-mz.t0;
+  var wasCancel=mz.cancelled;   // читаем ДО endHoldVisual — там жест сбрасывается
   endHoldVisual();
   try{ if(e.target && typeof e.target.releasePointerCapture==='function') e.target.releasePointerCapture(e.pointerId); }catch(_){}
+  if(wasCancel) return;         // отмена уже выполнена: ни символа, ни проверки, ни стрика
   if(morseLocked()) return;
   if(dur<MORSE_MIN_MS){
     // случайное касание — игнорируем, но накопленный ввод не должен остаться без проверки
@@ -5030,7 +5128,7 @@ var LANG_STATE_KEY='nem_languages_progress_v1';
 var LANG_CK_PRE='nem_lang_';                 // nem_lang_es_v1 … nem_lang_tr_v1
 var LANG_MAX_DAY=10;                         // дневная норма карточек
 var LANG_MAX_NEW=5;                          // новых карточек в день
-var LANG_STEP_DAYS={1:1,2:3,3:7,4:15,5:30};  // дневные стадии (как в «Словах»)
+var LANG_STEP_DAYS={1:1,2:3,3:7,4:30};  // дневные стадии цикла (как в «Словах»); 5–7 — календарные месяцы
 var LANGS=[
   {id:'es',name:'Испанский',bcp47:'es-ES'},
   {id:'fr',name:'Французский',bcp47:'fr-FR'},
@@ -5171,7 +5269,7 @@ function loadLanguages(){
 
 /* ---------- Состояние прогресса языков ---------- */
 function freshLangState(){
-  return {schemaVersion:1, cards:{}, day:null, ok:0, bad:0, updatedAt:Date.now()};
+  return {schemaVersion:2, cards:{}, days:{}, day:null, ok:0, bad:0, updatedAt:Date.now()};
 }
 function validLangProg(p){
   if(!p || typeof p!=='object') return false;
@@ -5182,6 +5280,21 @@ function validLangProg(p){
   if(!(p.a===0 || p.a===1)) return false;
   return true;
 }
+function sanitizeLangDays(days){
+  var out={}, keys=[];
+  Object.keys(days||{}).forEach(function(k){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(k)) return;
+    var r=days[k];
+    if(!r || typeof r!=='object') return;
+    out[k]={g:+r.g||0, nw:+r.nw||0, rv:+r.rv||0};
+    keys.push(k);
+  });
+  if(keys.length>150){                    // держим не больше 150 дней истории
+    keys.sort();
+    keys.slice(0, keys.length-150).forEach(function(k){ delete out[k]; });
+  }
+  return out;
+}
 function loadLangState(){
   if(langState) return;
   langState=freshLangState();
@@ -5189,13 +5302,21 @@ function loadLangState(){
     var raw=localStorage.getItem(LANG_STATE_KEY);
     if(!raw) return;
     var p=JSON.parse(raw);
-    if(!p || typeof p!=='object' || p.schemaVersion!==1 || !p.cards || typeof p.cards!=='object') return;
+    if(!p || typeof p!=='object' || (p.schemaVersion!==1 && p.schemaVersion!==2) ||
+       !p.cards || typeof p.cards!=='object') return;
+    /* sv1 → sv2: убрана 15-дневная стадия — сдвигаем этапы {4→3, 5→4, 6→5, 7→6, 8→7}
+       (даты и «архивированные» не трогаем; запускается ровно один раз). */
+    var SHIFT={4:3,5:4,6:5,7:6,8:7};
     var cards={};
     Object.keys(p.cards).forEach(function(id){
       if(typeof id!=='string' || id.length>64) return;
-      if(validLangProg(p.cards[id])) cards[id]=p.cards[id];
+      var o=p.cards[id];
+      if(!validLangProg(o)) return;
+      var s=(p.schemaVersion===1 && SHIFT[o.s]) ? SHIFT[o.s] : o.s;
+      cards[id]={s:s, d:o.d, e:o.e, c:o.c, a:o.a};
     });
     langState.cards=cards;
+    langState.days=(p.schemaVersion===2 && p.days) ? sanitizeLangDays(p.days) : {};
     langState.ok=(typeof p.ok==='number' && p.ok>=0)?(p.ok|0):0;
     langState.bad=(typeof p.bad==='number' && p.bad>=0)?(p.bad|0):0;
     langState.updatedAt=(typeof p.updatedAt==='number' && p.updatedAt>=0)?p.updatedAt:Date.now();
@@ -5209,6 +5330,7 @@ function loadLangState(){
         rd:(typeof p.day.rd==='number' && p.day.rd>=0)?(p.day.rd|0):0,
         lastLang:(typeof p.day.lastLang==='string')?p.day.lastLang:null};
     }
+    if(p.schemaVersion===1){ langState.schemaVersion=2; saveLang(); }
   }catch(e){}
 }
 function saveLang(){
@@ -5287,6 +5409,11 @@ function ensureLangDay(){
   }
   langState.day={date:today, queue:ordered.map(function(o){ return o.id; }),
                  done:0, nd:0, rd:0, lastLang:null};
+  /* Журнал для графика «Статистика — Языки»: nw/rv фиксируем при построении
+     плана (сколько НОВЫХ будет показано и сколько ПОВТОРЕНИЙ назначено),
+     g («Изучено») увеличивается в langApply при уходе в архив. */
+  var dd=langState.days[today];
+  langState.days[today]={g:(dd?dd.g|0:0), nw:news.length, rv:picked.length};
   saveLang();
   return langState.day;
 }
@@ -5305,12 +5432,18 @@ function langApply(id, know){
     langState.bad=(langState.bad|0)+1;
   } else {
     var ns=(p.s<1?1:p.s)+1;
-    if(ns>8){ p.a=1; p.d=null; }               // успешная годовая → архив
+    if(ns>7){
+      /* Успешная годовая (7-я) проверка → архив: s остаётся 7, d=null.
+         Для графика: это и есть «Изучено» (ушло в «Освоено») за сегодня. */
+      p.a=1; p.d=null;
+      var dd=langState.days[today]||(langState.days[today]={g:0,nw:0,rv:0});
+      dd.g=(dd.g|0)+1;
+    }
     else{
       p.s=ns;
-      if(ns===6) p.d=addCalMonthsStr(today,3);
-      else if(ns===7) p.d=addCalMonthsStr(today,7);
-      else if(ns===8) p.d=addCalMonthsStr(today,12);
+      if(ns===5) p.d=addCalMonthsStr(today,3);
+      else if(ns===6) p.d=addCalMonthsStr(today,7);
+      else if(ns===7) p.d=addCalMonthsStr(today,12);
       else p.d=addDaysStr(today, LANG_STEP_DAYS[ns]||1);
     }
     langState.ok=(langState.ok|0)+1;
@@ -5358,7 +5491,7 @@ function buildLangPayloads(){
     byLang[code][idx]=[p.s|0, p.d||0, p.e|0, p.c||0, p.a?1:0];
   });
   LANGS.forEach(function(L){
-    out[langBlockKey(L.id)]=JSON.stringify({u:langState.updatedAt||0, c:byLang[L.id]});
+    out[langBlockKey(L.id)]=JSON.stringify({v:2, u:langState.updatedAt||0, c:byLang[L.id]});
   });
   return out;
 }
@@ -5372,11 +5505,16 @@ function mergeLangCloudValue(key, obj){
   if(!Array.isArray(obj.c)) return;
   // Более свежая облачная версия побеждает целиком по этому языку
   Object.keys(langState.cards).forEach(function(id){ if(langOfId(id)===code) delete langState.cards[id]; });
+  /* v!==2 — облачная копия из периода с 15-дневной стадией: сдвигаем этапы
+     при разборе (без потери d/e/c/a), затем пишем уже в новой нумерации. */
+  var SHIFT={4:3,5:4,6:5,7:6,8:7};
+  var legacy=(obj.v!==2);
   for(var i=0;i<obj.c.length && i<50;i++){
     var v=obj.c[i];
     if(!Array.isArray(v)) continue;
     var s=(typeof v[0]==='number')?(v[0]|0):0;
     if(s<1 || s>9) continue;
+    if(legacy && SHIFT[s]) s=SHIFT[s];
     var d=(typeof v[1]==='string' && /^\d{4}-\d{2}-\d{2}$/.test(v[1])) ? v[1] : null;
     var e=(typeof v[2]==='number' && v[2]>=0)?(v[2]|0):0;
     var c=(typeof v[3]==='string' && /^\d{4}-\d{2}-\d{2}$/.test(v[3])) ? v[3] : null;
@@ -5394,7 +5532,10 @@ loadLangState();
 /* ---------- Озвучка: Web Speech API (без серверов и токенов) ---------- */
 /* Точный лог: каждая неудача объясняется в консоли причиной (нет API /
    нет голоса / код ошибки синтеза), а не общим «что-то пошло не так». */
+var langSoundLastError='';   // последняя проблема с озвучкой — показываем БЕЗ консоли
 function langLogSound(where, info){
+  var code=(info && info.code) ? String(info.code) : '';
+  langSoundLastError=where+(code ? ' (код: '+code+')' : '');
   try{ console.warn('No1EqualsMe: озвучка [' + where + ']', info); }catch(e){}
 }
 function langVoicesRaw(){
@@ -5418,10 +5559,11 @@ function speakLang(text, bcp47){
       speechSynthesis:hasSynth, utterance:hasUtt,
       ua:(typeof navigator!=='undefined' && navigator.userAgent)||''
     });
-    toast('Озвучка не поддерживается на этом устройстве');
+    toast('Озвучка не поддерживается на этом устройстве (код: no-speech-api)');
     return false;
   }
   try{ speechSynthesis.cancel(); }catch(e){}          // новое воспроизведение — старое гасим
+  try{ speechSynthesis.resume(); }catch(e){}          // iOS-квирк: синтез может «залипнуть» в paused
   var vs=langVoicesRaw();
   var v=langPickVoice(vs, bcp47);
   if(vs.length && !v){
@@ -5430,7 +5572,7 @@ function speakLang(text, bcp47){
       target:bcp47, voicesCount:vs.length,
       langs:vs.map(function(x){ return x.lang; }).filter(function(x,i,a){ return a.indexOf(x)===i; }).slice(0,24)
     });
-    toast('Голос этого языка не установлен. Добавьте его в настройках речи телефона.');
+    toast('Голос этого языка не установлен. Добавьте его в настройках речи телефона (код: no-language-voice).');
     return false;
   }
   /* Список голосов может быть ещё пуст (грузятся асинхронно): произносим по
@@ -5446,17 +5588,20 @@ function speakLang(text, bcp47){
         hasMatchedVoice:!!v, voicesCount:vs.length,
         ua:(typeof navigator!=='undefined' && navigator.userAgent)||''
       });
+      /* Тост всегда содержит код ошибки — пользователь видит причину сразу,
+         не открывая консоль, и может её продиктовать/скопировать. */
       if(code==='language-not-supported' || code==='voice-unavailable'){
-        toast('Голос этого языка не установлен. Добавьте его в настройках речи телефона.');
+        toast('Голос этого языка не установлен. Добавьте его в настройках речи телефона (код: '+code+').');
       } else if(code==='not-allowed' || code==='service-not-allowed'){
-        toast('Браузер запретил звук — разрешите озвучку для этой страницы в настройках.');
+        toast('Браузер запретил звук — разрешите озвучку для этой страницы в настройках (код: '+code+').');
       } else if(code==='synthesis-unavailable' || code==='no-audio' || code==='audio-busy'){
-        toast('Звук сейчас недоступен — откройте страницу заново и попробуйте ещё раз.');
+        toast('Звук сейчас недоступен — откройте страницу заново и попробуйте ещё раз (код: '+code+').');
       } else {
-        toast('Не удалось воспроизвести звук — попробуйте ещё раз.');
+        toast('Не удалось воспроизвести звук — попробуйте ещё раз (код: '+code+').');
       }
     };
     speechSynthesis.speak(u);
+    try{ speechSynthesis.resume(); }catch(e){}        // тот же iOS-квирк после запуска
     if(!vs.length) langLogSound('голоса ещё не загружены — произносим по lang', {target:bcp47});
     return true;
   }catch(e){
@@ -5464,7 +5609,7 @@ function speakLang(text, bcp47){
       message:String((e && e.message) || e), lang:bcp47,
       ua:(typeof navigator!=='undefined' && navigator.userAgent)||''
     });
-    toast('Озвучка не поддерживается на этом устройстве');
+    toast('Озвучка не поддерживается на этом устройстве (код: speak-exception)');
     return false;
   }
 }
@@ -5549,15 +5694,15 @@ function renderLangs(){
     grid.appendChild(row);
   });
   /* Статистика языков */
-  var st5=0, st6=0, st7=0, st8=0, arch=0;
+  var st4=0, st5=0, st6=0, st7=0, arch=0;
   Object.keys(langState.cards).forEach(function(id){
     var p=langState.cards[id];
     if(!p) return;
     if(p.a){ arch++; return; }
-    if(p.s===5) st5++;
+    if(p.s===4) st4++;
+    else if(p.s===5) st5++;
     else if(p.s===6) st6++;
     else if(p.s===7) st7++;
-    else if(p.s===8) st8++;
   });
   var ok=langState.ok|0, bad=langState.bad|0;
   var acc=(ok+bad)>0 ? Math.round(ok/(ok+bad)*100)+'%' : '—';
@@ -5568,9 +5713,13 @@ function renderLangs(){
     'Повторения сегодня: <b>'+((day&&day.rd)|0)+'</b>',
     'Общая точность: <b>'+acc+'</b>',
     'Изучено карточек: <b>'+startedAll+' из '+langContent.count+'</b>',
-    'Стадии — 30 дней: <b>'+st5+'</b> · 3 месяца: <b>'+st6+'</b> · 7 месяцев: <b>'+st7+'</b> · год: <b>'+st8+'</b>',
+    'Стадии — 30 дней: <b>'+st4+'</b> · 3 месяца: <b>'+st5+'</b> · 7 месяцев: <b>'+st6+'</b> · год: <b>'+st7+'</b>',
     'Архивировано: <b>'+arch+'</b>'
   ];
+  if(langSoundLastError){
+    // последняя проблема озвучки — прямо на экране, без консоли
+    lines.push('Озвучка — последняя проблема: <b>'+langSoundLastError+'</b>');
+  }
   lines.forEach(function(html){
     var sp=document.createElement('span'); sp.innerHTML=html; stats.appendChild(sp);
   });
@@ -5604,7 +5753,7 @@ function openLangSession(filter){
 }
 function lsIsRev(){
   var p=langState.cards[langSess.id];
-  return !!(p && p.s>=6);   // после успешной 30-дневной проверки направление меняется
+  return !!(p && p.s>=5);   // после успешной 30-дневной проверки (этап 4→5) направление меняется
 }
 function renderLangSession(opts){
   opts=opts||{};
@@ -5670,12 +5819,26 @@ function lsNextCard(){
   langSess.screen='question';
   renderLangSession({enter:true, instantFlip:true});
 }
+/* Аварийное восстановление карточки: любое исключение в механике жеста
+   НЕ должно «замораживать» тренировку — сбрасываем блокировку и трансформ,
+   а ошибку показываем пользователю тостом (без открытия консоли). */
+function lsRecover(err, where){
+  var msg='неизвестная ошибка';
+  try{
+    msg=String((err && err.message) || err);
+    console.warn('No1EqualsMe: карточка [' + where + '] — ' + msg, err);
+  }catch(_){}
+  try{ var d=$('lsDrag'); if(d) d.style.transform=''; }catch(_){}
+  lsLock=false;   // блокировка не должна остаться навсегда
+  try{ toast('Ошибка карточки: '+msg); }catch(_){}
+}
 /* «Помню» — как answer(true) в словах: прогресс, вылет вправо, следующая */
 function lsAnswer(remembered){
   if(lsLock || lsDrag) return;
   if(typeof state!=='undefined' && state && state.view!=='langsession') return;
   if(langSess.screen!=='question' || !langSess.id) return;
   lsLock=true;
+  try{
   var id=langSess.id;
   if(remembered){
     haptic('success');
@@ -5698,6 +5861,7 @@ function lsAnswer(remembered){
     lsRender();
     setTimeout(function(){ lsLock=false; }, D.flip);
   }
+  }catch(err){ lsRecover(err, 'lsAnswer'); }
 }
 function lsRender(){ renderLangSession(); }
 /* Уход с экрана обратной связи (тап, свайп, кнопка) — как continueFromDefinition */
@@ -5706,9 +5870,11 @@ function lsContinueDef(dir){
   if(langSess.screen!=='definition') return;
   if(Date.now()-lsFlipAt<300) return;
   lsLock=true;
-  langSess.screen='question';
-  langSess.id=null;
-  lsFly(dir||1, function(){ lsNextCard(); lsLock=false; });
+  try{
+    langSess.screen='question';
+    langSess.id=null;
+    lsFly(dir||1, function(){ lsNextCard(); lsLock=false; });
+  }catch(err){ lsRecover(err, 'lsContinueDef'); }
 }
 function lsEnterPeek(){
   if(lsLock || lsDrag) return;
@@ -5747,7 +5913,7 @@ function lsFly(dir, cb){
     lsClearVisual();
     void $('lsDrag').offsetWidth;
     $('lsDrag').classList.remove('no-anim');
-    cb();
+    try{ cb(); }catch(err){ lsRecover(err, 'lsFly->cb'); }  // сбой перехода не должен заморозить карточку
   }, D.fly);
 }
 function lsThreshold(){ return Math.max(26, ($('lsDrag').clientWidth||300)*(swipePct()/100)); }
@@ -5811,30 +5977,37 @@ function lsOnMove(e){
   lsSetVisual(dx);
 }
 function lsOnUp(e){
-  if(!lsDrag || e.pointerId!==lsDrag.id) return;
+  if(!lsDrag || e.pointerId!==lsDrag.id) return;   // повторный вызов (оконная страховка) — no-op
   var g=lsDrag; lsDrag=null;
-  var side=langSess.screen;
-  if(g.active){
-    var pass=Math.abs(g.dx)>=lsThreshold();
-    if(side==='question'){
-      if(pass && !lsLock) lsAnswer(g.dx>0);
-      else lsSpringBack();
+  try{
+    var side=langSess.screen;
+    if(g.active){
+      var pass=Math.abs(g.dx)>=lsThreshold();
+      if(side==='question'){
+        if(pass && !lsLock) lsAnswer(g.dx>0);
+        else lsSpringBack();
+      } else {
+        if(pass && Date.now()-lsFlipAt>=300 && g.downAt>lsFlipAt){
+          if(side==='definition') lsContinueDef(g.dx>0?1:-1);
+          else lsSpringBack(function(){ lsExitPeek(); });
+        } else lsSpringBack();
+      }
     } else {
-      if(pass && Date.now()-lsFlipAt>=300 && g.downAt>lsFlipAt){
-        if(side==='definition') lsContinueDef(g.dx>0?1:-1);
-        else lsSpringBack(function(){ lsExitPeek(); });
-      } else lsSpringBack();
+      var isTap=(Date.now()-g.downAt<600) && Math.abs(g.dx)<12 && Math.abs(g.dy)<12;
+      if(isTap && side!=='question' && Date.now()-lsFlipAt>=300 && g.downAt>lsFlipAt) lsBackProceed();
     }
-  } else {
-    var isTap=(Date.now()-g.downAt<600) && Math.abs(g.dx)<12 && Math.abs(g.dy)<12;
-    if(isTap && side!=='question' && Date.now()-lsFlipAt>=300 && g.downAt>lsFlipAt) lsBackProceed();
-  }
+  }catch(err){ lsRecover(err, 'lsOnUp'); }
 }
 function lsOnCancel(e){
   if(!lsDrag || e.pointerId!==lsDrag.id) return;
   if(lsDrag.active) lsSpringBack();
   lsDrag=null;
 }
+/* Страховка: если браузер «потерял» указатель на карточке (pointercancel,
+   уход фокуса и т.п.), жест всё равно закроется на window — карточка не
+   останется в полусвайпе. Повторный вызов безопасен: lsDrag уже сброшен. */
+window.addEventListener('pointerup', function(e){ try{ lsOnUp(e); }catch(err){ lsRecover(err, 'window-pointerup'); } });
+window.addEventListener('pointercancel', function(e){ try{ lsOnCancel(e); }catch(err){ lsRecover(err, 'window-pointercancel'); } });
 (function(){
   var drag=$('lsDrag');
   drag.addEventListener('pointerdown', lsOnDown);
@@ -5948,6 +6121,7 @@ function startApp(){
 var detTab=0;
 var detWords={days:[], data:[], any:false, sel:-1, clicked:false};
 var detMorse={days:[], data:[], any:false, sel:-1, clicked:false};
+var detLang={days:[], data:[], any:false, sel:-1, clicked:false};
 function detPad2(n){ return (n<10?'0':'')+n; }
 function detShiftDay(ymd, delta){
   var p=String(ymd).split('-');
@@ -5964,11 +6138,13 @@ function wordsDayRow(d, eff){
   if(raw){
     var nw=(typeof raw.nw==='number')?raw.nw:Math.min(raw.n|0, raw.f|0);
     var rv=(typeof raw.rv==='number')?raw.rv:Math.max(0, (raw.n|0)-nw);
-    return {a:raw.a|0, nw:nw, rv:rv};
+    // «Изучено» = сколько слов ушло в «Освоено» ЗА ЭТОТ ДЕНЬ (поле g),
+    // а не «перешло на следующий этап» (поле a)
+    return {a:raw.g|0, nw:nw, rv:rv};
   }
   if(d===eff){
     var plan=(state.dayPlanDate===eff && state.dayPlan)?state.dayPlan:null;
-    if(plan) return {a:computeStats().advanced|0, nw:plan.news|0, rv:plan.reviews|0};
+    if(plan) return {a:computeStats().graduated|0, nw:plan.news|0, rv:plan.reviews|0};
   }
   return {a:0, nw:0, rv:0};
 }
@@ -5998,6 +6174,64 @@ function fillDetFoot(id, lines){
     d.textContent=txt;
     el.appendChild(d);
   });
+}
+/* Строка дня для графика языков: из суточного журнала langState.days.
+   Изучено (a) = карточки, ушедшие в «Освоено» В ЭТОТ ДЕНЬ (поле g);
+   nw/rv — показано новых/повторений из плана. */
+function langDayRow(d){
+  var raw=(langState && langState.days && langState.days[d])?langState.days[d]:null;
+  return raw ? {a:raw.g|0, nw:raw.nw|0, rv:raw.rv|0} : {a:0, nw:0, rv:0};
+}
+function langNameOf(code){
+  var name=null;
+  (typeof LANGS!=='undefined'?LANGS:[]).forEach(function(L){ if(L.id===code) name=L.name; });
+  return name||code;
+}
+/* «Карточки с прогрессом» (аналог списка «Освоено слов»): все созданные
+   карточки — у них этап всегда >=1 (карточка заводится при первом ответе). */
+var langArchSort='pdesc';
+function renderLangArch(){
+  var cnt=$('langArchCount'), lst=$('langArchList'), emp=$('langArchEmpty');
+  if(!lst) return;
+  var items=[];
+  Object.keys(langState.cards).forEach(function(id){
+    var p=langState.cards[id];
+    if(!p) return;
+    var learned=!!p.a;
+    var prog=learned?7:Math.max(1, Math.min(7, p.s|0));
+    var card=(langContent.cardById && langContent.cardById[id])?langContent.cardById[id]:null;
+    items.push({word:(card && card.native)?card.native:id, lang:langNameOf(langOfId(id)),
+                prog:prog, learned:learned, created:p.c||''});
+  });
+  archSortItems(items, langArchSort);
+  cnt.textContent='Карточек с прогрессом: '+items.length;
+  emp.hidden=items.length>0;
+  lst.innerHTML='';
+  var shown=Math.min(items.length, 150);      // больше 150 строк в DOM не держим
+  for(var i=0;i<shown;i++){
+    var it=items[i];
+    var li=document.createElement('li');
+    var w=document.createElement('span'); w.className='aw'; w.textContent=it.word;
+    var d=document.createElement('span'); d.className='ad';
+    d.textContent=it.prog+'/7 · '+it.lang;
+    li.appendChild(w); li.appendChild(d);
+    lst.appendChild(li);
+  }
+  if(items.length>shown){
+    var more=document.createElement('li');
+    more.className='arch-more';
+    more.textContent='… и ещё '+(items.length-shown);
+    lst.appendChild(more);
+  }
+}
+function showLangDetail(){
+  var el=$('dtLangDetail'); if(!el) return;
+  if(!detLang.any && !detLang.clicked){
+    el.textContent='Пока нет данных за 14 дней — цифры появятся после тренировок.';
+    return;
+  }
+  var i=detLang.sel, v=detLang.data[i];
+  el.textContent=detLabel(detLang.days[i])+': Изучено '+v.a+' · Показано новых '+v.nw+' · Повторено '+v.rv;
 }
 function renderDetails(){
   /* ——— вкладка «Слова»: сколько слов проходил пользователь каждый день (пропуски видны) ——— */
@@ -6120,17 +6354,80 @@ function renderDetails(){
       ' · Попыток '+morseState.dailyAttempts+' · Ошибок '+morseState.dailyErrors+
       ' · Точность '+morseAccuracyText();
   }
+  /* ——— вкладка «Языки»: суточный журнал langState.days (аналогично «Словам») ——— */
+  detLang.days=detDayWindow(realToday());
+  detLang.data=detLang.days.map(function(d){ return langDayRow(d); });
+  detLang.any=detLang.data.some(function(v){ return (v.a+v.nw+v.rv)>0; });
+  detLang.clicked=false;
+  detLang.sel=-1;
+  for(var kk=detLang.days.length-1;kk>=0;kk--){
+    var lv=detLang.data[kk];
+    if(lv.a+lv.nw+lv.rv>0){ detLang.sel=kk; break; }
+  }
+  if(detLang.sel<0) detLang.sel=detLang.days.length-1;
+  var lMax=1;
+  detLang.data.forEach(function(v){ lMax=Math.max(lMax, v.a, v.nw, v.rv); });
+  var lc=$('dtLangChart');
+  if(lc){
+    lc.innerHTML='';
+    detLang.days.forEach(function(d, idx){
+      var val=detLang.data[idx];
+      var cell=document.createElement('div');
+      cell.className='dt-day'+(idx===detLang.sel?' sel':'');
+      cell.setAttribute('data-d', d);
+      var bars=document.createElement('div'); bars.className='dt-bars';
+      [['',val.a],['b-green',val.nw],['b-muted',val.rv]].forEach(function(pair){
+        var b=document.createElement('i');
+        b.className=('dt-bar '+pair[0]).trim();
+        if(pair[1]>0) b.style.height=Math.max(6, Math.round(pair[1]/lMax*100))+'%';
+        else b.classList.add('zero');
+        bars.appendChild(b);
+      });
+      var lab=document.createElement('span'); lab.className='dt-lab';
+      lab.textContent=String(+d.split('-')[2]);
+      cell.appendChild(bars); cell.appendChild(lab);
+      lc.appendChild(cell);
+    });
+    showLangDetail();
+  }
+  var lTotal=0, lTrainDays=0, lDayList=[];
+  if(langState && langState.days){
+    Object.keys(langState.days).forEach(function(d){
+      var r=langState.days[d];
+      if(!r) return;
+      var nn=(r.nw|0)+(r.rv|0);
+      lTotal+=nn;
+      if(nn>0){ lTrainDays++; lDayList.push(d); }
+    });
+  }
+  lDayList.sort();
+  var lBest=0, lRun=0, lPrev=null;
+  lDayList.forEach(function(d){
+    lRun=(lPrev && detShiftDay(lPrev,1)===d)?lRun+1:1;
+    if(lRun>lBest) lBest=lRun;
+    lPrev=d;
+  });
+  fillDetFoot('detLangFoot', [
+    'Всего показано карточек: '+lTotal,
+    'Дней с тренировками: '+lTrainDays,
+    'Лучшая серия: '+lBest+' '+plural(lBest,'день','дня','дней')
+  ]);
+  renderLangArch();
   var arc=$('archRowCount');
   if(arc) arc.textContent=String(learnedCount());
 }
 function setDetTab(i, animate){
-  detTab=(i<0)?0:(i>1?1:i);
+  /* Количество вкладок считаем по DOM — сдвиг = i-я доля ширины трека
+     (3 вкладки → шаг 33.333…%, 2 старых места «-50%» больше не канон). */
+  var tabs=document.querySelectorAll('.det-tab');
+  var tot=tabs.length||1;
+  detTab=(i<0)?0:(i>tot-1?tot-1:i);
   var track=$('detTrack');
   if(track){
     track.style.transition=(animate===false)?'none':'';
-    track.style.transform='translateX('+(-detTab*50)+'%)';
+    track.style.transform='translateX('+(-detTab*(100/tot))+'%)';
   }
-  Array.prototype.forEach.call(document.querySelectorAll('.det-tab'), function(b, j){
+  Array.prototype.forEach.call(tabs, function(b, j){
     b.classList.toggle('active', j===detTab);
   });
 }
@@ -6221,6 +6518,18 @@ $('dtWordsChart').addEventListener('click', function(e){
   detWords.sel=i; detWords.clicked=true;
   Array.prototype.forEach.call($('dtWordsChart').children, function(c, j){ c.classList.toggle('sel', j===i); });
   showWordsDetail();
+});
+$('dtLangChart').addEventListener('click', function(e){
+  var cell=e.target && e.target.closest ? e.target.closest('.dt-day') : null;
+  if(!cell) return;
+  var d=cell.getAttribute('data-d');
+  var i=detLang.days.indexOf(d);
+  if(i<0) return;
+  detLang.sel=i; detLang.clicked=true;
+  Array.prototype.forEach.call($('dtLangChart').querySelectorAll('.dt-day'), function(x, j){
+    x.classList.toggle('sel', j===i);
+  });
+  showLangDetail();
 });
 $('dtMorseChart').addEventListener('click', function(e){
   var cell=e.target && e.target.closest ? e.target.closest('.dt-day') : null;
@@ -6459,5 +6768,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a435596888e8e756',t:'MTc5MDc5MzU1NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

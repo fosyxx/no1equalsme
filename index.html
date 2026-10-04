@@ -138,10 +138,37 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .day-counters{display:flex;flex-direction:column;gap:3px;margin:-8px 0 14px}
 .dc-main{font-size:14.5px;font-weight:650;color:var(--text)}
 .dc-sub{font-size:13px;color:var(--muted)}
-.cat-card{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow-soft)}
-.cat-ic{width:46px;height:46px;flex:none;border-radius:14px;background:var(--violet-soft);display:grid;place-items:center;color:var(--violet)}
-.cat-ic svg{width:22px;height:22px}
-.cat-info{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+/* Строка раздела: одна кнопка целиком (иконка + название + состояние + действие) */
+.sec-row{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:12px 6px;
+  background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;
+  color:var(--text);font:inherit;text-align:left;cursor:pointer;transition:background .15s ease}
+.sec-row:last-child{border-bottom:0}
+.sec-row:active{background:rgba(143,116,224,.06)}
+.sec-row:focus-visible{outline:2px solid var(--violet);outline-offset:-2px;border-radius:14px}
+.sec-row:disabled{opacity:.55;pointer-events:none}
+.sec-ic{width:40px;height:40px;flex:none;border-radius:13px;background:var(--violet-soft);color:var(--violet);display:grid;place-items:center;transition:background .15s,color .15s}
+.sec-ic svg{width:20px;height:20px}
+.sec-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.sec-top{display:flex;align-items:center;gap:8px;min-width:0}
+.sec-top .chip{margin-left:auto}
+.sec-act{flex:none;display:flex;align-items:center;gap:5px;max-width:47%;justify-content:flex-end;
+  color:var(--violet);font-weight:700;font-size:13.5px;text-align:right}
+.sec-act-t{min-width:0;overflow-wrap:anywhere}
+.sec-arr{font-size:16px;font-weight:800;line-height:1;flex:none}
+.sec-check{display:none;font-weight:800;color:var(--green);flex:none}
+.sec-prog{display:none;height:4px;border-radius:99px;background:var(--track);overflow:hidden;margin-top:2px}
+.sec-prog i{display:block;height:100%;width:0;border-radius:99px;background:var(--violet);transition:width .25s ease}
+/* Выполненный раздел: зелёный акцент и галочка, но строка остаётся активной */
+.sec-row.is-done .sec-ic{background:var(--green-soft);color:var(--green)}
+.sec-row.is-done .sec-check{display:inline}
+/* «Пройти заново» — не «горит» (спокойное действие) */
+.sec-row.is-quiet .sec-act{color:var(--muted);font-weight:650}
+/* Компактная pill-кнопка результата дня — сразу под сводкой */
+.pill-result{display:inline-flex;align-self:flex-start;align-items:center;gap:6px;min-height:44px;
+  padding:8px 16px;margin:0 0 4px;border-radius:999px;border:1px solid var(--green-line);
+  background:var(--green-soft);color:var(--green);font-weight:700;font-size:13.5px;transition:filter .15s}
+.pill-result:active{filter:brightness(.96)}
+.pill-result:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 .cat-name{font-weight:650;font-size:16px}
 .cat-sub{color:var(--muted);font-size:13px;line-height:1.4}
 .chip{flex:none;font-size:12px;font-weight:600;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 10px;white-space:nowrap}
@@ -240,8 +267,6 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 
 
 /* ---------- Морзе + Дактиль ---------- */
-.morse-block{margin-top:14px;display:flex;flex-direction:column;gap:14px}
-.lang-block{margin-top:14px;display:flex;flex-direction:column;gap:14px}
 /* Экран раздела «Языки» */
 .lang-scroll{flex:1;min-height:0;overflow-y:auto;padding:8px 16px calc(env(safe-area-inset-bottom,0px) + 16px);display:flex;flex-direction:column;gap:12px}
 .lang-total{font-size:15px;font-weight:700;color:var(--text)}
@@ -316,10 +341,26 @@ html.rm .ms-streak.rec svg{animation:none}
 .morse-stats-note{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.45}
 
 
-/* ---------- Главная: две категории ---------- */
-.cat-block{margin-top:14px;display:flex;flex-direction:column;gap:14px}
-/* «Статистика» не прилипает к кнопке «Продолжить» выше */
+/* ---------- Главная: список разделов ---------- */
+.sec-list{margin-top:14px;display:flex;flex-direction:column}
+/* «Статистика» не прилипает к строкам разделов выше */
 #btnDetails{margin-top:14px}
+/* Оформление «Список»: каждая строка — отдельная скруглённая карточка */
+#view-home[data-home-layout="list"] .sec-list{gap:10px}
+#view-home[data-home-layout="list"] .sec-row{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;min-height:64px}
+#view-home[data-home-layout="list"] .sec-prog{display:block}
+#view-home[data-home-layout="list"] .sec-row.is-done{border-color:var(--green-line)}
+#view-home[data-home-layout="list"] .sec-row.is-done .sec-prog i{background:var(--green)}
+#view-home[data-home-layout="list"] .sec-act{background:var(--violet-soft);border:1px solid var(--violet-line);border-radius:999px;padding:6px 11px;font-size:12.5px;max-width:52%}
+#view-home[data-home-layout="list"] .sec-row.is-done .sec-act{background:var(--green-soft);border-color:var(--green-line);color:var(--green)}
+/* спокойное действие важнее зелёного: «Пройти заново» не «горит» */
+#view-home[data-home-layout="list"] .sec-row.is-quiet .sec-act{background:var(--card2);border-color:var(--line);color:var(--muted)}
+/* Узкие экраны 320–480: длинное «Продолжить тренировку» переносится, стрелка видна */
+@media (max-width:360px){
+  .sec-act{font-size:12.5px;gap:4px}
+  .sec-row{gap:10px}
+  .sec-top .chip{padding:4px 8px;font-size:11px}
+}
 /* ---------- Подробнее: две вкладки со свайпом + графики ---------- */
 .det-tabs{display:flex;gap:8px;padding:10px 2px 6px}
 .det-tab{flex:1;min-height:44px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--muted);font:inherit;font-weight:650;font-size:14px;transition:background .15s ease,border-color .15s ease,color .15s ease}
@@ -351,7 +392,6 @@ html.rm .ms-streak.rec svg{animation:none}
 /* ---------- Раунд 3 ---------- */
 .det-foot{text-align:center;display:flex;flex-direction:column;gap:7px;font-size:18px;color:var(--muted);padding:4px 8px 6px}
 .det-foot div{line-height:1.5}
-.cat-block .btn-primary,.morse-block .btn-primary{box-shadow:0 4px 11px rgba(143,116,224,.18)}
 .wipe-pass{width:100%;min-height:44px;border-radius:12px;border:1px solid var(--red-line);background:var(--card2);color:var(--text);padding:0 12px;font:inherit;font-size:15px;margin:8px 0 4px}
 /* ---------- Результат ---------- */
 .result-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 2px 14px}
@@ -491,7 +531,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
 <div id="app">
 
   <!-- Экран 1: Сегодня -->
-  <section class="view active" id="view-home" aria-label="Сегодня">
+  <section class="view active" id="view-home" data-home-layout="mine" aria-label="Сегодня">
     <header class="home-head">
       <div class="brand">
         <div class="mono" aria-hidden="true">N1</div>
@@ -509,49 +549,46 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         <p class="home-date" id="homeDate"></p>
         <span class="test-pill" id="testPillHome" hidden>ТЕСТОВАЯ ДАТА</span>
       </div>
-      <h1 class="home-title" id="homeTitle">Вечерняя сессия</h1>
+      <h1 class="home-title" id="homeTitle">Вечерняя тренировка</h1>
       <div class="day-counters" aria-live="polite">
         <span class="dc-main" id="cntToday">Сегодня: 0 / 15 слов</span>
         <span class="dc-sub" id="cntBreak">Повторений: 0, Новых: 0</span>
       </div>
-      <div class="cat-block">
-      <div class="cat-card">
-        <div class="cat-ic" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
-        </div>
-        <div class="cat-info">
-          <span class="cat-name">Слова</span>
-          <span class="cat-sub" id="catSub"></span>
-        </div>
-        <span class="chip" id="catChip">Сегодня</span>
-      </div>
-      <button class="btn-primary" id="btnStart">Начать</button>
-      </div>
-      <div class="morse-block">
-        <div class="cat-card" id="morseCard">
-          <div class="cat-ic" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M8.5 8.5a5 5 0 0 0 0 7"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M5.5 5.5a9 9 0 0 0 0 13"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
-          </div>
-          <div class="cat-info">
-            <span class="cat-name">Морзе + Дактиль</span>
-            <span class="cat-sub" id="morseSub">Загружаем карточки…</span>
-          </div>
-          <span class="chip" id="morseChip">Сегодня</span>
-        </div>
-        <button class="btn-primary" id="btnMorseStart" disabled>Начать</button>
-      </div>
-      <div class="lang-block">
-        <div class="cat-card" id="langCard">
-          <div class="cat-ic" aria-hidden="true">
+      <button class="pill-result" id="btnShowResult" hidden>✓ Посмотреть результат дня</button>
+      <div class="sec-list" id="secList">
+        <button class="sec-row" id="btnStart" aria-label="Слова">
+          <span class="sec-ic" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+          </span>
+          <span class="sec-info">
+            <span class="sec-top"><span class="cat-name">Слова</span><span class="chip" id="catChip">Сегодня</span></span>
+            <span class="cat-sub" id="catSub"></span>
+            <span class="sec-prog" aria-hidden="true"><i id="catProg"></i></span>
+          </span>
+          <span class="sec-act"><span class="sec-check" aria-hidden="true">✓</span><span class="sec-act-t" id="catAct">Начать</span><span class="sec-arr" aria-hidden="true">›</span></span>
+        </button>
+        <button class="sec-row" id="btnLangStart" disabled aria-label="Языки">
+          <span class="sec-ic" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          </div>
-          <div class="cat-info">
-            <span class="cat-name">Языки</span>
+          </span>
+          <span class="sec-info">
+            <span class="sec-top"><span class="cat-name">Языки</span><span class="chip" id="langChip">0 из 10</span></span>
             <span class="cat-sub" id="langSub">Загружаем языки…</span>
-          </div>
-          <span class="chip" id="langChip">0 из 10</span>
-        </div>
-        <button class="btn-primary" id="btnLangStart" disabled>Начать</button>
+            <span class="sec-prog" aria-hidden="true"><i id="langProg"></i></span>
+          </span>
+          <span class="sec-act"><span class="sec-check" aria-hidden="true">✓</span><span class="sec-act-t" id="langAct">Начать</span><span class="sec-arr" aria-hidden="true">›</span></span>
+        </button>
+        <button class="sec-row" id="btnMorseStart" disabled aria-label="Морзе + Дактиль">
+          <span class="sec-ic" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M8.5 8.5a5 5 0 0 0 0 7"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M5.5 5.5a9 9 0 0 0 0 13"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+          </span>
+          <span class="sec-info">
+            <span class="sec-top"><span class="cat-name">Морзе + Дактиль</span><span class="chip" id="morseChip">Сегодня</span></span>
+            <span class="cat-sub" id="morseSub">Загружаем карточки…</span>
+            <span class="sec-prog" aria-hidden="true"><i id="morseProg"></i></span>
+          </span>
+          <span class="sec-act"><span class="sec-check" aria-hidden="true">✓</span><span class="sec-act-t" id="morseAct">Начать</span><span class="sec-arr" aria-hidden="true">›</span></span>
+        </button>
       </div>
       <button class="btn-ghost" id="btnDetails">Статистика</button>
       <div class="home-bottom">
@@ -560,7 +597,6 @@ html.rm .card-drag.flipped .card-front{opacity:0}
           <p id="emptyDayText"></p>
           <button class="btn-ghost" id="btnNearest" hidden>К ближайшему повторению</button>
         </div>
-        <button class="btn-ghost" id="btnShowResult" hidden>Посмотреть результат</button>
       </div>
     </main>
   </section>
@@ -1155,6 +1191,16 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         </div>
       </div>
     </div>
+    <div class="set-row set-row-col">
+      <div class="set-text">
+        <span class="set-name">Вид главного экрана</span>
+        <span class="set-sub">Оформление трёх разделов на главной</span>
+      </div>
+      <div class="seg" role="radiogroup" aria-label="Вид главного экрана">
+        <button class="seg-btn" role="radio" aria-checked="false" data-home-btn="mine">Мой вариант</button>
+        <button class="seg-btn" role="radio" aria-checked="false" data-home-btn="list">Список</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1284,6 +1330,7 @@ var elHomeDate=$('homeDate'), elTestPillHome=$('testPillHome'), elHomeTitle=$('h
     elEmptyDay=$('emptyDay'), elEmptyDayTitle=$('emptyDayTitle'), elEmptyDayText=$('emptyDayText'), elBtnNearest=$('btnNearest'),
     elCntToday=$('cntToday'), elCntBreak=$('cntBreak'),
     elBtnStart=$('btnStart'), elBtnShowResult=$('btnShowResult'), elBtnSettings=$('btnSettings');
+var elCatAct=$('catAct'), elLangAct=$('langAct'), elMorseAct=$('morseAct');
 var elBtnBack=$('btnBack'), elSessProgress=$('sessProgress'), elTestPillSession=$('testPillSession'), elBar=$('bar'), elBarFill=$('barFill'),
     elCardArea=$('cardArea'), elCardDrag=$('cardDrag'), elCardInner=$('cardInner'),
     elCardFront=$('cardFront'), elCardBack=$('cardBack'),
@@ -1406,7 +1453,7 @@ function freshState(){
     customWords:[],          // тестовые слова (только первый запуск)
     lastStudyDate:null,      // последняя использованная учебная дата
     startedAt:null, updatedAt:Date.now(), completedAt:null,
-    settings:{haptics:true, theme:'evening', swipeSens:50, sndVol:100, accent:'violet'}
+    settings:{haptics:true, theme:'evening', swipeSens:50, sndVol:100, accent:'violet', homeLayout:'mine'}
   };
 }
 
@@ -1528,6 +1575,7 @@ function migrateStateV2(s){
     if(typeof s.settings.haptics==='boolean') out.settings.haptics=s.settings.haptics;
     if(s.settings.theme==='evening'||s.settings.theme==='dark'||s.settings.theme==='light') out.settings.theme=s.settings.theme;
     if(ACCENTS.indexOf(s.settings.accent)>=0) out.settings.accent=s.settings.accent;
+    out.settings.homeLayout=(s.settings.homeLayout==='list')?'list':'mine'; // неизвестное/старое → «Мой вариант»
     if(typeof s.settings.swipeSens==='number' && s.settings.swipeSens>=0 && s.settings.swipeSens<=100) out.settings.swipeSens=s.settings.swipeSens;
     if(typeof s.settings.sndVol==='number' && s.settings.sndVol>=0 && s.settings.sndVol<=100) out.settings.sndVol=s.settings.sndVol;
     out.settings.updatedAt=(typeof s.settings.updatedAt==='number')?s.settings.updatedAt:0;
@@ -1853,9 +1901,37 @@ function toast(msg, actionLabel, actionFn){
 
 /* ================= Рендер: главная ================= */
 function strong(text){ var b=document.createElement('strong'); b.textContent=text; return b; }
+/* Ширина полосы прогресса в строке раздела (0–100%) */
+function secProg(id,pct){ var el=$(id); if(el){ el.style.width=Math.max(0,Math.min(100,pct|0))+'%'; } }
+/* Данные языков/морзе для заголовка дня и кнопки результата (сами строки
+   рендерят renderLangHome/renderMorseHome — здесь только читаем состояние) */
+function homeSectionStates(){
+  var langOk=false, langRes=false, langUnf=false;
+  try{
+    if(langContent && langContent.ready){
+      var ld=ensureLangDay();
+      if(ld){
+        langRes=(ld.done|0)>0;
+        langOk=(!ld.queue.length && langStartedCount(null)>0);
+        langUnf=(langRes && ld.queue.length>0) || !!(langSess && langSess.practice && (langSess.q||[]).length);
+      }
+    }
+  }catch(e){}
+  var morseOk=false, morseRes=false, morseUnf=false;
+  try{
+    if(typeof morseContent!=='undefined' && morseContent.ready && morseState){
+      morseOk=morseState.dailyCorrect>=MORSE_GOAL;
+      morseRes=(morseState.dailyAttempts>0 || morseState.dailyCorrect>0);
+      morseUnf=!morseOk && !!(morseState.currentId || morseState.dailyAttempts>0 || morseState.mode!=='input');
+    }
+  }catch(e){}
+  return {langOk:langOk, langRes:langRes, langUnf:langUnf,
+          morseOk:morseOk, morseRes:morseRes, morseUnf:morseUnf};
+}
 function renderHome(){
   try{ renderLangHome(); }catch(e){}
   elBtnStart.classList.remove('is-quiet');  // «не горит» — только у «Пройти заново»
+  elBtnStart.classList.remove('is-done');   // зелёный акцент — только у выполненного
   var eff=effDate();
   elHomeDate.textContent=rusDateStr(eff);
   elTestPillHome.hidden=!testState.enabled;
@@ -1865,36 +1941,36 @@ function renderHome(){
   elCntToday.textContent='Сегодня: '+plan.total+' / '+MAX_DAILY+' слов';
   elCntBreak.textContent='Повторений: '+plan.reviews+', Новых: '+plan.news;
   elCatChip.className='chip';
-  if(state.status==='completed' && state.sessionDate===eff){
-    elHomeTitle.textContent='На сегодня всё';
-    elCatSub.textContent=state.sessionTotal+' '+plural(state.sessionTotal,'карточка','карточки','карточек')+' · день завершён';
+  var wordsDone=(state.status==='completed' && state.sessionDate===eff);
+  var wordsActive=(state.status==='active');
+  /* — строка «Слова»: действие меняет только <span id="catAct"> — */
+  if(wordsDone){
+    elCatSub.textContent=state.sessionTotal+' '+plural(state.sessionTotal,'карточка','карточки','карточек')+' · выполнено сегодня';
     elCatChip.textContent='Готово'; elCatChip.classList.add('is-done');
     elEmptyDay.hidden=true;
     elBtnStart.hidden=false;
     /* Дневная тренировка пройдена → «Пройти заново»: те же слова (план дня),
-       кнопка спокойная (не «горит»). */
-    elBtnStart.textContent='Пройти заново';
+       строка спокойная (не «горит»), но остаётся активной. */
+    elCatAct.textContent='Пройти заново';
     elBtnStart.classList.add('is-quiet');
-    elBtnShowResult.hidden=false;
-    return;
-  }
-  elBtnShowResult.hidden=true;
-  elHomeTitle.textContent='Вечерняя сессия';
-  if(state.status==='active'){
+    elBtnStart.classList.add('is-done');
+    secProg('catProg',100);
+  } else if(wordsActive){
     var done=doneCount();
     elCatSub.textContent='Пройдено '+done+' из '+state.sessionTotal+' · продолжим с того же места';
     elCatChip.textContent='В процессе'; elCatChip.classList.add('is-active');
     elEmptyDay.hidden=true;
     elBtnStart.hidden=false;
     /* Прогресс нулевой → «Начать» (та же сессия), иначе → «Продолжить» */
-    elBtnStart.textContent=done ? 'Продолжить' : 'Начать';
-    return;
-  }
-  if(plan.total===0){
+    elCatAct.textContent=done ? 'Продолжить' : 'Начать';
+    secProg('catProg', state.sessionTotal? Math.round(done*100/state.sessionTotal) : 0);
+  } else if(plan.total===0){
     // Ограничение 3 из правил — точный текст сообщения
     elCatSub.textContent='Сегодня свободно';
     elCatChip.textContent='Нет карточек';
+    elCatAct.textContent='Начать';
     elBtnStart.hidden=true;
+    secProg('catProg',0);
     elEmptyDay.hidden=false;
     elEmptyDayTitle.textContent='На сегодня всё! Повторения завтра.';
     var nd=nearestFutureDue();
@@ -1912,8 +1988,18 @@ function renderHome(){
       ' · новых: '+plan.news +
       ' · около '+mins+' '+plural(mins,'минуты','минут','минут');
     elBtnStart.hidden=false;
-    elBtnStart.textContent='Начать';
+    elCatAct.textContent='Начать';
+    secProg('catProg',0);
   }
+  elBtnStart.setAttribute('aria-label','Слова — '+elCatAct.textContent);
+  /* — Заголовок дня и кнопка результата: по данным ВСЕХ трёх разделов — */
+  var st=homeSectionStates();
+  var wordsRes=wordsDone || (wordsActive && state.sessionDate===eff && doneCount()>0);
+  var allDone=wordsDone && st.langOk && st.morseOk;
+  var anyUnfin=wordsActive || st.langUnf || st.morseUnf;
+  elHomeTitle.textContent=allDone ? 'На сегодня всё'
+    : (anyUnfin ? 'Продолжим?' : 'Вечерняя тренировка');
+  elBtnShowResult.hidden=!(wordsRes || st.langRes || st.morseRes);
 }
 
 /* Длинные слова, которые не умещаются на карточке, показываем чуть меньшим шрифтом */
@@ -2564,11 +2650,37 @@ function applyAccent(){
   });
 });
 
+/* Вид главного экрана: один DOM, разное оформление — атрибут data-home-layout */
+function homeLayoutValue(){ return (state && state.settings && state.settings.homeLayout==='list') ? 'list' : 'mine'; }
+function applyHomeLayout(){
+  var v=homeLayoutValue();
+  var hv=$('view-home');
+  if(hv) hv.setAttribute('data-home-layout', v);
+  Array.prototype.slice.call(document.querySelectorAll('[data-home-btn]')).forEach(function(b){
+    var on=b.getAttribute('data-home-btn')===v;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-checked', String(on));
+  });
+}
+Array.prototype.slice.call(document.querySelectorAll('[data-home-btn]')).forEach(function(b){
+  b.addEventListener('click', function(){
+    var v=b.getAttribute('data-home-btn');
+    if(v!=='mine' && v!=='list') return;
+    if(!state || !state.settings) return;
+    if(state.settings.homeLayout===v){ applyHomeLayout(); return; }
+    state.settings.homeLayout=v;
+    state.settings.updatedAt=Date.now();  // та же система конфликтов, что у темы/акцента
+    save();
+    applyHomeLayout();                    // сразу, без перезагрузки; настройки не закрываются
+  });
+});
+
 /* ================= Настройки: вибрация, архив ================= */
 function syncSwitch(){
   elSwHaptic.classList.toggle('on', state.settings.haptics);
   elSwHaptic.setAttribute('aria-checked', String(state.settings.haptics));
   syncSens();
+  try{ applyHomeLayout(); }catch(e){}  // позиция переключателя «Вид главного экрана»
 }
 var elSensRange=$('sensRange'), elSensSub=$('sensSub');
 function syncSens(){
@@ -2705,7 +2817,7 @@ elBtnResetNo.addEventListener('click', function(){
   elResetConfirm.hidden=true; elBtnReset.hidden=false;
 });
 elBtnResetYes.addEventListener('click', function(){
-  var keepSettings={haptics:state.settings.haptics, theme:state.settings.theme, swipeSens:swipeSens(), sndVol:(typeof state.settings.sndVol==='number'?state.settings.sndVol:100), accent:currentAccent()};
+  var keepSettings={haptics:state.settings.haptics, theme:state.settings.theme, swipeSens:swipeSens(), sndVol:(typeof state.settings.sndVol==='number'?state.settings.sndVol:100), accent:currentAccent(), homeLayout:(state.settings.homeLayout==='list')?'list':'mine'};
   try{ localStorage.removeItem(KEY); }catch(e){}
   try{ localStorage.removeItem(TKEY); }catch(e){}
   state=freshState();
@@ -2715,6 +2827,7 @@ elBtnResetYes.addEventListener('click', function(){
   state.settings.swipeSens=keepSettings.swipeSens;
   state.settings.sndVol=keepSettings.sndVol;
   state.settings.accent=keepSettings.accent;
+  state.settings.homeLayout=keepSettings.homeLayout;
   save();
   saveTest();
   applyTheme();
@@ -2989,7 +3102,7 @@ function buildPayloads(){
   var blockNames=Object.keys(blocks).sort();
   blockNames.forEach(function(bk){ out[bk]=JSON.stringify({v:CLOUD_SCHEMA, c:blocks[bk]}); });
   // настройки (без тестового режима и сдвига даты)
-  out[CK.settings]=JSON.stringify({v:CLOUD_SCHEMA, haptics:!!state.settings.haptics, theme:state.settings.theme||'evening', accent:currentAccent(),
+  out[CK.settings]=JSON.stringify({v:CLOUD_SCHEMA, haptics:!!state.settings.haptics, theme:state.settings.theme||'evening', accent:currentAccent(), homeLayout:(state.settings.homeLayout==='list')?'list':'mine',
     swipeSens:swipeSens(), updatedAt:state.settings.updatedAt||0});
   // активная/завершённая сессия
   var sr={};
@@ -3058,6 +3171,7 @@ function mergeCloudSettings(obj){
       try{ applyAccent(); }catch(e){}   // цвет из облака применяется сразу
     }
   if(typeof obj.swipeSens==='number' && obj.swipeSens>=0 && obj.swipeSens<=100) state.settings.swipeSens=obj.swipeSens;
+  if(obj.homeLayout==='list'||obj.homeLayout==='mine') state.settings.homeLayout=obj.homeLayout;
   state.settings.updatedAt=remoteTs;
 }
 function mergeCloudSession(obj){
@@ -3352,12 +3466,15 @@ renderHome = function(){
   renderMorseHome();
   if(!content.ready && !elBtnStart.hidden){
     elBtnStart.disabled=true;
-    elBtnStart.textContent='Загружаем словарь…';
+    elCatAct.textContent='Загружаем словарь…';
+    elBtnStart.setAttribute('aria-label','Слова — Загружаем словарь…');
   } else if(cloud.gate && !elBtnStart.hidden){
     elBtnStart.disabled=true;
-    elBtnStart.textContent='Проверяем прогресс…';
+    elCatAct.textContent='Проверяем прогресс…';
+    elBtnStart.setAttribute('aria-label','Слова — Проверяем прогресс…');
   } else {
     elBtnStart.disabled=false;
+    elBtnStart.setAttribute('aria-label','Слова — '+elCatAct.textContent);
   }
   updateSyncUI();
 };
@@ -3471,7 +3588,7 @@ $('btnKeepLocal').addEventListener('click', function(){
 });
 $('btnFreshStart').addEventListener('click', function(){
   elCloudAfter.hidden=true; elBtnCloudWipe.hidden=false;
-  var keep={haptics:state.settings.haptics, theme:state.settings.theme, swipeSens:swipeSens(), sndVol:(typeof state.settings.sndVol==='number'?state.settings.sndVol:100), accent:currentAccent()};
+  var keep={haptics:state.settings.haptics, theme:state.settings.theme, swipeSens:swipeSens(), sndVol:(typeof state.settings.sndVol==='number'?state.settings.sndVol:100), accent:currentAccent(), homeLayout:(state.settings.homeLayout==='list')?'list':'mine'};
   try{ localStorage.removeItem(KEY); }catch(e){}
   try{ localStorage.removeItem(TKEY); }catch(e){}
   state=freshState();
@@ -3481,6 +3598,7 @@ $('btnFreshStart').addEventListener('click', function(){
   state.settings.swipeSens=keep.swipeSens;
   state.settings.sndVol=keep.sndVol;
   state.settings.accent=keep.accent;
+  state.settings.homeLayout=keep.homeLayout;
   state.settings.updatedAt=Date.now();
   normalizeStats();
   mirror={}; saveMirror();
@@ -3500,7 +3618,7 @@ function buildBackupText(){
     schemaVersion:6,
     createdAt:new Date().toISOString(),
     cards:state.cards,
-    settings:{haptics:!!state.settings.haptics, theme:state.settings.theme||'evening', accent:currentAccent(), swipeSens:swipeSens(), sndVol:(typeof state.settings.sndVol==='number'?state.settings.sndVol:100), updatedAt:state.settings.updatedAt||0},
+    settings:{haptics:!!state.settings.haptics, theme:state.settings.theme||'evening', accent:currentAccent(), homeLayout:(state.settings.homeLayout==='list')?'list':'mine', swipeSens:swipeSens(), sndVol:(typeof state.settings.sndVol==='number'?state.settings.sndVol:100), updatedAt:state.settings.updatedAt||0},
     stats:state.stats,
     session:{status:state.status, sessionDate:state.sessionDate, queue:state.queue, sessionTotal:state.sessionTotal,
              sessionResults:state.sessionResults, cardScreen:state.cardScreen, startedAt:state.startedAt,
@@ -3771,6 +3889,7 @@ $('btnImportYes').addEventListener('click', function(){
     state.settings.haptics=c.settings.haptics;
     state.settings.theme=c.settings.theme;
     state.settings.swipeSens=c.settings.swipeSens;
+    state.settings.homeLayout=(c.settings.homeLayout==='list')?'list':'mine'; // старые копии без поля → «Мой вариант»
     state.settings.updatedAt=Math.max(c.settings.updatedAt, Date.now());
   }
   state.stats=c.stats;
@@ -4590,15 +4709,18 @@ function preloadMorseImages(){ MORSE_CARDS.forEach(function(c){ loadMorseImage(c
 /* ---------- Рендер главной карточки ---------- */
 function renderMorseHome(){
   if(!morseState) return;
-  var sub=$('morseSub'), chip=$('morseChip'), btn=$('btnMorseStart');
-  if(!sub || !chip || !btn) return;
+  var sub=$('morseSub'), chip=$('morseChip'), btn=$('btnMorseStart'), act=$('morseAct');
+  if(!sub || !chip || !btn || !act) return;
   ensureMorseDay();
+  btn.classList.remove('is-done');  // зелёный акцент — только после дневной цели
   if(!morseContent.ready){
     chip.className='chip';
     chip.textContent=morseContent.error?'Ошибка':'Загрузка';
     sub.textContent=morseContent.error?'Карточки морзе не загрузились':'Загружаем карточки…';
-    btn.textContent='Начать';
+    act.textContent='Начать';
     btn.disabled=true;
+    secProg('morseProg',0);
+    btn.setAttribute('aria-label','Морзе + Дактиль — '+act.textContent);
     return;
   }
   btn.disabled=false;
@@ -4606,7 +4728,11 @@ function renderMorseHome(){
     sub.textContent='Цель выполнена · '+MORSE_GOAL+' из '+MORSE_GOAL;
     chip.className='chip is-done';
     chip.textContent='Готово';
-    btn.textContent='Продолжить тренировку';
+    /* Цель достигнута: строка зелёная, но активна — «Продолжить тренировку» */
+    act.textContent='Продолжить тренировку';
+    btn.classList.add('is-done');
+    secProg('morseProg',100);
+    btn.setAttribute('aria-label','Морзе + Дактиль — '+act.textContent);
     return;
   }
   var left=MORSE_GOAL-morseState.dailyCorrect;
@@ -4616,7 +4742,9 @@ function renderMorseHome(){
   var started=!!(morseState.currentId || morseState.dailyAttempts>0 || morseState.mode!=='input');
   chip.className='chip'+(started?' is-active':'');
   chip.textContent=started?'В процессе':'Сегодня';
-  btn.textContent=started?'Продолжить':'Начать';
+  act.textContent=started?'Продолжить':'Начать';
+  secProg('morseProg', Math.round(morseState.dailyCorrect*100/MORSE_GOAL));
+  btn.setAttribute('aria-label','Морзе + Дактиль — '+act.textContent);
 }
 
 /* ---------- Рендер экрана ---------- */
@@ -5808,16 +5936,19 @@ window.addEventListener('pagehide', function(){ stopLangSpeech(); langAudioStop(
 
 /* ---------- Карточка на главной ---------- */
 function renderLangHome(){
-  var sub=$('langSub'), chip=$('langChip'), btn=$('btnLangStart');
-  if(!sub || !chip || !btn) return;
+  var sub=$('langSub'), chip=$('langChip'), btn=$('btnLangStart'), act=$('langAct');
+  if(!sub || !chip || !btn || !act) return;
   btn.classList.remove('is-quiet');   // «не горит» — только у «Пройти заново»
+  btn.classList.remove('is-done');    // зелёный акцент — только у выполненного
   if(!langContent.ready){
     chip.className='chip';
     btn.hidden=false;
     btn.disabled=!langContent.error;              // при ошибке кнопка = «Повторить»
-    btn.textContent=langContent.error?'Повторить':'Начать';
+    act.textContent=langContent.error?'Повторить':'Начать';
     chip.textContent=langContent.error?'Ошибка':'Сегодня';
     sub.textContent=langContent.error?('Языки не загрузились — '+langErrText(langContent.err||'')):'Загружаем языки…';
+    secProg('langProg',0);
+    btn.setAttribute('aria-label','Языки — '+act.textContent);
     return;
   }
   var day=ensureLangDay();
@@ -5830,7 +5961,9 @@ function renderLangHome(){
     chip.textContent=(langSess.base-(langSess.q||[]).length)+' из '+langSess.base;
     sub.textContent='Практика · повторение прошедшей тренировки';
     btn.hidden=false; btn.disabled=false;
-    btn.textContent='Продолжить';
+    act.textContent='Продолжить';
+    secProg('langProg', langSess.base? Math.round((langSess.base-(langSess.q||[]).length)*100/langSess.base) : 0);
+    btn.setAttribute('aria-label','Языки — '+act.textContent);
     return;
   }
   if(left>0){
@@ -5838,16 +5971,23 @@ function renderLangHome(){
     chip.className='chip'+(done>0?' is-active':'');
     chip.textContent=done+' из '+LANG_MAX_DAY;
     btn.hidden=false; btn.disabled=false;
-    btn.textContent=done>0?'Продолжить':'Начать';
+    act.textContent=done>0?'Продолжить':'Начать';
+    if(done>0) sub.textContent=done+' из '+LANG_MAX_DAY+' · продолжить с текущей карточки';
+    secProg('langProg', Math.round(done*100/LANG_MAX_DAY));
   } else {
     chip.className='chip is-done';
     chip.textContent='Готово на сегодня';
-    /* Тренировка пройдена → «Пройти заново», кнопка спокойная (не горит) */
+    sub.textContent=LANG_MAX_DAY+' карточек · выполнено сегодня';
+    /* Тренировка пройдена → «Пройти заново», строка спокойная (не горит),
+       но остаётся активной (тот же день, те же карточки) */
     btn.hidden=(langStartedCount(null)===0);
     btn.disabled=false;
-    btn.textContent='Пройти заново';
+    act.textContent='Пройти заново';
+    btn.classList.add('is-done');
     if(!btn.hidden) btn.classList.add('is-quiet');
+    secProg('langProg',100);
   }
+  btn.setAttribute('aria-label','Языки — '+act.textContent);
 }
 
 /* ---------- Экран раздела ---------- */
@@ -6283,13 +6423,9 @@ window.addEventListener('pointercancel', function(e){ try{ lsOnCancel(e); }catch
     }
     openLangSession(null);  // обычный день или возобновление практики
   });
-  /* Тап по карточке «Языки» — вход в обзор раздела; кнопка — сразу смешанная */
-  var langCardEl=$('langCard');
-  if(langCardEl) langCardEl.addEventListener('click', function(e){
-    if(e.target && e.target.closest && e.target.closest('button')) return;
-    if(!langContent.ready) return;
-    showView('langs');
-  });
+  /* Раньше тап по карточке «Языки» открывал обзор раздела отдельным обработчиком.
+     Теперь строка раздела — одна кнопка с одним обработчиком (btnLangStart):
+     обзор «Языки» доступен кнопкой «назад» с экрана тренировки (btnLsessBack). */
   var rs=$('btnLangReset'), rc=$('langResetConfirm'), rno=$('btnLangResetNo'), ryes=$('btnLangResetYes');
   if(rs) rs.addEventListener('click', function(){ rs.hidden=true; rc.hidden=false; });
   if(rno) rno.addEventListener('click', function(){ rc.hidden=true; rs.hidden=false; });
@@ -6314,6 +6450,8 @@ function startApp(){
   if(state.settings && ACCENTS.indexOf(state.settings.accent)<0) state.settings.accent='violet';
   if(typeof state.settings.swipeSens!=='number' || state.settings.swipeSens<0 || state.settings.swipeSens>100) state.settings.swipeSens=50;
   if(typeof state.settings.sndVol!=='number' || state.settings.sndVol<0 || state.settings.sndVol>100) state.settings.sndVol=100;
+  if(state.settings.homeLayout!=='list' && state.settings.homeLayout!=='mine') state.settings.homeLayout='mine';
+  applyHomeLayout();                    // атрибут вида на #view-home до первой отрисовки
   if(typeof state.practice!=='boolean') state.practice=false;
   if(state.practiceBackup && typeof state.practiceBackup!=='object') state.practiceBackup=null;
   // слова, отсутствующие в текущем словаре, не показываем, но их прогресс сохраняем
@@ -7008,5 +7146,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4560e3d6f19a94f',t:'MTc5MTEzNjUwNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4569f32acd4acd4',t:'MTc5MTE0MjQ0Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

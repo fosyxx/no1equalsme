@@ -117,6 +117,8 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .btn-primary{min-height:56px;border-radius:18px;background:linear-gradient(135deg,var(--violet-deep),#b394ff);color:#181022;font-weight:750;font-size:16px;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 10px 24px rgba(143,116,224,.32);transition:transform .15s ease,filter .15s ease}
 .btn-primary:active{transform:scale(.985);filter:brightness(1.06)}
 .btn-primary:disabled{opacity:.55;filter:none;box-shadow:none;pointer-events:none}
+/* «Пройти заново» — тренировка уже пройдена: кнопка есть, но она не «горит» */
+.btn-primary.is-quiet{background:var(--card);border:1px solid var(--line);color:var(--text);box-shadow:none;filter:none;font-weight:650}
 .btn-ghost:disabled{opacity:.5;pointer-events:none}
 .btn-ghost{min-height:52px;border-radius:18px;border:1px solid var(--line);color:var(--text);background:var(--card);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;transition:background var(--dur)}
 .btn-ghost:active{background:var(--card2)}
@@ -363,7 +365,8 @@ html.rm .ms-streak.rec svg{animation:none}
 .forgot{width:100%;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;text-align:left;margin-bottom:14px}
 .forgot h3{font-size:14px;font-weight:650;margin-bottom:8px}
 .forgot ul{list-style:none;display:flex;flex-wrap:wrap;gap:8px}
-.forgot li{font-size:13px;color:var(--violet);background:var(--violet-soft);border:1px solid var(--violet-line);border-radius:999px;padding:5px 11px}
+.forgot li{font-size:13px;color:var(--violet);background:var(--violet-soft);border:1px solid var(--violet-line);border-radius:999px;padding:5px 11px;cursor:pointer}
+.forgot li:active{filter:brightness(.94)}
 .forgot .all-ok{color:var(--muted);font-size:13.5px}
 .result-msg{color:var(--muted);font-size:14px;max-width:310px;margin:0 auto}
 .result-bottom{flex:none;padding-top:8px}
@@ -424,9 +427,7 @@ html.rm .ms-streak.rec svg{animation:none}
 .sort-chip.on{background:var(--violet-soft);border-color:var(--violet-line);color:var(--violet)}
 /* Оборот карточки языков: перевод/транслитерация — ПО СЕРЕДИНЕ стороны,
    а не прижаты к верху (первая строка языка — метка, её отодвигаем вверх) */
-#lsBack .back-scroll{display:flex;flex-direction:column;padding-top:16px}
-#lsBack .back-scroll>:first-child{margin-top:auto}
-#lsBack .back-scroll>:last-child{margin-bottom:auto}
+#lsBack .back-scroll{display:flex;flex-direction:column;justify-content:center;padding-top:16px}
 .arch-more{color:var(--muted);font-size:13px;padding:6px 2px}
 .reset-zone{padding:14px 4px 2px;border-top:1px solid var(--line)}
 .reset-zone h3{font-size:13px;font-weight:650;color:var(--muted);margin-bottom:10px;letter-spacing:.04em}
@@ -629,10 +630,11 @@ html.rm .card-drag.flipped .card-front{opacity:0}
       </div>
       <h1 class="result-title">Сессия завершена</h1>
       <div class="stats">
-        <div class="stat"><b id="statFirst">0</b><span>С первого раза</span></div>
-        <div class="stat"><b id="statRepeated">0</b><span>Повторено после ошибки</span></div>
-        <div class="stat"><b id="statTomorrow">0</b><span>Оставлено на завтра</span></div>
-        <div class="stat"><b id="statErrors">0</b><span>Всего ошибок</span></div>
+        <div class="stat"><b id="statRight">0</b><span>Правильно</span></div>
+        <div class="stat"><b id="statWrong">0</b><span>Неправильно</span></div>
+        <div class="stat"><b id="statRep">0</b><span>Повторено с прошлых дней</span></div>
+        <div class="stat"><b id="statNew">0</b><span>Новых</span></div>
+        <div class="stat"><b id="statForgotPast">0</b><span>Забыл с прошлых дней</span></div>
         <div class="stat"><b id="statAdvanced">0</b><span>Перешли на следующий этап</span></div>
         <div class="stat"><b id="statGraduated">0</b><span>Полностью освоено</span></div>
       </div>
@@ -1290,8 +1292,9 @@ var elBtnBack=$('btnBack'), elSessProgress=$('sessProgress'), elTestPillSession=
     elReturnNote=$('returnNote'),
     elBtnBackAction=$('btnBackAction'), elBadgePeek=$('badgePeek'), elTintBack=$('tintBack'),
     elActions=$('actionsBar'), elBtnNo=$('btnNo'), elBtnYes=$('btnYes');
-var elStatFirst=$('statFirst'), elStatRepeated=$('statRepeated'), elStatTomorrow=$('statTomorrow'),
-    elStatErrors=$('statErrors'), elStatAdvanced=$('statAdvanced'), elStatGraduated=$('statGraduated'),
+var elStatRight=$('statRight'), elStatWrong=$('statWrong'), elStatRep=$('statRep'),
+    elStatNew=$('statNew'), elStatForgotPast=$('statForgotPast'),
+    elStatAdvanced=$('statAdvanced'), elStatGraduated=$('statGraduated'),
     elForgotList=$('forgotList'), elForgotEmpty=$('forgotEmpty'),
     elResultMsg=$('resultMsg'), elBtnResultHome=$('btnResultHome');
 var elBtnArchBack=$('btnArchBack'), elArchCount=$('archCount'), elArchList=$('archList'), elArchEmpty=$('archEmpty');
@@ -1787,16 +1790,33 @@ function doneCount(){
   return n;
 }
 function computeStats(){
-  var first=0, rep=0, tom=0, err=0, adv=0, grad=0, forgot=[];
+  /* Стата конкретного прохождения: правильно/неправильно — по ответам этой
+     сессии; повторено/новых — состав показа (слово знакомо с прошлых дней
+     или показано впервые); «забыл с прошлых дней» — подмножество ошибок. */
+  var right=0, wrong=0, rep=0, fresh=0, fpast=0, err=0, adv=0, grad=0, forgot=[];
+  /* Служебные поля для дневного журнала (recordDayStats): как и раньше */
+  var first=0, repeated=0, tom=0;
+  var sd=state.sessionDate;
   Object.keys(state.sessionResults).forEach(function(id){
     var r=state.sessionResults[id];
     err+=r.errors;
-    if(r.errors>0 && CARD_MAP[id]) forgot.push(CARD_MAP[id].stress);
-    if(r.done){ if(r.tomorrow) tom++; else if(r.firstTry) first++; else rep++; }
+    if(r.errors>0 && CARD_MAP[id]) forgot.push({id:id, word:CARD_MAP[id].stress});
+    if(r.done){
+      if(r.errors>0) wrong++; else right++;
+      if(r.tomorrow) tom++; else if(r.firstTry) first++; else repeated++;
+    }
+    var p=state.cards[id];
+    if(p && p.createdAt && sd && p.createdAt<sd) rep++; else fresh++;
     if(r.advanced) adv++;
     if(r.graduatedNow) grad++;
   });
-  return {first:first, repeated:rep, tomorrow:tom, errors:err, advanced:adv, graduated:grad, forgot:forgot};
+  forgot.forEach(function(f){
+    var p=state.cards[f.id];
+    if(p && p.createdAt && sd && p.createdAt<sd) fpast++;
+  });
+  return {right:right, wrong:wrong, rep:rep, fresh:fresh, forgotPast:fpast,
+          first:first, repeated:repeated, tomorrow:tom,
+          errors:err, advanced:adv, graduated:grad, forgot:forgot};
 }
 function haptic(kind){
   if(!state.settings.haptics) return;
@@ -1835,6 +1855,7 @@ function toast(msg, actionLabel, actionFn){
 function strong(text){ var b=document.createElement('strong'); b.textContent=text; return b; }
 function renderHome(){
   try{ renderLangHome(); }catch(e){}
+  elBtnStart.classList.remove('is-quiet');  // «не горит» — только у «Пройти заново»
   var eff=effDate();
   elHomeDate.textContent=rusDateStr(eff);
   elTestPillHome.hidden=!testState.enabled;
@@ -1850,7 +1871,10 @@ function renderHome(){
     elCatChip.textContent='Готово'; elCatChip.classList.add('is-done');
     elEmptyDay.hidden=true;
     elBtnStart.hidden=false;
-    elBtnStart.textContent='Продолжить тренировку'; // норма закрыта — тренируемся дальше, как в «Морзе»
+    /* Дневная тренировка пройдена → «Пройти заново»: те же слова (план дня),
+       кнопка спокойная (не «горит»). */
+    elBtnStart.textContent='Пройти заново';
+    elBtnStart.classList.add('is-quiet');
     elBtnShowResult.hidden=false;
     return;
   }
@@ -1862,7 +1886,8 @@ function renderHome(){
     elCatChip.textContent='В процессе'; elCatChip.classList.add('is-active');
     elEmptyDay.hidden=true;
     elBtnStart.hidden=false;
-    elBtnStart.textContent='Продолжить';
+    /* Прогресс нулевой → «Начать» (та же сессия), иначе → «Продолжить» */
+    elBtnStart.textContent=done ? 'Продолжить' : 'Начать';
     return;
   }
   if(plan.total===0){
@@ -1978,11 +2003,15 @@ function renderSession(opts){
 
 /* ================= Рендер: результат ================= */
 function renderResult(){
-  var st=computeStats();
-  elStatFirst.textContent=String(st.first);
-  elStatRepeated.textContent=String(st.repeated);
-  elStatTomorrow.textContent=String(st.tomorrow);
-  elStatErrors.textContent=String(st.errors);
+  /* practiceStats — стата прошедшего «Пройти заново» (снимается один раз,
+     дальше экран показывает обычные итоги дня). */
+  var st=state.practiceStats || computeStats();
+  if(state.practiceStats){ state.practiceStats=null; save(); }
+  elStatRight.textContent=String(st.right);
+  elStatWrong.textContent=String(st.wrong);
+  elStatRep.textContent=String(st.rep);
+  elStatNew.textContent=String(st.fresh);
+  elStatForgotPast.textContent=String(st.forgotPast);
   elStatAdvanced.textContent=String(st.advanced);
   elStatGraduated.textContent=String(st.graduated);
   elForgotList.innerHTML='';
@@ -1990,7 +2019,9 @@ function renderResult(){
     elForgotEmpty.hidden=true;
     st.forgot.forEach(function(w){
       var li=document.createElement('li');
-      li.textContent=w;
+      li.textContent=w.word;
+      /* Тап по слову — панель «Подробнее» этого слова (та же, что с карточки) */
+      li.addEventListener('click', function(){ openDetails(w.id); });
       elForgotList.appendChild(li);
     });
   } else {
@@ -2143,22 +2174,29 @@ function finishSession(){
   lock=false;
   showView('result');
 }
-/* Свободная тренировка после выполнения дневной нормы — аналог «Продолжить
-   тренировку» у морзе. Берём случайные уже начатые слова (learning/graduated/
-   learned, не новые), но ответы НЕ вызывают applyKnow/applyForget: шаги,
+/* «Пройти заново» после выполнения нормы: механика РОВНО такая же, как у
+   «Начать» — те же слова плана дня (повторы с прошлых дней + новые), тот же
+   порядок, та же длина. Ответы НЕ вызывают applyKnow/applyForget: шаги,
    интервалы, план дня и статистика дня остаются нетронутыми. Прежние итоги дня
-   кладём в practiceBackup и возвращаем по завершении — поэтому главная и
-   экран результата показывают реальный день, а не практику. */
+   кладём в practiceBackup; по завершении показываем экран статы этого прохода,
+   а день восстанавливается при выходе из результата. */
 function startPracticeSession(){
   if(state.status==='active' || state.practice) return;
   if(!content.ready || !CARDS.length) return;
-  var pool=[];
-  CARDS.forEach(function(c){
-    var p=state.cards[c.id];
-    if(p && (p.status==='learning' || p.status==='graduated' || p.status==='learned')) pool.push(c.id);
+  /* Пул = план дня (те же 15, что и в штатной тренировке); фильтр по
+     «learning» — ушедшие в архив (learned) слова не возвращаются. */
+  var pool=(state.dayQueue||[]).filter(function(id){
+    var p=state.cards[id];
+    return !!(CARD_MAP[id] && p && p.status==='learning');
   });
+  if(!pool.length){ // страховка: плана нет — берём слова только что закрытой сессии
+    pool=Object.keys(state.sessionResults||{}).filter(function(id){
+      var p=state.cards[id];
+      return !!(CARD_MAP[id] && p && p.status==='learning');
+    });
+  }
   if(!pool.length){ toast('Нет слов для повторения — все карточки ещё новые.'); return; }
-  shuffle(pool);
+  // порядок НЕ перемешиваем: «пройти заново» — точно такая же тренировка
   pool=pool.slice(0, MAX_DAILY); // та же длина, что у плана дня
   state.practiceBackup={q:state.queue.slice(),
                         r:JSON.parse(JSON.stringify(state.sessionResults||{})),
@@ -2176,6 +2214,7 @@ function startPracticeSession(){
   save();
 }
 function finishPractice(){
+  state.practiceStats=computeStats(); // стата ПРОХОЖДЕНИЯ — снимаем до восстановления дня
   var b=state.practiceBackup;
   state.practice=false;
   state.practiceBackup=null;
@@ -2187,8 +2226,7 @@ function finishPractice(){
   save();
   haptic('done');
   lock=false;
-  goHome();
-  toast('Тренировка завершена');
+  showView('result');   // после тренировки — небольшой экран статы по этому проходу
 }
 
 /* Единая функция обработки ответа — вызывается кнопками и свайпом */
@@ -2247,17 +2285,11 @@ function continueFromDefinition(dir){
   lock=true;
   var c=currentCard(); if(!c){ lock=false; return; }
   var r=state.sessionResults[c.id];
-  /* После «Не помню» слово нельзя просто пропустить «дальше»: оно
-     возвращается в КОНЕЦ очереди ЭТОЙ ЖЕ тренировки и показывается заново
-     (один повтор). Повторный провал закрывает слово как раньше. */
-  if(r && !r.done && !r.requeued){
-    r.requeued=true;
-    if(!state.practice) r.tomorrow=true;  // если тренировку оборвут — слово честно останется «на завтра»
-    state.queue.push(state.queue.shift()); // слово — в конец текущей очереди
-  } else {
-    if(r && !r.done){ r.done=true; if(!state.practice) r.tomorrow=true; }
-    state.queue.shift();
-  }
+  /* «Не помню» НЕ показывает слово повторно в этой же тренировке (правило
+     «без повторений»): слово закрывается, остаётся «на завтра» и в конце
+     тренировки попадает в раздел «Слова, которые позабылись». */
+  if(r && !r.done){ r.done=true; if(!state.practice) r.tomorrow=true; }
+  state.queue.shift();
   state.cardScreen='question';
   save();
   flyCard(dir||1,function(){
@@ -3801,8 +3833,8 @@ function fillChips(ul, items){
     ul.appendChild(li);
   });
 }
-function openDetails(){
-  var c=currentCard();
+function openDetails(id){
+  var c=(id && CARD_MAP[id]) || currentCard();   // слово из «позабывших» или текущая карточка
   if(!c || detailsOpen) return;
   detailsOpen=true;
   elDtWord.textContent=c.stress;
@@ -5385,7 +5417,9 @@ function loadLangState(){
        /^\d{4}-\d{2}-\d{2}$/.test(p.day.date) && Array.isArray(p.day.queue)){
       var q=[];
       p.day.queue.forEach(function(id){ if(typeof id==='string' && id.length<=64) q.push(id); });
-      langState.day={date:p.day.date, queue:q,
+      var qa=[];
+      (Array.isArray(p.day.all)?p.day.all:[]).forEach(function(id){ if(typeof id==='string' && id.length<=64) qa.push(id); });
+      langState.day={date:p.day.date, queue:q, all:qa,
         done:(typeof p.day.done==='number' && p.day.done>=0)?(p.day.done|0):0,
         nd:(typeof p.day.nd==='number' && p.day.nd>=0)?(p.day.nd|0):0,
         rd:(typeof p.day.rd==='number' && p.day.rd>=0)?(p.day.rd|0):0,
@@ -5468,7 +5502,10 @@ function ensureLangDay(){
     if(take.lang) remaining[take.lang]--;
     ordered.push(take);
   }
-  langState.day={date:today, queue:ordered.map(function(o){ return o.id; }),
+  var qids=ordered.map(function(o){ return o.id; });
+  /* all — исходная копия очереди дня: по ней работает «Пройти заново»
+     (те же карточки и порядок), queue при этом уменьшается по мере ответов. */
+  langState.day={date:today, queue:qids, all:qids.slice(),
                  done:0, nd:0, rd:0, lastLang:null};
   /* Журнал для графика «Статистика — Языки»: nw/rv фиксируем при построении
      плана (сколько НОВЫХ будет показано и сколько ПОВТОРЕНИЙ назначено),
@@ -5483,6 +5520,13 @@ function ensureLangDay(){
    Засчитывается в ОБЩИЙ дневной лимит (day.queue общий для смешанной и
    отдельных тренировок). */
 function langApply(id, know){
+  /* Практика «Пройти заново»: этапы, даты, ошибки, счётчики дня и общая
+     точность НЕ трогаются — двигается только очередь самой практики. */
+  if(langSess && langSess.practice && langSess.q){
+    var qi=langSess.q.indexOf(id);
+    if(qi>=0) langSess.q.splice(qi,1);
+    return {wasNew:false, archived:false};
+  }
   ensureLangDay();
   var today=realToday();
   var p=langProg(id);
@@ -5766,6 +5810,7 @@ window.addEventListener('pagehide', function(){ stopLangSpeech(); langAudioStop(
 function renderLangHome(){
   var sub=$('langSub'), chip=$('langChip'), btn=$('btnLangStart');
   if(!sub || !chip || !btn) return;
+  btn.classList.remove('is-quiet');   // «не горит» — только у «Пройти заново»
   if(!langContent.ready){
     chip.className='chip';
     btn.hidden=false;
@@ -5779,7 +5824,17 @@ function renderLangHome(){
   var done=day?(day.done|0):0;
   var left=day?day.queue.length:0;
   sub.textContent='10 языков · '+langContent.count+' слов и фраз';
+  if(langSess && langSess.practice && (langSess.q||[]).length){
+    /* Практика «Пройти заново» не закончена — вернуться в неё же */
+    chip.className='chip is-active';
+    chip.textContent=(langSess.base-(langSess.q||[]).length)+' из '+langSess.base;
+    sub.textContent='Практика · повторение прошедшей тренировки';
+    btn.hidden=false; btn.disabled=false;
+    btn.textContent='Продолжить';
+    return;
+  }
   if(left>0){
+    /* Прогресс нулевой → «Начать», иначе → «Продолжить» (как в «Словах») */
     chip.className='chip'+(done>0?' is-active':'');
     chip.textContent=done+' из '+LANG_MAX_DAY;
     btn.hidden=false; btn.disabled=false;
@@ -5787,7 +5842,11 @@ function renderLangHome(){
   } else {
     chip.className='chip is-done';
     chip.textContent='Готово на сегодня';
-    btn.hidden=true;
+    /* Тренировка пройдена → «Пройти заново», кнопка спокойная (не горит) */
+    btn.hidden=(langStartedCount(null)===0);
+    btn.disabled=false;
+    btn.textContent='Пройти заново';
+    if(!btn.hidden) btn.classList.add('is-quiet');
   }
 }
 
@@ -5878,11 +5937,39 @@ function langQueueFor(filter){
 }
 function openLangSession(filter){
   if(!langContent.ready){ toast(langContent.error?'Языки не загрузились. Нажми «Повторить» на главной.':'Языки ещё загружаются…'); return; }
+  /* Практика «Пройти заново» не закончена — возвращаемся в неё же */
+  if(langSess && langSess.practice && (langSess.q||[]).length){
+    lsLock=false; lsDrag=null;
+    showView('langsession');
+    return;
+  }
   var q=langQueueFor(filter);
   if(!q.length){ toast(langQueueFor(null).length?'Сегодня по этому языку карточек нет':'Готово на сегодня'); return; }
   langSess={filter:filter||null, base:q.length, shown:0, id:q[0], screen:'question', errs:{}, _renderedId:null};
   lsLock=false; lsDrag=null; lsFlipAt=0;
   stopLangSpeech();
+  showView('langsession');
+}
+/* «Пройти заново» в языках: повторяем РОВНО ту же дневную тренировку —
+   те же карточки и порядок (day.all); ответы не двигают прогресс (langApply
+   в режиме practice ничего не меняет в langState). */
+function openLangRedo(){
+  if(!langContent.ready){ toast(langContent.error?'Языки не загрузились. Нажми «Повторить» на главной.':'Языки ещё загружаются…'); return; }
+  ensureLangDay();
+  var day=langState.day;
+  var all=(day && Array.isArray(day.all) && day.all.length) ? day.all.slice() : [];
+  if(!all.length){
+    /* Состояние собрано до появления day.all — берём начатые карточки */
+    all=Object.keys(langState.cards).filter(function(id){
+      var p=langState.cards[id];
+      return !!(p && !p.a && p.s>=1 && langContent.cardById[id]);
+    }).slice(0, LANG_MAX_DAY);
+  }
+  if(!all.length){ toast('Сегодня проходить пока нечего'); return; }
+  langSess={filter:null, base:all.length, shown:0, id:all[0], screen:'question',
+            errs:{}, _renderedId:null, practice:true, q:all};
+  lsLock=false; lsDrag=null; lsFlipAt=0;
+  stopLangSpeech(); langAudioStop();
   showView('langsession');
 }
 function lsIsRev(){
@@ -5942,8 +6029,16 @@ function renderLangSession(opts){
   }
 }
 function lsNextCard(){
-  var q=langQueueFor(langSess.filter);
+  var q=langSess.practice ? (langSess.q||[]) : langQueueFor(langSess.filter);
   if(!q.length){
+    if(langSess.practice){
+      /* Практика закрыта: день не менялся — главная снова даст «Пройти заново» */
+      langSess.practice=false; langSess.q=null; langSess.id=null;
+      stopLangSpeech(); langAudioStop();
+      showView('langs');
+      toast('Тренировка завершена');
+      return;
+    }
     stopLangSpeech();
     showView('langs');
     toast(langQueueFor(null).length ? 'Сегодня по этому языку всё — есть ещё общая очередь' : 'Готово на сегодня');
@@ -6180,7 +6275,13 @@ window.addEventListener('pointercancel', function(e){ try{ lsOnCancel(e); }catch
   $('btnMixedTrain').addEventListener('click', function(){ openLangSession(null); });
   $('btnLangStart').addEventListener('click', function(){
     if(langContent.error){ loadLanguages(); return; }  // «Повторить»
-    openLangSession(null);
+    var practising=(langSess && langSess.practice && (langSess.q||[]).length);
+    var day=ensureLangDay();
+    if(!practising && day && !day.queue.length && langStartedCount(null)>0){
+      openLangRedo();       // «Пройти заново» — те же карточки дня
+      return;
+    }
+    openLangSession(null);  // обычный день или возобновление практики
   });
   /* Тап по карточке «Языки» — вход в обзор раздела; кнопка — сразу смешанная */
   var langCardEl=$('langCard');
@@ -6907,5 +7008,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4560e3d6f19a94f',t:'MTc5MTEzNjUwNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

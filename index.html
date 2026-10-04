@@ -258,6 +258,8 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .speak-btn{position:absolute;right:14px;bottom:14px;width:46px;height:46px;border-radius:50%;background:var(--violet-soft);border:1px solid var(--violet-line);display:grid;place-items:center;color:var(--violet);z-index:2}
 .speak-btn svg{width:20px;height:20px}
 .speak-btn:disabled{opacity:.45}
+.speak-btn.is-playing{background:var(--violet);border-color:var(--violet);color:#fff}
+.toast-act{margin-left:10px;padding:0;background:none;border:0;color:#fff;font:inherit;font-weight:700;text-decoration:underline;cursor:pointer}
 .card-front .ls-lang{margin-bottom:2px}
 #btnLsSpeakBack{top:12px;right:12px;bottom:auto}
 .morse-status{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:2px 2px 10px}
@@ -1234,7 +1236,7 @@ var BACKUP_PREFIX = 'no1equalsme_state_v2_backup_';
    - слово проходит 4 успешные проверки (1→2→3→4) и становится "learned";
    - жёсткий лимит — 15 слов в день, никогда больше;
    - повторения всегда имеют приоритет над новыми словами. */
-var STEP_INTERVAL = {1:1, 2:3, 3:7, 4:30};   // дневные стадии цикла; 5–7 — календарные месяцы (см. applyKnow)
+var STEP_INTERVAL = {1:1, 2:3, 3:7, 4:15, 5:30};   // дневные стадии цикла (1·3·7·15·30 дней); 6–8 — календарные месяцы/год (см. applyKnow)
 var MAX_DAILY = 15;   // дневной лимит: план дня и очередь сессии больше не бывают
 var MAX_SESSION = 15; // (используется также для обрезки очередей из облака/бэкапа)
 
@@ -1384,7 +1386,7 @@ function makeTestCards(){
 
 function freshState(){
   return {
-    schemaVersion:5,        // 5 = цикл из 7 этапов (1·3·7·30 дней, 3/7 мес., год); было 4, 3 и 2
+    schemaVersion:6,        // 6 = цикл из 8 этапов (1·3·7·15·30 дней, 3/7 мес., год); было 5, 4 и 3
     status:'idle',           // idle | active | completed
     sessionDate:null,        // учебная дата текущей сессии
     practice:false,          // свободная тренировка после нормы дня (интервалы слов не меняет)
@@ -1423,6 +1425,8 @@ function normalizeProgV2(o){
   } else if(st==='learning'){
     var stage=(typeof o.stage==='number' && o.stage>=0) ? o.stage : null;
     var step = (stage===null) ? 1 : (stage<=2 ? stage+1 : stage);
+    /* Нумерация схемы 3 (1·3·7·30 дней): доводим до 1..4; миграция migrateWordsV6
+       добавит недостающую 15-дневную стадию для новой схемы. */
     out={status:'learning', currentStep:Math.min(4, Math.max(1, step)),
          nextReviewDate:dateOk(o.dueDate), createdAt:dateOk(o.firstSeenDate)};
   } else {
@@ -1472,7 +1476,7 @@ function isValidProgV2(p){
 function isValidState(s, v3){
   try{
     if(!s || typeof s!=='object') return false;
-    if(v3 ? (s.schemaVersion!==3 && s.schemaVersion!==4 && s.schemaVersion!==5) : s.schemaVersion!==2) return false;
+    if(v3 ? (s.schemaVersion!==3 && s.schemaVersion!==4 && s.schemaVersion!==5 && s.schemaVersion!==6) : s.schemaVersion!==2) return false;
     if(['idle','active','completed'].indexOf(s.status)<0) return false;
     if(['home','session','result','archive','morse','details','langs','langsession'].indexOf(s.view)<0) return false;
     if(['question','peek','definition'].indexOf(s.cardScreen)<0) return false;
@@ -1537,24 +1541,25 @@ function migrateStateV2(s){
 }
 
 var state, testState={enabled:false, offset:0}, hadCorruption=false, freshInstall=false;
-/* Однократная миграция состояния слов к циклу из 7 этапов. Идемпотентна:
-   срабатывает только на schemaVersion 3 или 4 и сразу выставляет 5, поэтому
-   повторный запуск данные больше не меняет.
-   - schemaVersion 3 (дневные шаги 1,3,7,30) — нумерация уже совпадает:
-     меняется только версия;
-   - schemaVersion 4 (период с 15-дневной стадией): лишняя стадия убирается —
-     шаг 4 (ожидал 15 дней) → шаг 3 (следующий станет 30-дневным), шаги 5..8
-     сдвигаются на 4..7; даты, ошибки и «выученные» не трогаются. */
-function migrateWordsV5(){
-  if(!state || (state.schemaVersion!==3 && state.schemaVersion!==4)) return;
-  if(state.schemaVersion===4){
-    var SHIFT={4:3, 5:4, 6:5, 7:6, 8:7};
+/* Однократная идемпотентная миграция старых схем в 8-этапный цикл (6):
+   3 → 6: в схеме 3 было 1·3·7·30 дней — добавляем 15-дневную стадию {4→5},
+          стадии 1/3/7 дней и их даты не трогаем, «Освоено» (status learned) не трогаем;
+   4 → 6: схема 4 уже 8-этапная (1·3·7·15·30) — нумерация совпадает, сдвига нет;
+   5 → 6: в схеме 5 не было 15 дней — сдвигаем {4→5,5→6,6→7,7→8}, даты не трогаем.
+   Даты проверок, ошибки и архив остаются как были (правило «только для новых
+   и незавершённых циклов»: архив не возвращается, текущие due-даты не меняются). */
+function migrateWordsV6(){
+  if(!state || (state.schemaVersion<3 || state.schemaVersion>5)) return;
+  var SHIFT=null;
+  if(state.schemaVersion===3) SHIFT={4:5};
+  else if(state.schemaVersion===5) SHIFT={4:5, 5:6, 6:7, 7:8};
+  if(SHIFT){
     Object.keys(state.cards||{}).forEach(function(id){
       var p=state.cards[id];
       if(p && p.status==='learning' && SHIFT[p.currentStep]) p.currentStep=SHIFT[p.currentStep];
     });
   }
-  state.schemaVersion=5;
+  state.schemaVersion=6;
   state.updatedAt=Date.now();
 }
 function loadState(){
@@ -1571,7 +1576,7 @@ function loadState(){
     var s=JSON.parse(raw);
     if(isValidState(s, true)){
       state=s;
-      if(state.schemaVersion===3 || state.schemaVersion===4){ migrateWordsV5(); save(); }
+      if(state.schemaVersion>=3 && state.schemaVersion<=5){ migrateWordsV6(); save(); }
       return;
     }
     // старая схема (schemaVersion 2) — мигрируем, прогресс не теряем
@@ -1622,11 +1627,11 @@ function addCalMonthsStr(dateStr, months){
   return t.getFullYear()+'-'+(mm<10?'0':'')+mm+'-'+(dd<10?'0':'')+dd;
 }
 /* ═══ «ЗНАЮ» ═══
-   Полный цикл — 7 этапов (одинаковый для Слов и Языков):
-   1 · 3 · 7 · 30 дней → 3 календарных месяца → 7 месяцев → год → архив.
+   Полный цикл — 8 этапов (одинаковый для Слов и Языков):
+   1 · 3 · 7 · 15 · 30 дней → 3 календарных месяца → 7 месяцев → год → архив.
    Увеличиваем currentStep и назначаем дату следующей проверки по новому шагу;
-   шаги 5–7 считаются календарно (addCalMonthsStr). После успешной годовой
-   проверки (шаг 7) слово уходит в архив: status="learned", дата=null. */
+   шаги 6–8 считаются календарно (addCalMonthsStr). После успешной годовой
+   проверки (шаг 8) слово уходит в архив: status="learned", дата=null. */
 function applyKnow(id, studyDate){
   var p=cardProg(id);
   if(p.status==='learned') return {advanced:false, graduated:false};
@@ -1638,17 +1643,19 @@ function applyKnow(id, studyDate){
     p.nextReviewDate=addDaysStr(studyDate,1);
   }
   var ns=p.currentStep+1;
-  if(ns>=8){ // пройдена годовая проверка (7-я) — слово уходит в архив навсегда
+  if(ns>=9){ // пройдена годовая проверка (8-я, через 1 год) — слово уходит в архив навсегда
     p.status='learned';
-    p.currentStep=8;
+    p.currentStep=9;
     p.nextReviewDate=null;
     p.updatedAt=Date.now();
     return {advanced:true, graduated:true};
   }
   p.currentStep=ns;
-  if(ns===5) p.nextReviewDate=addCalMonthsStr(studyDate,3);       // 3 календарных месяца
-  else if(ns===6) p.nextReviewDate=addCalMonthsStr(studyDate,7);  // 7 календарных месяцев
-  else if(ns===7) p.nextReviewDate=addCalMonthsStr(studyDate,12); // 1 календарный год
+  /* Этапы 6–8 — календарные, не дневные: ровно 3 месяца, 7 месяцев и 1 год
+     от даты проверки (локальный календарь, см. addCalMonthsStr). */
+  if(ns===6) p.nextReviewDate=addCalMonthsStr(studyDate,3);       // 3 календарных месяца
+  else if(ns===7) p.nextReviewDate=addCalMonthsStr(studyDate,7);  // 7 календарных месяцев
+  else if(ns===8) p.nextReviewDate=addCalMonthsStr(studyDate,12); // 1 календарный год
   else p.nextReviewDate=addDaysStr(studyDate, STEP_INTERVAL[ns]||1);
   p.updatedAt=Date.now();
   return {advanced:true, graduated:false};
@@ -1803,8 +1810,19 @@ function haptic(kind){
   }catch(e){}
 }
 var toastTimer=null;
-function toast(msg){
-  elToast.textContent=msg; elToast.hidden=false;
+function toast(msg, actionLabel, actionFn){
+  elToast.textContent=msg;
+  if(actionLabel){
+    var ab=document.createElement('button');
+    ab.type='button'; ab.className='toast-act'; ab.textContent=actionLabel;
+    ab.addEventListener('click', function(){
+      elToast.classList.remove('show'); elToast.hidden=true;
+      clearTimeout(toastTimer);
+      if(actionFn) actionFn();
+    });
+    elToast.appendChild(ab);
+  }
+  elToast.hidden=false;
   requestAnimationFrame(function(){ elToast.classList.add('show'); });
   clearTimeout(toastTimer);
   toastTimer=setTimeout(function(){
@@ -2008,7 +2026,7 @@ function renderArchive(){
     if(!p || p.status==='new') return;                    // прогресс нулевой — не показываем
     var learned=(p.status==='learned');
     if(learned) learnedN++;
-    var step=learned ? 7 : Math.max(1, Math.min(7, p.currentStep|0));
+    var step=learned ? 8 : Math.max(1, Math.min(8, p.currentStep|0));
     items.push({word:c.stress, prog:step, learned:learned,
                 created:(typeof p.createdAt==='string')?p.createdAt:'',
                 date:(p.updatedAt ? dateToYMD(new Date(p.updatedAt)) : null)});
@@ -2022,7 +2040,7 @@ function renderArchive(){
     var li=document.createElement('li');
     var w=document.createElement('span'); w.className='aw'; w.textContent=it.word;
     var d=document.createElement('span'); d.className='ad';
-    d.textContent=it.prog+'/7'+(it.learned && it.date ? ' · освоено '+fmtHuman(it.date) : '');
+    d.textContent=it.prog+'/8'+(it.learned && it.date ? ' · освоено '+fmtHuman(it.date) : '');
     li.appendChild(w); li.appendChild(d);
     elArchList.appendChild(li);
   });
@@ -2053,6 +2071,7 @@ function updateTgBack(){
 }
 function showView(v){
   try{ stopLangSpeech(); }catch(e){}   // любой переход гасит речь
+  try{ if(typeof langAudioStop==='function') langAudioStop(); }catch(e){}  // и MP3: новая карточка/выход/сворачивание
   state.view=v; save();
   Object.keys(elViews).forEach(function(k){ elViews[k].classList.toggle('active', k===v); });
   if(v==='home') renderHome();
@@ -3445,8 +3464,8 @@ $('btnFreshStart').addEventListener('click', function(){
 function buildBackupText(){
   var data={
     app:'no1equalsme',
-    exportVersion:6,
-    schemaVersion:5,
+    exportVersion:7,
+    schemaVersion:6,
     createdAt:new Date().toISOString(),
     cards:state.cards,
     settings:{haptics:!!state.settings.haptics, theme:state.settings.theme||'evening', accent:currentAccent(), swipeSens:swipeSens(), sndVol:(typeof state.settings.sndVol==='number'?state.settings.sndVol:100), updatedAt:state.settings.updatedAt||0},
@@ -3586,9 +3605,12 @@ function copyBackupText(){
 function sanitizeImport(obj){
   if(!obj || typeof obj!=='object') return null;
   if(obj.app!=='no1equalsme') return null;
-  // принимаем и старые копии (exportVersion ≤ 3, прошлая схема), и новые (4)
-  if(typeof obj.exportVersion!=='number' || obj.exportVersion>4) return null;
+  /* Принимаем все экспорты: ≤4 — нумерация схемы 3 (без 15 дней), 5 — схема 4
+     (8 этапов, совпадает с новой), 6 — схема 5 (без 15 дней), 7 — текущая схема 6.
+     Эпоху фиксируем, чтобы применение копии прошло ровно одну миграцию. */
+  if(typeof obj.exportVersion!=='number' || obj.exportVersion>7) return null;
   var out={cards:{}, settings:null, stats:{days:{}}, session:null};
+  out.schemaVersion = (obj.exportVersion<=4) ? 3 : (obj.exportVersion===5 ? 4 : (obj.exportVersion===6 ? 5 : 6));
   var ids=Object.keys(obj.cards||{}).slice(0,5000);
   ids.forEach(function(id){
     if(typeof id!=='string' || id.length>64 || !CARD_MAP[id]) return;
@@ -3711,6 +3733,8 @@ $('btnImportYes').addEventListener('click', function(){
   var c=pendingImport; pendingImport=null;
   elImportConfirm.hidden=true;
   state.cards=c.cards;
+  state.schemaVersion=c.schemaVersion;            // нумерация этапов эпохи копии
+  if(state.schemaVersion<=5) migrateWordsV6();    // ровно одна идемпотентная миграция
   if(c.settings){
     state.settings.haptics=c.settings.haptics;
     state.settings.theme=c.settings.theme;
@@ -5155,7 +5179,7 @@ var LANG_STATE_KEY='nem_languages_progress_v1';
 var LANG_CK_PRE='nem_lang_';                 // nem_lang_es_v1 … nem_lang_tr_v1
 var LANG_MAX_DAY=10;                         // дневная норма карточек
 var LANG_MAX_NEW=5;                          // новых карточек в день
-var LANG_STEP_DAYS={1:1,2:3,3:7,4:30};  // дневные стадии цикла (как в «Словах»); 5–7 — календарные месяцы
+var LANG_STEP_DAYS={1:1,2:3,3:7,4:15,5:30};  // дневные стадии цикла (как в «Словах»); 6–8 — календарные месяцы/год
 var LANGS=[
   {id:'es',name:'Испанский',bcp47:'es-ES'},
   {id:'fr',name:'Французский',bcp47:'fr-FR'},
@@ -5198,6 +5222,13 @@ function validateLangPackage(root){
       if(typeof c.translationRu!=='string' || !c.translationRu) return {error:'fields'};
       if(typeof c.languageId!=='string' || !c.languageId) return {error:'fields'};
       if(typeof c.bcp47!=='string' || !c.bcp47) return {error:'fields'};
+      /* audio — обязательное поле: только безопасный относительный путь
+         ./assets/languages/audio/lang_*.mp3 — без абсолютных ссылок и «..». */
+      var au=(typeof c.audio==='string') ? c.audio : '';
+      if(!au) return {error:'audio'};
+      if(au.charAt(0)==='/' || /^[A-Za-z][A-Za-z0-9+.-]*:/.test(au) || au.indexOf('..')>=0 ||
+         !/^\.\/assets\/languages\/audio\/lang_[A-Za-z0-9_\-]+\.mp3$/.test(au))
+        return {error:'audio'};
       if(['zh','ja','ko','ar'].indexOf(c.languageId)>=0 &&
          !(typeof c.transliteration==='string' && c.transliteration.replace(/^\s+|\s+$/g,'')))
         return {error:'translit'};
@@ -5222,6 +5253,7 @@ function langErrText(err){
   if(s==='langs') return 'в languages.json неизвестный languageId';
   if(s==='fields') return 'в languages.json есть карточки с пустыми обязательными полями';
   if(s==='translit') return 'для китайского/японского/корейского/арабского нет транскрипции';
+  if(s==='audio') return 'в languages.json пустые или небезопасные пути к MP3 (поле audio)';
   if(s==='perlang') return 'в languages.json не по 50 карточек на язык';
   if(s==='cards') return 'в languages.json нет пригодных карточек';
   if(s==='nofetch') return 'страница не может прочитать languages.json — откройте её через сервер';
@@ -5296,7 +5328,7 @@ function loadLanguages(){
 
 /* ---------- Состояние прогресса языков ---------- */
 function freshLangState(){
-  return {schemaVersion:2, cards:{}, days:{}, day:null, ok:0, bad:0, updatedAt:Date.now()};
+  return {schemaVersion:3, cards:{}, days:{}, day:null, ok:0, bad:0, updatedAt:Date.now()};
 }
 function validLangProg(p){
   if(!p || typeof p!=='object') return false;
@@ -5329,21 +5361,23 @@ function loadLangState(){
     var raw=localStorage.getItem(LANG_STATE_KEY);
     if(!raw) return;
     var p=JSON.parse(raw);
-    if(!p || typeof p!=='object' || (p.schemaVersion!==1 && p.schemaVersion!==2) ||
+    if(!p || typeof p!=='object' || (p.schemaVersion!==1 && p.schemaVersion!==2 && p.schemaVersion!==3) ||
        !p.cards || typeof p.cards!=='object') return;
-    /* sv1 → sv2: убрана 15-дневная стадия — сдвигаем этапы {4→3, 5→4, 6→5, 7→6, 8→7}
-       (даты и «архивированные» не трогаем; запускается ровно один раз). */
-    var SHIFT={4:3,5:4,6:5,7:6,8:7};
+    /* Миграция «только для новых и незавершённых циклов» (ровно один раз, сейчас в sv3):
+       - sv1 (цикл уже с 15-дневной стадией) — нумерация совпадает, сдвига нет;
+       - sv2 (15 дней убрали) — возвращаем стадию: {4→5, 5→6, 6→7, 7→8};
+       даты, ошибки и «архивированные» не трогаем; архив не возвращаем. */
+    var SHIFT={4:5,5:6,6:7,7:8};
     var cards={};
     Object.keys(p.cards).forEach(function(id){
       if(typeof id!=='string' || id.length>64) return;
       var o=p.cards[id];
       if(!validLangProg(o)) return;
-      var s=(p.schemaVersion===1 && SHIFT[o.s]) ? SHIFT[o.s] : o.s;
+      var s=(p.schemaVersion===2 && SHIFT[o.s]) ? SHIFT[o.s] : o.s;
       cards[id]={s:s, d:o.d, e:o.e, c:o.c, a:o.a};
     });
     langState.cards=cards;
-    langState.days=(p.schemaVersion===2 && p.days) ? sanitizeLangDays(p.days) : {};
+    langState.days=(p.schemaVersion>=2 && p.days) ? sanitizeLangDays(p.days) : {};
     langState.ok=(typeof p.ok==='number' && p.ok>=0)?(p.ok|0):0;
     langState.bad=(typeof p.bad==='number' && p.bad>=0)?(p.bad|0):0;
     langState.updatedAt=(typeof p.updatedAt==='number' && p.updatedAt>=0)?p.updatedAt:Date.now();
@@ -5357,7 +5391,7 @@ function loadLangState(){
         rd:(typeof p.day.rd==='number' && p.day.rd>=0)?(p.day.rd|0):0,
         lastLang:(typeof p.day.lastLang==='string')?p.day.lastLang:null};
     }
-    if(p.schemaVersion===1){ langState.schemaVersion=2; saveLang(); }
+    if(p.schemaVersion!==3){ langState.schemaVersion=3; saveLang(); }
   }catch(e){}
 }
 function saveLang(){
@@ -5459,8 +5493,8 @@ function langApply(id, know){
     langState.bad=(langState.bad|0)+1;
   } else {
     var ns=(p.s<1?1:p.s)+1;
-    if(ns>7){
-      /* Успешная годовая (7-я) проверка → архив: s остаётся 7, d=null.
+    if(ns>=9){
+      /* Успешная годовая (8-я) проверка → архив: s остаётся 8, d=null.
          Для графика: это и есть «Изучено» (ушло в «Освоено») за сегодня. */
       p.a=1; p.d=null;
       var dd=langState.days[today]||(langState.days[today]={g:0,nw:0,rv:0});
@@ -5468,9 +5502,11 @@ function langApply(id, know){
     }
     else{
       p.s=ns;
-      if(ns===5) p.d=addCalMonthsStr(today,3);
-      else if(ns===6) p.d=addCalMonthsStr(today,7);
-      else if(ns===7) p.d=addCalMonthsStr(today,12);
+      /* Этапы 6–8 — календарные: ровно 3 месяца, 7 месяцев и 1 год от даты
+         проверки (локальный календарь) — как в «Словах». */
+      if(ns===6) p.d=addCalMonthsStr(today,3);
+      else if(ns===7) p.d=addCalMonthsStr(today,7);
+      else if(ns===8) p.d=addCalMonthsStr(today,12);
       else p.d=addDaysStr(today, LANG_STEP_DAYS[ns]||1);
     }
     langState.ok=(langState.ok|0)+1;
@@ -5518,7 +5554,7 @@ function buildLangPayloads(){
     byLang[code][idx]=[p.s|0, p.d||0, p.e|0, p.c||0, p.a?1:0];
   });
   LANGS.forEach(function(L){
-    out[langBlockKey(L.id)]=JSON.stringify({v:2, u:langState.updatedAt||0, c:byLang[L.id]});
+    out[langBlockKey(L.id)]=JSON.stringify({v:3, u:langState.updatedAt||0, c:byLang[L.id]});
   });
   return out;
 }
@@ -5532,10 +5568,11 @@ function mergeLangCloudValue(key, obj){
   if(!Array.isArray(obj.c)) return;
   // Более свежая облачная версия побеждает целиком по этому языку
   Object.keys(langState.cards).forEach(function(id){ if(langOfId(id)===code) delete langState.cards[id]; });
-  /* v!==2 — облачная копия из периода с 15-дневной стадией: сдвигаем этапы
-     при разборе (без потери d/e/c/a), затем пишем уже в новой нумерации. */
-  var SHIFT={4:3,5:4,6:5,7:6,8:7};
-  var legacy=(obj.v!==2);
+  /* v:3 — текущая нумерация (8 этапов), берём как есть. v:2 — эпоха без
+     15-дневной стадии: возвращаем её {4→5,5→6,6→7,7→8} при разборе (d/e/c/a
+     не теряем). v:1/без версии — цикл с 15 днями, нумерация уже совпадает. */
+  var SHIFT={4:5,5:6,6:7,7:8};
+  var legacy=(obj.v===2);
   for(var i=0;i<obj.c.length && i<50;i++){
     var v=obj.c[i];
     if(!Array.isArray(v)) continue;
@@ -5591,6 +5628,34 @@ function langPickVoice(vs, bcp47){
   for(var j=0;j<vs.length;j++){ if(vs[j] && String(vs[j].lang||'').split('-')[0]===base) return vs[j]; }
   return null;
 }
+/* ═══ Озвучка карточек: MP3 — основной путь, Web Speech — запасной ═══
+   Telegram WebView на многих устройствах не имеет speechSynthesis, поэтому:
+   - основной звук — локальный MP3 из card.audio (./assets/languages/audio/*.mp3);
+   - один переиспользуемый объект Audio на всё приложение (без сотен <audio>);
+   - play() вызывается только внутри нажатия пользователя (без автоплея);
+   - при новой карточке/выходе/сворачивании плеер гасится, src очищается;
+   - Web Speech — лишь запасной путь, когда MP3 не загрузился или отсутствует;
+   - пользователь видит только человеческие сообщения, без технических кодов;
+   - звук никогда не раскрывает карточку и не засчитывает ответ (см. обработчики). */
+var langAudio=new Audio();             // единственный плеер приложения
+var langAudioToken=0;                  // «эпоха»: события погашенного воспроизведения игнорируем
+var langAudioCardId=null;              // id карточки текущего src (null = плеер пуст)
+var langAudioPath='';                  // относительный путь, выставленный в src
+var langAudioErrTok=0;                 // токен, где уже была ошибка загрузки
+var langAudioBtn=null;                 // кнопка в состоянии «играет»
+langAudio.preload='metadata';          // метаданные одного файла, не 500 сразу
+function langAudioUiIdle(){
+  if(langAudioBtn){ langAudioBtn.classList.remove('is-playing'); langAudioBtn=null; }
+}
+function langAudioStop(){
+  langAudioToken++;
+  try{ langAudio.pause(); }catch(e){}
+  try{ langAudio.removeAttribute('src'); langAudio.load(); }catch(e){}
+  langAudioCardId=null; langAudioPath='';
+  langAudioUiIdle();
+}
+/* Запасной путь: Web Speech API. Список голосов не требуется — движок сам
+   выбирает голос по u.lang; ошибки показываем только понятным текстом. */
 function speakLang(text, bcp47){
   var synth=langSynth();                              // speechSynthesis или webkitSpeechSynthesis
   var Utt=langUttCtor();                              // SpeechSynthesisUtterance или webkit-версия
@@ -5599,64 +5664,89 @@ function speakLang(text, bcp47){
       speechSynthesis:!!synth, utterance:!!Utt,
       ua:(typeof navigator!=='undefined' && navigator.userAgent)||''
     });
-    /* Тост называет, чего именно не хватает, и что можно сделать —
-       пользователю не нужно открывать консоль. */
-    toast('Озвучка не поддерживается этим браузером (код: no-speech-api: synthesis='+
-      (synth?'да':'нет')+', utterance='+(Utt?'да':'нет')+
-      '). Откройте в Chrome или обновите приложение.');
-    return false;
+    return false;                 // тост покажет вызывающий код («Аудио этой карточки не загрузилось»)
   }
   try{ synth.cancel(); }catch(e){}                    // новое воспроизведение — старое гасим
   try{ synth.resume(); }catch(e){}                    // iOS-квирк: синтез может «залипнуть» в paused
-  var vs=langVoicesRaw();
-  var v=langPickVoice(vs, bcp47);
-  if(vs.length && !v){
-    // список уже загружен, но голоса этого языка в нём нет — говорим сразу
-    langLogSound('нет голоса языка', {
-      target:bcp47, voicesCount:vs.length,
-      langs:vs.map(function(x){ return x.lang; }).filter(function(x,i,a){ return a.indexOf(x)===i; }).slice(0,24)
-    });
-    toast('Голос этого языка не установлен. Добавьте его в настройках речи телефона (код: no-language-voice).');
-    return false;
-  }
-  /* Список голосов может быть ещё пуст (грузятся асинхронно): произносим по
-     lang — движок сам выберет голос; реальные ошибки придёт из onerror. */
   try{
     var u=new Utt(text);
     u.lang=bcp47; u.rate=0.85; u.pitch=1;
-    if(v) u.voice=v;
     u.onerror=function(ev){
-      var code=(ev && ev.error) ? String(ev.error) : 'unknown';
       langLogSound('ошибка синтеза', {
-        code:code, lang:bcp47, textLen:String(text||'').length,
-        hasMatchedVoice:!!v, voicesCount:vs.length,
+        code:(ev && ev.error)?String(ev.error):'unknown', lang:bcp47,
+        textLen:String(text||'').length,
         ua:(typeof navigator!=='undefined' && navigator.userAgent)||''
       });
-      /* Тост всегда содержит код ошибки — пользователь видит причину сразу,
-         не открывая консоль, и может её продиктовать/скопировать. */
-      if(code==='language-not-supported' || code==='voice-unavailable'){
-        toast('Голос этого языка не установлен. Добавьте его в настройках речи телефона (код: '+code+').');
-      } else if(code==='not-allowed' || code==='service-not-allowed'){
-        toast('Браузер запретил звук — разрешите озвучку для этой страницы в настройках (код: '+code+').');
-      } else if(code==='synthesis-unavailable' || code==='no-audio' || code==='audio-busy'){
-        toast('Звук сейчас недоступен — откройте страницу заново и попробуйте ещё раз (код: '+code+').');
-      } else {
-        toast('Не удалось воспроизвести звук — попробуйте ещё раз (код: '+code+').');
-      }
+      /* Только человеческий текст: никаких кодов ошибок и советов про браузер. */
+      toast('Не удалось воспроизвести звук — попробуйте ещё раз.');
     };
     synth.speak(u);
     try{ synth.resume(); }catch(e){}                  // тот же iOS-квирк после запуска
-    if(!vs.length) langLogSound('голоса ещё не загружены — произносим по lang', {target:bcp47});
     return true;
   }catch(e){
     langLogSound('speak() бросил исключение', {
       message:String((e && e.message) || e), lang:bcp47,
       ua:(typeof navigator!=='undefined' && navigator.userAgent)||''
     });
-    toast('Озвучка не поддерживается этим браузером (код: speak-exception)');
     return false;
   }
 }
+/* MP3 не загрузился (или её нет): пробуем Web Speech, иначе — понятное
+   сообщение с кнопкой «Повторить», которая снова пытается играть этот же MP3. */
+function langAudioFail(card, btn){
+  langAudioUiIdle();
+  if(card && speakLang(card.native, card.bcp47)) return;   // запасной путь заработал
+  toast('Аудио этой карточки не загрузилось', 'Повторить', function(){ langSpeakCard(card, btn); });
+}
+/* Основной вход: нажатие 🔊 на карточке. Повторное нажатие во время игры
+   перезапусывает запись с начала; звук не раскрывает карточку и не двигает свайп. */
+function langSpeakCard(card, btn){
+  if(!card) return;
+  var src=(typeof card.audio==='string') ? card.audio : '';
+  langAudioUiIdle();
+  if(btn){ btn.classList.add('is-playing'); langAudioBtn=btn; }
+  if(!src){                             // в контенте нет MP3 — сразу запасной путь
+    langAudioCardId=null; langAudioPath='';
+    langAudioFail(card, btn);
+    return;
+  }
+  stopLangSpeech();                     // синтез не должен накладываться на MP3
+  var tok=++langAudioToken;
+  var restarting=(langAudioCardId===card.id && langAudioPath===src);
+  if(!restarting){
+    try{ langAudio.pause(); }catch(e){}
+    try{ langAudio.removeAttribute('src'); }catch(e){}
+    langAudioCardId=card.id; langAudioPath=src;
+    langAudio.preload='metadata';
+    try{ langAudio.src=src; }catch(e){ langAudioFail(card, btn); return; }
+  } else {
+    try{ langAudio.currentTime=0; }catch(e){}          // повторное нажатие — с начала
+  }
+  var pr=null, threw=false;
+  try{ pr=langAudio.play(); }catch(e){ threw=true; }
+  var onFail=function(){
+    if(tok!==langAudioToken || tok===langAudioErrTok) return;  // уже погасили или разобрали
+    langAudioUiIdle();
+    langLogSound('play() не запустился', {cardId:card.id});
+    toast('Не удалось запустить звук. Нажмите ещё раз.');
+  };
+  /* Небольшая задержка: если play() отклонился из-за негрузящегося файла,
+     событие error (5 мс) успеет разобрать ситуацию раньше — не покажем ложный
+     «Нажмите ещё раз», когда точное сообщение — «Аудио не загрузилось». */
+  if(pr && typeof pr.then==='function') pr.then(null, function(){ setTimeout(onFail, 50); });
+  else if(threw) setTimeout(onFail, 50);
+}
+langAudio.addEventListener('ended', function(){ langAudioUiIdle(); });
+langAudio.addEventListener('error', function(){
+  if(langAudioCardId===null) return;                    // плеер уже сброшен — не наш случай
+  var tok=langAudioToken;
+  if(tok===langAudioErrTok) return;
+  langAudioErrTok=tok;
+  var card=langContent.cardById[langAudioCardId];
+  langAudioCardId=null; langAudioPath='';
+  langLogSound('MP3 не загрузился', {cardId:card?card.id:''});
+  langAudioFail(card, langAudioBtn);
+});
 function stopLangSpeech(){
   try{ var s=langSynth(); if(s) s.cancel(); }catch(e){}
 }
@@ -5669,7 +5759,8 @@ try{
     warmSynth.onvoiceschanged=warmVoices;
   }
 }catch(e){}
-document.addEventListener('visibilitychange', function(){ if(document.hidden) stopLangSpeech(); });
+document.addEventListener('visibilitychange', function(){ if(document.hidden){ stopLangSpeech(); langAudioStop(); } });
+window.addEventListener('pagehide', function(){ stopLangSpeech(); langAudioStop(); });
 
 /* ---------- Карточка на главной ---------- */
 function renderLangHome(){
@@ -5739,15 +5830,15 @@ function renderLangs(){
     grid.appendChild(row);
   });
   /* Статистика языков */
-  var st4=0, st5=0, st6=0, st7=0, arch=0;
+  var st5=0, st6=0, st7=0, st8=0, arch=0;
   Object.keys(langState.cards).forEach(function(id){
     var p=langState.cards[id];
     if(!p) return;
     if(p.a){ arch++; return; }
-    if(p.s===4) st4++;
-    else if(p.s===5) st5++;
+    if(p.s===5) st5++;
     else if(p.s===6) st6++;
     else if(p.s===7) st7++;
+    else if(p.s===8) st8++;
   });
   var ok=langState.ok|0, bad=langState.bad|0;
   var acc=(ok+bad)>0 ? Math.round(ok/(ok+bad)*100)+'%' : '—';
@@ -5758,13 +5849,11 @@ function renderLangs(){
     'Повторения сегодня: <b>'+((day&&day.rd)|0)+'</b>',
     'Общая точность: <b>'+acc+'</b>',
     'Изучено карточек: <b>'+startedAll+' из '+langContent.count+'</b>',
-    'Стадии — 30 дней: <b>'+st4+'</b> · 3 месяца: <b>'+st5+'</b> · 7 месяцев: <b>'+st6+'</b> · год: <b>'+st7+'</b>',
+    'Стадии — 30 дней: <b>'+st5+'</b> · 3 месяца: <b>'+st6+'</b> · 7 месяцев: <b>'+st7+'</b> · год: <b>'+st8+'</b>',
     'Архивировано: <b>'+arch+'</b>'
   ];
-  if(langSoundLastError){
-    // последняя проблема озвучки — прямо на экране, без консоли
-    lines.push('Озвучка — последняя проблема: <b>'+langSoundLastError+'</b>');
-  }
+  /* Строк диагностики озвучки здесь больше нет: пользователь видит только
+     понятные сообщения тостов, технические детали — в консоли (langLogSound). */
   lines.forEach(function(html){
     var sp=document.createElement('span'); sp.innerHTML=html; stats.appendChild(sp);
   });
@@ -5798,7 +5887,7 @@ function openLangSession(filter){
 }
 function lsIsRev(){
   var p=langState.cards[langSess.id];
-  return !!(p && p.s>=5);   // после успешной 30-дневной проверки (этап 4→5) направление меняется
+  return !!(p && p.s>=6);   // после успешной 30-дневной проверки (этап 5→6) направление меняется
 }
 function renderLangSession(opts){
   opts=opts||{};
@@ -5813,7 +5902,7 @@ function renderLangSession(opts){
     lsNextCard();
     return;
   }
-  if(langSess._renderedId!==langSess.id){ stopLangSpeech(); langSess._renderedId=langSess.id; }
+  if(langSess._renderedId!==langSess.id){ stopLangSpeech(); langAudioStop(); langSess._renderedId=langSess.id; }
   var rev=lsIsRev();
   var back=langSess.screen!=='question';
   var peek=langSess.screen==='peek';
@@ -6070,16 +6159,21 @@ window.addEventListener('pointercancel', function(e){ try{ lsOnCancel(e); }catch
   $('btnLsPeek').addEventListener('click', function(e){ e.stopPropagation(); lsEnterPeek(); });
   $('btnLsPeek').addEventListener('pointerdown', function(e){ e.stopPropagation(); });
   $('btnLsBackAction').addEventListener('click', function(){ lsBackProceed(); });
-  $('btnLsSpeakFront').addEventListener('click', function(e){
-    e.stopPropagation();
-    var c=langContent.cardById[langSess.id];
-    if(c) speakLang(c.native, c.bcp47);   // звук — поле native, не транскрипция
-  });
-  $('btnLsSpeakBack').addEventListener('click', function(e){
-    e.stopPropagation();
-    var c=langContent.cardById[langSess.id];
-    if(c) speakLang(c.native, c.bcp47);
-  });
+  /* Озвучка: play() строго внутри нажатия (жест пользователя), а
+     preventDefault/stopPropagation гарантируют, что нажатие не раскроет
+     карточку, не сдвинет свайп и не засчитает ответ. */
+  function bindSpeak(btn){
+    btn.addEventListener('pointerdown', function(e){ e.preventDefault(); e.stopPropagation(); });
+    btn.addEventListener('pointerup', function(e){ e.stopPropagation(); });
+    btn.addEventListener('pointercancel', function(e){ e.stopPropagation(); });
+    btn.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      var c=langContent.cardById[langSess.id];
+      if(c) langSpeakCard(c, btn);        // MP3 из card.audio; Web Speech — запасной путь
+    });
+  }
+  bindSpeak($('btnLsSpeakFront'));
+  bindSpeak($('btnLsSpeakBack'));
   $('btnLsessBack').addEventListener('click', function(){ stopLangSpeech(); showView('langs'); });
   /* Навигация раздела, главная карточка и сброс */
   $('btnLangsBack').addEventListener('click', function(){ goHome(); });
@@ -6243,7 +6337,7 @@ function renderLangArch(){
     var p=langState.cards[id];
     if(!p) return;
     var learned=!!p.a;
-    var prog=learned?7:Math.max(1, Math.min(7, p.s|0));
+    var prog=learned?8:Math.max(1, Math.min(8, p.s|0));
     var card=(langContent.cardById && langContent.cardById[id])?langContent.cardById[id]:null;
     items.push({word:(card && card.native)?card.native:id, lang:langNameOf(langOfId(id)),
                 prog:prog, learned:learned, created:p.c||''});
@@ -6258,7 +6352,7 @@ function renderLangArch(){
     var li=document.createElement('li');
     var w=document.createElement('span'); w.className='aw'; w.textContent=it.word;
     var d=document.createElement('span'); d.className='ad';
-    d.textContent=it.prog+'/7 · '+it.lang;
+    d.textContent=it.prog+'/8 · '+it.lang;
     li.appendChild(w); li.appendChild(d);
     lst.appendChild(li);
   }

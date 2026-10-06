@@ -166,6 +166,10 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .sec-more:focus-visible{outline:2px solid var(--violet);outline-offset:-2px;border-radius:12px}
 .sec-more svg{width:16px;height:16px;transition:transform .18s ease}
 .sec-more[aria-expanded="true"] svg{transform:rotate(180deg)}
+/* Высота раскрываемого списка анимируется (max-height+opacity+сдвиг):
+   сворачивание перестало мгновенно «выбрасывать» экран наверх */
+#secMore{overflow:hidden;transition:max-height .34s cubic-bezier(.25,.85,.3,1),opacity .24s ease,transform .34s cubic-bezier(.25,.85,.3,1)}
+html.rm #secMore{transition:none}
 #secMore{display:flex;flex-direction:column}
 #secMore .sec-row:last-child{border-bottom:0}
 /* Выполненный раздел: зелёный акцент и галочка, но строка остаётся активной */
@@ -358,6 +362,16 @@ html.rm .ms-streak.rec svg{animation:none}
    «срезали» содержимое (рычаги, рамку). Отклик — свечением рамки. */
 @keyframes zoneOk{30%{box-shadow:0 0 46px 8px rgba(130,185,145,.42),0 0 0 1px rgba(130,185,145,.5)}}
 @keyframes zoneBad{30%{box-shadow:0 0 46px 8px rgba(214,141,141,.42),0 0 0 1px rgba(214,141,141,.5)}}
+/* Само поле по-прежнему не движется (transform на зоне резал рычаги). Но голый
+   color — «ничего не происходит»: добавлен световой всплеск на ПСЕВДОСЛОЕ
+   внутри поля (::before, inset:0) — он не трогает содержимое и не обрезается
+   краями: свечение собирается с периферии к центру и гаснет. Рычаги (z-index:3)
+   поверх вспышки (z-index:2). */
+.morse-zone.ok::before,.morse-zone.bad::before{content:'';position:absolute;inset:0;border-radius:inherit;z-index:2;pointer-events:none}
+.morse-zone.ok::before{background:radial-gradient(125% 95% at 50% 55%,rgba(130,185,145,0) 52%,rgba(130,185,145,.34) 100%);animation:zoneFlashG .52s cubic-bezier(.2,.7,.3,1) both}
+.morse-zone.bad::before{background:radial-gradient(125% 95% at 50% 55%,rgba(214,141,141,0) 52%,rgba(214,141,141,.36) 100%);animation:zoneFlashR .52s cubic-bezier(.2,.7,.3,1) both}
+@keyframes zoneFlashG{0%{opacity:0;transform:scale(1.14)}30%{opacity:1}100%{opacity:0;transform:scale(.86)}}
+@keyframes zoneFlashR{0%{opacity:0;transform:scale(1.14)}30%{opacity:1}100%{opacity:0;transform:scale(.86)}}
 .morse-zone.locked{cursor:default}
 /* Два рычага: одно поле, разделённое на две «ручки» (ямбический ключ) */
 .mz-levers{position:absolute;inset:0;display:flex;z-index:3;border-radius:inherit;overflow:hidden}
@@ -599,17 +613,6 @@ html.rm .ms-streak.rec svg{animation:none}
 .sync-btns .tb{min-height:48px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--text);font-weight:650;font-size:13.5px}
 .sync-btns .tb:disabled{opacity:.45;pointer-events:none}
 .sync-diag{font-size:12px;color:var(--muted);line-height:1.45;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;white-space:pre-line;word-break:break-word}
-.backup-btns{display:grid;gap:10px}
-.backup-btns .btn-ghost{width:100%}
-.export-result{display:flex;flex-direction:column;gap:4px;font-size:12.5px;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-top:10px}
-.export-result div{display:flex;justify-content:space-between;gap:10px}
-.export-result span{color:var(--muted);flex:none}
-.export-result b{font-weight:650;text-align:right;word-break:break-all}
-.export-fallback{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-.fb-label{font-size:12.5px;color:var(--muted)}
-.fb-text{width:100%;resize:vertical;min-height:110px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--text);padding:10px 12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.5px;line-height:1.45}
-.fb-text:focus-visible{outline:2px solid var(--violet);outline-offset:2px}
-.backup-note{font-size:12px;color:var(--muted);line-height:1.45;margin-top:10px}
 
 /* ---------- Тост ---------- */
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%) translateY(8px);z-index:80;max-width:min(88vw,380px);background:var(--card2);border:1px solid var(--line);color:var(--text);font-size:13.5px;line-height:1.4;padding:11px 16px;border-radius:14px;opacity:0;transform:translateX(-50%) translateY(8px) scale(.97);transition:opacity .2s,transform .26s cubic-bezier(.2,1.25,.35,1);pointer-events:none;text-align:center;box-shadow:0 12px 30px rgba(0,0,0,.45)}
@@ -848,7 +851,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
       </button>
       <div class="sess-mid">
-        <span class="sess-progress">Морзе + Дактиль</span>
+        <span class="sess-progress" id="morseSessTitle">Морзе + Дактиль</span>
       </div>
       <div class="head-spacer" aria-hidden="true"></div>
     </header>
@@ -1143,15 +1146,6 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         <span class="sens-cap">Громко</span>
       </div>
     </div>
-    <div class="set-row">
-      <div class="set-text">
-        <span class="set-name">Вибрация при вводе Морзе</span>
-        <span class="set-sub">Стабильная вибрация, пока удерживается поле ввода</span>
-      </div>
-      <button class="switch" id="swMorseVibe" role="switch" aria-checked="false" aria-label="Вибрация при вводе Морзе">
-        <span class="track"><span class="knob"></span></span>
-      </button>
-    </div>
     <div class="set-row set-row-col">
       <div class="set-text">
         <span class="set-name">Ввод морзе</span>
@@ -1164,13 +1158,14 @@ html.rm .card-drag.flipped .card-front{opacity:0}
     </div>
     <div class="set-row set-row-col">
       <div class="set-text">
-        <span class="set-name">Ритм «двух рычагов»</span>
-        <span class="set-sub">Как быстро ставятся символы, пока рычаг зажат</span>
+        <span class="set-name">Скорость символов при зажатии</span>
+        <span class="set-sub" id="rhythmSub">Символов в секунду: 3.3</span>
       </div>
-      <div class="seg" role="radiogroup" aria-label="Ритм ключа">
-        <button class="seg-btn" role="radio" aria-checked="false" data-rhythm-btn="420">Размеренно</button>
-        <button class="seg-btn" role="radio" aria-checked="false" data-rhythm-btn="300">Средне</button>
-        <button class="seg-btn" role="radio" aria-checked="false" data-rhythm-btn="210">Быстро</button>
+      <div class="sens-row">
+        <span class="sens-cap">Медленно</span>
+        <input type="range" id="rgRhythm" class="sens-range" min="140" max="520" step="20" value="360"
+               aria-label="Скорость печати символов при зажатом рычаге: правее — быстрее, вибрация подстраивается под ритм">
+        <span class="sens-cap">Быстро</span>
       </div>
     </div>
     <div class="set-row set-row-col">
@@ -1275,36 +1270,6 @@ html.rm .card-drag.flipped .card-front{opacity:0}
       </div>
     </div>
     <div class="reset-zone">
-      <h3>РЕЗЕРВНАЯ КОПИЯ</h3>
-      <div class="backup-btns">
-        <button class="btn-ghost" id="btnExport">Экспортировать резервную копию</button>
-        <button class="btn-ghost" id="btnVerify">Проверить резервную копию</button>
-        <button class="btn-ghost" id="btnImport">Импортировать копию</button>
-      </div>
-      <input type="file" id="fileImport" accept="application/json,.json" hidden>
-      <input type="file" id="fileVerify" accept="application/json,.json" hidden>
-      <div class="export-result" id="exportResult" hidden>
-        <div><span>Файл</span><b id="expName">—</b></div>
-        <div><span>Размер</span><b id="expSize">—</b></div>
-        <div><span>Подготовлена</span><b id="expWhen">—</b></div>
-        <div><span>Способ</span><b id="expMethod">—</b></div>
-      </div>
-      <div class="export-fallback" id="exportFallback" hidden>
-        <p class="fb-label" id="fbNote">На этом устройстве передача файла недоступна. Скопируйте JSON и сохраните его вручную.</p>
-        <textarea id="exportText" class="fb-text" readonly spellcheck="false" rows="5" aria-label="Резервная копия в виде текста"></textarea>
-        <button class="btn-ghost" id="btnCopyBackup">Скопировать JSON</button>
-        <button class="btn-ghost" id="btnRetryExport">Повторить экспорт</button>
-      </div>
-      <div class="rc-confirm" id="importConfirm" hidden style="margin-top:10px">
-        <p id="importInfo"></p>
-        <div class="rc-btns">
-          <button class="rc-cancel" id="btnImportNo">Отмена</button>
-          <button class="btn-danger-solid" id="btnImportYes">Применить копию</button>
-        </div>
-      </div>
-      <p class="backup-note" id="backupNote">Файл содержит только учебный прогресс и настройки — без токенов и данных Telegram.</p>
-    </div>
-    <div class="reset-zone">
       <h3>ОБЛАЧНЫЕ ДАННЫЕ</h3>
       <button class="btn-danger" id="btnCloudWipe">Удалить облачный прогресс</button>
       <div class="rc-confirm" id="cloudWipe1" hidden>
@@ -1338,17 +1303,6 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         <div class="rc-btns">
           <button class="rc-cancel" id="btnResetNo">Отмена</button>
           <button class="btn-danger-solid" id="btnResetYes">Да, сбросить</button>
-        </div>
-      </div>
-    </div>
-    <div class="reset-zone">
-      <h3>РЕЗЕРВНАЯ КОПИЯ ВЕРСИИ 1</h3>
-      <button class="btn-danger" id="btnResetV1">Удалить резерв версии 1</button>
-      <div class="rc-confirm" id="resetV1Confirm" hidden>
-        <p>Удалить сохранённую копию данных первой версии? Текущий прогресс версии 2 не пострадает.</p>
-        <div class="rc-btns">
-          <button class="rc-cancel" id="btnResetV1No">Отмена</button>
-          <button class="btn-danger-solid" id="btnResetV1Yes">Да, удалить</button>
         </div>
       </div>
     </div>
@@ -1437,7 +1391,6 @@ try{ if(tg && typeof tg.onEvent==='function') tg.onEvent('viewportChanged', setA
 /* ================= Контент ================= */
 var KEY = 'no1equalsme_state_v2';
 var TKEY = 'no1equalsme_testdate_v1';
-var V1KEY = 'no1equalsme_state_v1';
 var BACKUP_PREFIX = 'no1equalsme_state_v2_backup_';
 /* ═══════════ Интервальное повторение ═══════════
    Правила (менять нельзя):
@@ -1510,8 +1463,7 @@ var elOverlay=$('settingsOverlay'), elBtnCloseSettings=$('btnCloseSettings'), el
     elArchOpen=$('archOpen'), elArchSettingsCount=$('archSettingsCount'),
     elSwTest=$('swTest'), elTestBlock=$('testBlock'),
     elTbReal=$('tbReal'), elTbEff=$('tbEff'), elTbShift=$('tbShift'), elTbNearest=$('tbNearest'), elTbRealBtn=$('tbRealBtn'), elTbLock=$('tbLock'),
-    elBtnReset=$('btnReset'), elResetConfirm=$('resetConfirm'), elBtnResetYes=$('btnResetYes'), elBtnResetNo=$('btnResetNo'),
-    elBtnResetV1=$('btnResetV1'), elResetV1Confirm=$('resetV1Confirm'), elBtnResetV1Yes=$('btnResetV1Yes'), elBtnResetV1No=$('btnResetV1No');
+    elBtnReset=$('btnReset'), elResetConfirm=$('resetConfirm'), elBtnResetYes=$('btnResetYes'), elBtnResetNo=$('btnResetNo');
 var elToast=$('toast');
 var bumpButtons = Array.prototype.slice.call(document.querySelectorAll('[data-bump]'));
 
@@ -2955,12 +2907,11 @@ function openSettings(){
   settingsOpen=true;
   elOverlay.hidden=false;
   elBtnReset.hidden=false; elResetConfirm.hidden=true;
-  elBtnResetV1.hidden=false; elResetV1Confirm.hidden=true;
   syncSwitch();
   syncTestSwitch();
   renderTestBlock();
   try{ syncKeyerSeg(); }catch(e){}   // переключатель «Ввод морзе»
-  try{ syncRhythmSeg(); }catch(e){}  // и «Ритм двух рычагов»
+  try{ syncRhythmSlider(); }catch(e){}  // и ползунок скорости зажатия
   elArchSettingsCount.textContent=String(learnedCount());
   requestAnimationFrame(function(){ elOverlay.classList.add('show'); });
 }
@@ -3001,21 +2952,6 @@ elBtnResetYes.addEventListener('click', function(){
   renderSession({instantFlip:true});
   showView('home');
   toast('Тестовый прогресс сброшен — можно начать заново.');
-});
-elBtnResetV1.addEventListener('click', function(){
-  elBtnResetV1.hidden=true; elResetV1Confirm.hidden=false;
-});
-elBtnResetV1No.addEventListener('click', function(){
-  elResetV1Confirm.hidden=true; elBtnResetV1.hidden=false;
-});
-elBtnResetV1Yes.addEventListener('click', function(){
-  var existed=false;
-  try{
-    existed = localStorage.getItem(V1KEY)!==null;
-    if(existed) localStorage.removeItem(V1KEY);
-  }catch(e){}
-  elResetV1Confirm.hidden=true; elBtnResetV1.hidden=false;
-  toast(existed ? 'Резервная копия версии 1 удалена.' : 'Резервной копии версии 1 уже нет.');
 });
 
 /* ================= Дневная статистика ================= */
@@ -3645,10 +3581,6 @@ var __openSettings = openSettings;
 openSettings = function(){
   __openSettings();
   elSyncDiag.hidden=true; elSyncDiag.textContent='';
-  elExportResult.hidden=true;
-  elExportFallback.hidden=true;
-  elExportText.value='';
-  $('importConfirm').hidden=true;
   $('cloudWipe1').hidden=true; $('cloudWipe2').hidden=true; $('cloudAfter').hidden=true;
   var wp=$('wipePass'); if(wp) wp.value='';
   $('btnCloudWipe').hidden=false;
@@ -3771,316 +3703,6 @@ $('btnFreshStart').addEventListener('click', function(){
   closeSettings();
   showView('home');
   toast('Начинаем полностью заново.');
-});
-
-/* ================= Экспорт и импорт ================= */
-function buildBackupText(){
-  var data={
-    app:'no1equalsme',
-    exportVersion:7,
-    schemaVersion:6,
-    createdAt:new Date().toISOString(),
-    cards:state.cards,
-    settings:{haptics:!!state.settings.haptics, theme:state.settings.theme||'evening', accent:currentAccent(), homeLayout:(state.settings.homeLayout==='list')?'list':'mine', swipeSens:swipeSens(), sndVol:(typeof state.settings.sndVol==='number'?state.settings.sndVol:100), updatedAt:state.settings.updatedAt||0},
-    stats:state.stats,
-    session:{status:state.status, sessionDate:state.sessionDate, queue:state.queue, sessionTotal:state.sessionTotal,
-             sessionResults:state.sessionResults, cardScreen:state.cardScreen, startedAt:state.startedAt,
-             completedAt:state.completedAt, lastStudyDate:state.lastStudyDate,
-             practice:state.practice?true:false, practiceBackup:state.practiceBackup||null, updatedAt:state.updatedAt}
-  };
-  return JSON.stringify(data, null, 2);
-}
-/* Экспорт запускается строго синхронно из обработчика клика:
-   до navigator.share() нет await, fetch, FileReader и таймеров,
-   иначе браузер теряет пользовательскую активацию и блокирует системное меню. */
-function exportBackup(){
-  elExportFallback.hidden=true;
-  elExportText.value='';
-  var text=buildBackupText();
-  var now=new Date();
-  var name='no1equalsme-backup-'+dateToYMD(now)+'-'
-           +String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0')+'.json';
-  var size=byteLength(text);
-
-  var file=null;
-  try{
-    if(typeof File==='function') file=new File([text], name, {type:'application/json'});
-  }catch(e){ file=null; }
-
-  var canShareFile=false;
-  try{
-    canShareFile = !!(file && navigator.share && navigator.canShare && navigator.canShare({files:[file]}));
-  }catch(e){ canShareFile=false; }
-
-  if(canShareFile){
-    var shared=null;
-    try{
-      shared=navigator.share({files:[file], title:'Резервная копия No1EqualsMe'});
-    }catch(e){
-      offerCopyFallback(text, name, size, now, 'Не удалось открыть меню сохранения. Скопируйте JSON вручную.');
-      return;
-    }
-    showExportResult(name, size, now, 'Системное меню');
-    if(shared && typeof shared.then==='function'){
-      shared.then(function(){
-        toast('Резервная копия передана выбранному приложению');
-      }, function(err){
-        var n=(err && err.name)?err.name:'';
-        if(n==='AbortError'){ toast('Экспорт отменён'); return; }
-        offerCopyFallback(text, name, size, now, 'Не удалось открыть меню сохранения. Скопируйте JSON вручную.');
-        toast('Не удалось открыть меню сохранения. Скопируйте JSON вручную.');
-      });
-    }
-    return;
-  }
-
-  // Вне Telegram допускается обычная загрузка, но без утверждения, что файл сохранён
-  if(!isInsideTelegram() && tryBrowserDownload(text, name)){
-    showExportResult(name, size, now, 'Браузерная загрузка');
-    toast('Попытка загрузки отправлена браузеру');
-    return;
-  }
-
-  offerCopyFallback(text, name, size, now, 'На этом устройстве передача файла недоступна. Скопируйте JSON и сохраните его вручную.');
-  toast('На этом устройстве передача файла недоступна');
-}
-function isInsideTelegram(){
-  try{
-    if(!tg) return false;
-    var p=(typeof tg.platform==='string')?tg.platform:'';
-    return !!p && p!=='unknown';
-  }catch(e){ return false; }
-}
-function tryBrowserDownload(text, name){
-  try{
-    var a=document.createElement('a');
-    if(typeof a.download!=='string') return false;
-    var blob=new Blob([text], {type:'application/json'});
-    var url=URL.createObjectURL(blob);
-    a.href=url; a.download=name; a.rel='noopener';
-    a.style.position='fixed'; a.style.left='-9999px';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(function(){ if(a.parentNode) a.parentNode.removeChild(a); }, 100);
-    setTimeout(function(){ URL.revokeObjectURL(url); }, 30000);
-    return true;
-  }catch(e){ return false; }
-}
-function offerCopyFallback(text, name, size, when, note){
-  elFbNote.textContent=note;
-  elExportText.value=text;
-  elExportFallback.hidden=false;
-  showExportResult(name, size, when, 'Копирование JSON');
-}
-function fmtBytes(n){
-  if(n<1024) return n+' Б';
-  if(n<1024*1024) return (n/1024).toFixed(1).replace('.',',')+' КБ';
-  return (n/1048576).toFixed(2).replace('.',',')+' МБ';
-}
-function showExportResult(name, size, when, method){
-  elExpName.textContent=name;
-  elExpSize.textContent=fmtBytes(size);
-  try{
-    elExpWhen.textContent=new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}).format(when);
-  }catch(e){ elExpWhen.textContent=when.toISOString().slice(0,16).replace('T',' '); }
-  elExpMethod.textContent=method;
-  elExportResult.hidden=false;
-}
-function byteLength(text){
-  try{ return new Blob([text]).size; }catch(e){ return text.length; }
-}
-function copyBackupText(){
-  var text=elExportText.value;
-  if(!text){ toast('Сначала создайте резервную копию.'); return; }
-  var done=function(){ toast('JSON скопирован в буфер обмена'); };
-  var fail=function(){ toast('Не удалось скопировать автоматически. Выделите текст вручную и скопируйте.'); };
-  try{
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(text).then(done, function(){ if(!legacyCopy()) fail(); });
-      return;
-    }
-  }catch(e){}
-  if(legacyCopy()) done(); else fail();
-  function legacyCopy(){
-    try{
-      elExportText.removeAttribute('readonly');
-      elExportText.focus();
-      elExportText.setSelectionRange(0, text.length);
-      var ok=document.execCommand('copy');
-      elExportText.setAttribute('readonly','');
-      return !!ok;
-    }catch(e){
-      elExportText.setAttribute('readonly','');
-      return false;
-    }
-  }
-}
-function sanitizeImport(obj){
-  if(!obj || typeof obj!=='object') return null;
-  if(obj.app!=='no1equalsme') return null;
-  /* Принимаем все экспорты: ≤4 — нумерация схемы 3 (без 15 дней), 5 — схема 4
-     (8 этапов, совпадает с новой), 6 — схема 5 (без 15 дней), 7 — текущая схема 6.
-     Эпоху фиксируем, чтобы применение копии прошло ровно одну миграцию. */
-  if(typeof obj.exportVersion!=='number' || obj.exportVersion>7) return null;
-  var out={cards:{}, settings:null, stats:{days:{}}, session:null};
-  out.schemaVersion = (obj.exportVersion<=4) ? 3 : (obj.exportVersion===5 ? 4 : (obj.exportVersion===6 ? 5 : 6));
-  var ids=Object.keys(obj.cards||{}).slice(0,5000);
-  ids.forEach(function(id){
-    if(typeof id!=='string' || id.length>64 || !CARD_MAP[id]) return;
-    var norm=normalizeAnyProg(obj.cards[id]); // мигрирует и старую, и новую схему
-    if(norm) out.cards[id]=norm;
-  });
-  if(obj.settings && typeof obj.settings==='object'){
-    out.settings={
-      haptics:(typeof obj.settings.haptics==='boolean')?obj.settings.haptics:true,
-      theme:(['evening','dark','light'].indexOf(obj.settings.theme)>=0)?obj.settings.theme:'evening',
-      swipeSens:(typeof obj.settings.swipeSens==='number' && obj.settings.swipeSens>=0 && obj.settings.swipeSens<=100)?obj.settings.swipeSens:50,
-      sndVol:(typeof obj.settings.sndVol==='number' && obj.settings.sndVol>=0 && obj.settings.sndVol<=100)?obj.settings.sndVol:100,
-      accent:(['violet','blue','sky','green','rose'].indexOf(obj.settings.accent)>=0)?obj.settings.accent:'violet',
-      updatedAt:(typeof obj.settings.updatedAt==='number')?obj.settings.updatedAt:0
-    };
-  }
-  if(obj.stats && obj.stats.days && typeof obj.stats.days==='object'){
-    Object.keys(obj.stats.days).slice(0,90).forEach(function(d){
-      if(!/^\d{4}-\d{2}-\d{2}$/.test(d)) return;
-      var r=obj.stats.days[d];
-      if(!r || typeof r!=='object') return;
-      out.stats.days[d]={f:r.f|0, r:r.r|0, t:r.t|0, e:r.e|0, a:r.a|0, g:r.g|0, n:r.n|0, ts:(typeof r.ts==='number')?r.ts:0};
-    });
-  }
-  var s=obj.session;
-  if(s && typeof s==='object' && ['idle','active','completed'].indexOf(s.status)>=0){
-    var q=Array.isArray(s.queue)?s.queue.filter(function(id){ return !!CARD_MAP[id]; }).slice(0,MAX_SESSION*6):[];
-    var res={};
-    Object.keys(s.sessionResults||{}).slice(0,200).forEach(function(id){
-      if(!CARD_MAP[id]) return;
-      var r=s.sessionResults[id];
-      if(!r || typeof r!=='object') return;
-      res[id]={errors:Math.max(0,r.errors|0), done:!!r.done, firstTry:!!r.firstTry, tomorrow:!!r.tomorrow, advanced:!!r.advanced, graduatedNow:!!r.graduatedNow};
-    });
-    // хвост тренировки из копии: валидируем так же строго, как обычную сессию
-    var pb=null;
-    if(s.practiceBackup && typeof s.practiceBackup==='object'){
-      var pbq=Array.isArray(s.practiceBackup.q)?s.practiceBackup.q.filter(function(id){ return !!CARD_MAP[id]; }).slice(0,MAX_SESSION*6):[];
-      var pbr={};
-      Object.keys(s.practiceBackup.r||{}).slice(0,200).forEach(function(id){
-        if(!CARD_MAP[id]) return;
-        var prr=s.practiceBackup.r[id];
-        if(!prr || typeof prr!=='object') return;
-        pbr[id]={errors:Math.max(0,prr.errors|0), done:!!prr.done, firstTry:!!prr.firstTry, tomorrow:!!prr.tomorrow, advanced:!!prr.advanced, graduatedNow:!!prr.graduatedNow};
-      });
-      pb={q:pbq, r:pbr, t:(typeof s.practiceBackup.t==='number' && s.practiceBackup.t>=0)?s.practiceBackup.t:Object.keys(pbr).length};
-    }
-    out.session={
-      status:s.status,
-      practice:!!s.practice, practiceBackup:pb,
-      sessionDate:(typeof s.sessionDate==='string' && /^\d{4}-\d{2}-\d{2}$/.test(s.sessionDate))?s.sessionDate:null,
-      queue:q, sessionResults:res,
-      sessionTotal:(typeof s.sessionTotal==='number' && s.sessionTotal>=0)?s.sessionTotal:Object.keys(res).length,
-      cardScreen:(['question','peek','definition'].indexOf(s.cardScreen)>=0)?s.cardScreen:'question',
-      startedAt:(typeof s.startedAt==='number')?s.startedAt:null,
-      completedAt:(typeof s.completedAt==='number')?s.completedAt:null,
-      lastStudyDate:(typeof s.lastStudyDate==='string' && /^\d{4}-\d{2}-\d{2}$/.test(s.lastStudyDate))?s.lastStudyDate:null,
-      updatedAt:(typeof s.updatedAt==='number')?s.updatedAt:0
-    };
-  }
-  out.createdAt=(typeof obj.createdAt==='string')?obj.createdAt.slice(0,40):'';
-  return out;
-}
-var pendingImport=null;
-var elFileImport=$('fileImport'), elImportConfirm=$('importConfirm'), elImportInfo=$('importInfo');
-var elFileVerify=$('fileVerify'), elExportResult=$('exportResult'), elExpName=$('expName'),
-    elExpSize=$('expSize'), elExpWhen=$('expWhen'), elExpMethod=$('expMethod'),
-    elExportFallback=$('exportFallback'), elFbNote=$('fbNote'), elExportText=$('exportText');
-/* Обработчик вызывает exportBackup напрямую: пользовательская активация не теряется */
-$('btnExport').addEventListener('click', exportBackup);
-$('btnRetryExport').addEventListener('click', exportBackup);
-$('btnCopyBackup').addEventListener('click', copyBackupText);
-$('btnImport').addEventListener('click', function(){ elFileImport.click(); });
-$('btnVerify').addEventListener('click', function(){ elFileVerify.click(); });
-/* Проверка копии: только валидация структуры, без импорта */
-elFileVerify.addEventListener('change', function(){
-  var f=elFileVerify.files && elFileVerify.files[0];
-  elFileVerify.value='';
-  if(!f) return;
-  if(f.size>2*1024*1024){ toast('Файл слишком большой для резервной копии.'); return; }
-  var reader=new FileReader();
-  reader.onerror=function(){ toast('Не удалось прочитать файл.'); };
-  reader.onload=function(){
-    var parsed=null;
-    try{ parsed=JSON.parse(String(reader.result||'')); }catch(e){ parsed=null; }
-    if(!parsed){ toast('Файл повреждён: это не валидный JSON.'); return; }
-    var clean=sanitizeImport(parsed);
-    if(!clean){ toast('Это не резервная копия No1EqualsMe или её версия не поддерживается.'); return; }
-    var grad=0;
-    Object.keys(clean.cards).forEach(function(id){ if(clean.cards[id].status==='learned') grad++; });
-    var dateTxt=clean.createdAt?clean.createdAt.slice(0,10):'дата неизвестна';
-    toast('Резервная копия исправна · '+dateTxt+' · карточек: '+Object.keys(clean.cards).length+' · освоено: '+grad);
-  };
-  reader.readAsText(f);
-});
-elFileImport.addEventListener('change', function(){
-  var f=elFileImport.files && elFileImport.files[0];
-  elFileImport.value='';
-  if(!f) return;
-  if(f.size>2*1024*1024){ toast('Файл слишком большой для резервной копии.'); return; }
-  var reader=new FileReader();
-  reader.onerror=function(){ toast('Не удалось прочитать файл.'); };
-  reader.onload=function(){
-    var parsed=null;
-    try{ parsed=JSON.parse(String(reader.result||'')); }catch(e){ parsed=null; }
-    var clean=sanitizeImport(parsed);
-    if(!clean){ toast('Файл повреждён или это не резервная копия No1EqualsMe.'); return; }
-    pendingImport=clean;
-    var grad=0;
-    Object.keys(clean.cards).forEach(function(id){ if(clean.cards[id].status==='learned') grad++; });
-    var dateTxt=clean.createdAt?clean.createdAt.slice(0,10):'дата неизвестна';
-    elImportInfo.textContent='Копия от '+dateTxt+' · карточек с прогрессом: '+Object.keys(clean.cards).length+' · освоено: '+grad+'. Применить и заменить текущий прогресс?';
-    elImportConfirm.hidden=false;
-  };
-  reader.readAsText(f);
-});
-$('btnImportNo').addEventListener('click', function(){ pendingImport=null; elImportConfirm.hidden=true; });
-$('btnImportYes').addEventListener('click', function(){
-  if(!pendingImport) return;
-  var c=pendingImport; pendingImport=null;
-  elImportConfirm.hidden=true;
-  state.cards=c.cards;
-  state.schemaVersion=c.schemaVersion;            // нумерация этапов эпохи копии
-  if(state.schemaVersion<=5) migrateWordsV6();    // ровно одна идемпотентная миграция
-  if(c.settings){
-    state.settings.haptics=c.settings.haptics;
-    state.settings.theme=c.settings.theme;
-    state.settings.swipeSens=c.settings.swipeSens;
-    state.settings.homeLayout=(c.settings.homeLayout==='list')?'list':'mine'; // старые копии без поля → «Мой вариант»
-    state.settings.updatedAt=Math.max(c.settings.updatedAt, Date.now());
-  }
-  state.stats=c.stats;
-  if(c.session){
-    state.status=c.session.status;
-    state.sessionDate=c.session.sessionDate;
-    state.queue=c.session.queue;
-    state.sessionResults=c.session.sessionResults;
-    state.sessionTotal=c.session.sessionTotal;
-    state.cardScreen=c.session.cardScreen;
-    state.startedAt=c.session.startedAt;
-    state.completedAt=c.session.completedAt;
-    state.practice=!!c.session.practice;
-    state.practiceBackup=c.session.practiceBackup||null;
-    if(c.session.lastStudyDate) state.lastStudyDate=c.session.lastStudyDate;
-  }
-  state.view='home';
-  normalizeStats();
-  ensureDay();
-  mirror={}; saveMirror(); // всё помечено как требующее отправки
-  save();
-  applyTheme(); syncSwitch();
-  renderSession({instantFlip:true});
-  renderArchive();
-  closeSettings();
-  showView('home');
-  toast('Резервная копия применена.');
-  if(cloud.available && cloud.ready) schedulePush();
 });
 
 /* ================= Автосинхронизация при возврате ================= */
@@ -4536,11 +4158,11 @@ function loadMorseContent(){
 function freshMorseState(){
   return {schemaVersion:1, day:realToday(), dailyCorrect:0, dailyAttempts:0, dailyErrors:0,
           weaknessScore:{}, currentId:null, sequence:'', mode:'input', freeMode:false,
-          sound:true, vibeInput:false, keyer:'hold', rhythm:300, history:{}, letterStats:{}, streak:0, streakBest:0, updatedAt:Date.now(),
+          sound:true, keyer:'hold', rhythm:300, history:{}, letterStats:{}, streak:0, streakBest:0, updatedAt:Date.now(),
           /* Своя точность у «Морзе» и «Дактиль»: отдельные счётчики, своя
              суточная сброска, без дневной нормы. Живут только локально в этом
              ключе — в статистику дня и в облако не попадают. */
-          drills:{letter:{attempts:0,correct:0,errors:0}, dactyl:{attempts:0,correct:0,errors:0}}};
+          drills:{letter:{attempts:0,correct:0,errors:0,streak:0,streakBest:0}, dactyl:{attempts:0,correct:0,errors:0,streak:0,streakBest:0}}};
 }
 function clampInt(v, lo, hi){
   return (typeof v==='number' && isFinite(v)) ? Math.min(hi, Math.max(lo, Math.floor(v))) : lo;
@@ -4575,11 +4197,12 @@ function loadMorseState(){
     mode:(['input','correct','incorrect','goal'].indexOf(s.mode)>=0) ? s.mode : 'input',
     freeMode:!!s.freeMode,
     sound:(typeof s.sound==='boolean') ? s.sound : true,
-    vibeInput:!!s.vibeInput,
     keyer:(s.keyer==='iambic') ? 'iambic' : 'hold',   // старые сохранения → «Как сейчас»
-    /* Ритм ямбического ключа (мс на символ при зажатом рычаге). Три ступени;
-       всё, что не попало в них (включая старые сохранения), — «Средне». */
-    rhythm:(s.rhythm===420 || s.rhythm===210) ? s.rhythm : 300,
+    /* Скорость при зажатии рычага: мс на символ, шкала ползунка 140..520 шаг 20.
+       «Переключатель вибрации» и vibeInput из состояния убраны совсем — вся
+       вибрация морзе слушается общий «Виброотклик». Старые сохранения с ритмом
+       420/300/210 попадают в шкалу и живут как есть. */
+    rhythm:(typeof s.rhythm==='number' && s.rhythm>=140 && s.rhythm<=520) ? Math.round(s.rhythm/20)*20 : 300,
     drills:normalizeMorseDrills(s.drills),
     history:normalizeMorseHistory(s.history),
     letterStats:normalizeMorseLetterStats(s.letterStats),
@@ -4615,14 +4238,17 @@ function normalizeMorseHistory(h){
 }
 /* Дриллы в старых сохранениях отсутствуют — создаём нули */
 function normalizeMorseDrills(d){
-  var out={letter:{attempts:0,correct:0,errors:0}, dactyl:{attempts:0,correct:0,errors:0}};
+  var out={letter:{attempts:0,correct:0,errors:0,streak:0,streakBest:0}, dactyl:{attempts:0,correct:0,errors:0,streak:0,streakBest:0}};
   if(d && typeof d==='object'){
     ['letter','dactyl'].forEach(function(k){
       var v=d[k];
       if(v && typeof v==='object'){
         out[k]={attempts:clampInt(v.attempts,0,1000000),
                 correct:clampInt(v.correct,0,1000000),
-                errors:clampInt(v.errors,0,1000000)};
+                errors:clampInt(v.errors,0,1000000),
+                streak:clampInt(v.streak,0,1000000),
+                streakBest:clampInt(v.streakBest,0,1000000)};
+        if(out[k].streakBest<out[k].streak) out[k].streakBest=out[k].streak; // рекорд не меньше живой серии
       }
     });
   }
@@ -4653,7 +4279,7 @@ function ensureMorseDay(){
     morseState.mode='input';
     morseState.currentId=null;
     morseState.sequence='';
-    morseState.drills={letter:{attempts:0,correct:0,errors:0}, dactyl:{attempts:0,correct:0,errors:0}}; // и своя точность — по суткам
+    morseState.drills=normalizeMorseDrills(null); // и своя точность (со стриками) — по суткам
     saveMorse();
   }
   // дриллы есть всегда (в т.ч. в старых сохранениях)
@@ -5011,21 +4637,25 @@ function renderMorse(){
       ? ('Верных '+stD.correct+' из '+stD.attempts)
       : 'Ответов пока нет';
   }
-  /* Стрик и рекордная подсветка: rec горит, когда серия равна рекорду —
-     следующая верная буква станет новым рекордом. Стрик — часть дневной
-     цели «Морзе + Дактиль», в дриллах его нет. */
+  /* Стрик живёт во всех трёх режимах: в «Морзе + Дактиль» — общий (часть
+     дневной цели, morseState.streak), в «Морзе» и «Дактиль» — свой внутри
+     drills[mode]: серии режимов не смешиваются, промах обнуляет только свою.
+     rec горит, когда серия равна рекорду — следующая верная станет best. */
+  var stSk=isSign ? null : morseDrillStat(morseDrill);
+  var sc=isSign ? (morseState.streak|0) : ((stSk && stSk.streak)|0);
+  var sb=isSign ? (morseState.streakBest|0) : ((stSk && stSk.streakBest)|0);
   var stk=$('morseStreak'), stkN=$('morseStreakN');
   if(stk && stkN){
-    stk.hidden=!isSign;
-    if(isSign){
-      var sc=morseState.streak|0;
-      stkN.textContent=String(sc);
-      /* рост серии — короткий «bump» цифры: прогресс должен быть ощутим */
-      if(sc>0 && sc!==morseShownStreak){ stkN.classList.remove('bump'); void stkN.offsetWidth; stkN.classList.add('bump'); }
-      morseShownStreak=sc;
-      stk.classList.toggle('rec', sc>0 && sc>=(morseState.streakBest|0));
-    }
+    stk.hidden=false;
+    stkN.textContent=String(sc);
+    /* рост серии — короткий «bump» цифры: прогресс должен быть ощутим */
+    if(sc>0 && sc!==morseShownStreak){ stkN.classList.remove('bump'); void stkN.offsetWidth; stkN.classList.add('bump'); }
+    morseShownStreak=sc;
+    stk.classList.toggle('rec', sc>0 && sc>=sb);
   }
+  /* Заголовок экрана — по режиму: «Морзе» или «Дактиль», а не всегда вместе */
+  var tEl=$('morseSessTitle');
+  if(tEl) tEl.textContent = morseDrill==='letter' ? 'Морзе' : morseDrill==='dactyl' ? 'Дактиль' : 'Морзе + Дактиль';
   var card=currentMorseCard();
   var imgWrap=$('morseImgWrap'), bigL=$('morseBigLetter');
   if(morseDrill==='letter'){
@@ -5173,11 +4803,6 @@ function syncMorseSoundSwitch(){
       sw.classList.toggle('on', !!morseState.sound);
       sw.setAttribute('aria-checked', String(!!morseState.sound));
     }
-    var vb=$('swMorseVibe');
-    if(vb){
-      vb.classList.toggle('on', !!morseState.vibeInput);
-      vb.setAttribute('aria-checked', String(!!morseState.vibeInput));
-    }
   }
 }
 
@@ -5299,7 +4924,7 @@ function morseLocked(){
 function morseKeyer(){ return (morseState && morseState.keyer==='iambic') ? 'iambic' : 'hold'; }
 /* Период автоповтора символа при зажатом рычаге — из настроек.
    MORSE_IAMBIC_MS остаётся запасным значением по умолчанию. */
-function morseRhythmMs(){ return (morseState && (morseState.rhythm===420 || morseState.rhythm===210)) ? morseState.rhythm : MORSE_IAMBIC_MS; }
+function morseRhythmMs(){ var r=morseState ? +morseState.rhythm : 0; return (r>=140 && r<=520) ? r : MORSE_IAMBIC_MS; }
 function cancelMorseCheck(){
   if(morseCheckTimer){ clearTimeout(morseCheckTimer); morseCheckTimer=null; }
 }
@@ -5371,8 +4996,11 @@ function triggerMorseCancel(){
    Левый рычаг — точки, правый — тире (как в Jambic Keyer):
    - зажат один рычаг → его элементы идут своим ритмом;
    - зажаты оба (или второй нажат, пока зажат первый — «сжатие») →
-     вставляется элемент второго рычага, дальше ритм чередуется
-     (точка, тире, точка, тире…) без разрыва. */
+     вставляется элемент второго рычага, и дальше ритм ЖЁСТКО чередуется
+     (.-.-.-… если первым была точка, -.-.-… если первым было тире),
+     пока держатся оба;
+   - отпустили один — оставшийся продолжает свой одиночный ритм,
+     отпустили второй — стоп. */
 var ib={dot:null, dash:null, timer:null, last:null};
 function ibEmit(el){
   if(!morseState || morseLocked()) return;
@@ -5390,10 +5018,11 @@ function ibEmit(el){
   morseState.sequence+=el;
   ib.last=el;
   morseTick(el==='-');
-  /* Сильный толчок на каждый поставленный символ. В «Два рычага» он включён
-     всегда: режим «ручной», отдача обязательна. Переключатель «Вибрация при
-     вводе» сверху дополнительно даёт непрерывный гул удержания. */
-  if(morseState.vibeInput || morseKeyer()==='iambic') morseHeavyPulse(45);
+  /* Сильный толчок на каждый поставленный символ: пульсует сам ibEmit,
+     поэтому частота точно равна скорости с ползунка (вибрация подстраивается).
+     Отдельных выключателей нет — всё гасится общим «Виброоткликом»
+     (проверка внутри morseHeavyPulse). */
+  morseHeavyPulse(90);
   saveMorse();
   renderMorse();
 }
@@ -5422,6 +5051,8 @@ function ibTimerStart(){
 }
 function ibTick(){
   if(!morseState || morseLocked()){ ibStop(true); return; }
+  /* оба держат — строгое чередование: после точки тире, после тире точка,
+     до тех пор пока не отпущен хоть один рычаг (дальше — одиночный ритм) */
   if(ib.dot!=null && ib.dash!=null){ ibEmit(ib.last==='.' ? '-' : '.'); }
   else if(ib.dot!=null){ ibEmit('.'); }
   else if(ib.dash!=null){ ibEmit('-'); }
@@ -5489,7 +5120,7 @@ function onMorseDown(e){
   $('morseZoneMain').textContent='Точка'; // до порога нажатие читается как точка
   startHoldFill();
   startMorseTone();                       // тон звучит, пока пользователь держит поле
-  startMorseVibe();                       // стабильная вибрация при удержании (настройка)
+  startMorseVibe();                       // тихий фон удержания (гейт — общий виброотклик)
   if(mz.threshTimer) clearTimeout(mz.threshTimer);
   mz.threshTimer=setTimeout(function(){
     if(mz.t0===null) return;
@@ -5522,7 +5153,7 @@ function onMorseUp(e){
   }
   morseState.sequence += (dur<MORSE_DOT_MS ? '.' : '-'); // ровно один символ за нажатие
   morseTick(dur>=MORSE_DOT_MS);                          // щелчок — звуковое сопровождение ввода
-  if(morseState.vibeInput) morseHeavyPulse(45);          // отчётливый толчок: единица введена — вибро-подтверждение
+  morseHeavyPulse(40);                                   // отчётливый толчок: символ введён (гейт — общий «Виброотклик»)
   saveMorse();
   renderMorse();
   scheduleMorseCheck();
@@ -5647,6 +5278,9 @@ function morseCommit(ok){
     if(st){
       st.attempts=(st.attempts|0)+1;
       if(ok) st.correct=(st.correct|0)+1; else st.errors=(st.errors|0)+1;
+      /* стрик дрилла: верные ответы подряд, у каждого режима свой */
+      if(ok){ st.streak=(st.streak|0)+1; if(st.streak>(st.streakBest|0)) st.streakBest=st.streak; }
+      else { st.streak=0; }
     }
     morseState.mode=ok?'correct':'incorrect';
     if(ok){ morseHintId=null; haptic('success'); morseSoundResult(true); }
@@ -5767,13 +5401,41 @@ var morseDrill='sign';
 $('btnMorseStart').addEventListener('click', function(){ morseDrill='sign'; openMorse(); });
 $('btnDrillLetter').addEventListener('click', function(){ morseDrill='letter'; openMorse(); });
 $('btnDrillDactyl').addEventListener('click', function(){ morseDrill='dactyl'; openMorse(); });
-/* Стрелка вниз: разворачивает список дальше — строки «Морзе» и «Дактиль» */
+/* Стрелка вниз: разворачивает список дальше — строки «Морзе» и «Дактиль».
+   Ключевое решение: сворачивание больше не «телепортирует» наверх — блок
+   схлопывается по высоте (max-height+opacity+лёгкий сдвиг), и параллельно
+   страница уходит к нулю плавно (scrollTo smooth). hidden ставим только в
+   конце анимации, поэтому страница не прыгает под пальцем. Повторный клик
+   посреди анимации не теряется: таймер финала сбрасывается и анимация
+   разворачивается обратно с текущей высоты. */
+var secMoreT=null;
 $('btnSecMore').addEventListener('click', function(){
-  var b=$('btnSecMore');
+  var b=$('btnSecMore'), box=$('secMore');
+  if(!box) return;
+  if(secMoreT){ clearTimeout(secMoreT); secMoreT=null; }
   var open=b.getAttribute('aria-expanded')==='true';
   b.setAttribute('aria-expanded', String(!open));
-  $('secMore').hidden=open;
-  $('secMoreText').textContent=open?'Ещё разделы':'Свернуть';
+  if(!open){
+    $('secMoreText').textContent='Свернуть';
+    box.hidden=false;
+    box.style.transition='none';
+    box.style.maxHeight='0px'; box.style.opacity='0'; box.style.transform='translateY(-8px) scale(.985)';
+    void box.offsetHeight;                                   // зафиксировать стартовое состояние
+    box.style.transition='';
+    box.style.maxHeight=(box.scrollHeight||600)+'px'; box.style.opacity='1'; box.style.transform='';
+    secMoreT=setTimeout(function(){ box.style.maxHeight=''; secMoreT=null; },380);
+  } else {
+    $('secMoreText').textContent='Ещё разделы';
+    box.style.transition='none';
+    box.style.maxHeight=(box.scrollHeight||300)+'px';
+    void box.offsetHeight;
+    box.style.transition='';
+    try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(e){} // плавный уход наверх вместо прыжка
+    box.style.maxHeight='0px'; box.style.opacity='0'; box.style.transform='translateY(-8px) scale(.985)';
+    secMoreT=setTimeout(function(){
+      box.hidden=true; box.style.maxHeight=''; box.style.opacity=''; box.style.transform=''; secMoreT=null;
+    },360);
+  }
 });
 $('btnMorseBack').addEventListener('click', function(){ saveMorse(); goHome(); });
 $('btnMorseImgRetry').addEventListener('click', function(e){
@@ -5810,12 +5472,6 @@ $('volRange').addEventListener('input', function(){
   if(!isFinite(v)) return;
   state.settings.sndVol=Math.max(0, Math.min(100, v));
   save();
-});
-$('swMorseVibe').addEventListener('click', function(){
-  morseState.vibeInput=!morseState.vibeInput;
-  if(!morseState.vibeInput) stopMorseVibe();
-  saveMorse();
-  syncMorseSoundSwitch();
 });
 $('btnMorseReset').addEventListener('click', function(){
   $('btnMorseReset').hidden=true;
@@ -5938,28 +5594,27 @@ Array.prototype.slice.call(document.querySelectorAll('[data-keyer-btn]')).forEac
 /* Ритм ключа: три ступени (420/300/210 мс). Хранится в morseState — вместе
    с остальными настройками морзе он НЕ уезжает в облако и не влияет на
    статистику: это чистая эргономика ввода. */
-function syncRhythmSeg(){
-  var v=String(morseRhythmMs());
-  Array.prototype.slice.call(document.querySelectorAll('[data-rhythm-btn]')).forEach(function(b){
-    var on=b.getAttribute('data-rhythm-btn')===v;
-    b.classList.toggle('on', on);
-    b.setAttribute('aria-checked', String(on));
-  });
+function syncRhythmSlider(){
+  var ms=morseRhythmMs();
+  var el=document.getElementById('rgRhythm');
+  if(el) el.value=String(660-ms);   // инверсия шкалы: правее = быстрее
+  var sub=document.getElementById('rhythmSub');
+  if(sub) sub.textContent='Символов в секунду: '+(1000/ms).toFixed(1)+' · пауза '+ms+' мс';
 }
-Array.prototype.slice.call(document.querySelectorAll('[data-rhythm-btn]')).forEach(function(b){
-  b.addEventListener('click', function(){
-    var v=+b.getAttribute('data-rhythm-btn');
-    if(v!==420 && v!==300 && v!==210) return;
+(function(){
+  var el=document.getElementById('rgRhythm'); if(!el) return;
+  el.addEventListener('input', function(){
     if(!morseState) return;
-    if(morseState.rhythm===v){ syncRhythmSeg(); return; }
-    morseState.rhythm=v;
-    saveMorse();
-    syncRhythmSeg();
-    /* если ритм меняют прямо во время «зажатия» — пересобрать таймер,
-       иначе текущая очередь будет идти по-старому до конца удержания */
+    var ms=660-(parseInt(el.value,10)||360);
+    ms=Math.round(Math.max(140,Math.min(520,ms))/20)*20;
+    if(morseState.rhythm!==ms){ morseState.rhythm=ms; saveMorse(); }   // только локально, в облако не идёт
+    syncRhythmSlider();
+    /* если скорость меняют прямо во время «зажатия» — пересобрать таймер,
+       иначе текущая очередь будет идти по-старому до конца удержания.
+       Вибропульсы ставит ibEmit, значит отдача сама идёт в такт ползунку */
     if(ib.timer){ clearTimeout(ib.timer); ib.timer=null; if(!morseLocked() && (ib.dot!=null || ib.dash!=null)) ibTimerStart(); }
   });
-});
+})();
 
 /* ================= ЯЗЫКИ — третий независимый раздел =================
    Ключевые решения:
@@ -7645,6 +7300,7 @@ var morseSub=null;         // активный саб-бас (60+120 Гц), жи
      а если вибро через navigator заблокирован — вызов просто вернёт false
      и останется impact. Побеждает тот канал, который на устройстве жив. */
 function morseHeavyPulse(navMs){
+  if(!state || !state.settings || !state.settings.haptics) return;  // единый рубильник — «Виброотклик» настроек
   var t=tgLive(), hf=t && t.HapticFeedback;
   /* Три независимых канала: сработает хотя бы один — вибрация обязана прийти.
      1) navigator — единственный канал в обычном браузере; в Android TG обычно
@@ -7659,10 +7315,19 @@ function morseHeavyPulse(navMs){
         тяжёлый паттерн heavy — тот самый, что чувствуется на110 мс. */
   try{ if(hf && typeof hf.impactOccurred==='function') hf.impactOccurred('heavy'); }catch(e){}
 }
+/* Фоновый «гул удержания» — наоборот, тихий: короткий light-impact + короткий
+   navigator-пульс, без heavy и notification. Пользователь просил: фон меньше,
+   отклик самого символа сильнее — два разных уровня, а не один на всё. */
+function morseSoftPulse(navMs){
+  if(!state || !state.settings || !state.settings.haptics) return;
+  var t=tgLive(), hf=t && t.HapticFeedback;
+  try{ if(typeof navigator!=='undefined' && typeof navigator.vibrate==='function') navigator.vibrate(navMs||16); }catch(e){}
+  try{ if(hf && typeof hf.impactOccurred==='function') hf.impactOccurred('light'); }catch(e){}
+}
 
 /* Саб-бас: 60 Гц («поршневой» по спецификации) + октава 120 Гц — телефонный
    динамик физически не играет 60 Гц, а 120 Гц реально толкает воздух и отдаёт
-   в корпус. Полная шкала × ползунок «Громкость». Гейт — «Вибрация при вводе». */
+   в корпус. Полная шкала × ползунок «Громкость». Гейт — общий «Виброотклик». */
 function startMorseSub(){
   try{
     if(morseSub) return;
@@ -7685,8 +7350,8 @@ function startMorseSub(){
        отсюда «очень низкий и неприятный» рёв. Итог 0.26+0.14=0.40 ×слайдер:
        тёплое давление под пальцем есть, клиппинга и боли в ухах нет.
        Синхронность с вибрацией (старт/стоп одним таймером) не тронута. */
-    mk(60, 0.26);  // базовый саб-бас — комфортное давление
-    mk(120, 0.14); // октава: она реально играет динамиком и даёт «чувство»
+    mk(60, 0.15);  // R34 «меньше фона»: 0.26→0.15 — давление есть, гудёжа нет
+    mk(120, 0.08); // октава: 0.14→0.08 — «чувство» осталось, микс тише почти вдвое
     morseSub={ctx:ctx, parts:parts};
   }catch(e){}
 }
@@ -7704,16 +7369,17 @@ function stopMorseSub(){
   }catch(e){}
 }
 function startMorseVibe(){
-  if(!morseState || !morseState.vibeInput || morseVibeTimer || morseVibeCont) return;
-  /* Удары каждые 110 мс: более частые (65 мс) перезапускали эффект раньше,
-     чем мотор раскручивается, — Android «сливал» серию в полную тишину.
-     110 мс — плотность, на которой импульсы реально ощущаются. */
+  if(!morseState || !state || !state.settings || !state.settings.haptics || morseVibeTimer || morseVibeCont) return;
+  /* R34: фон намеренно тихий — не heavy-удар каждые 110 мс, а мягкий
+     light-пульс каждые 170 мс (16 мс navigator). Интервал не короче: частые
+     импульсы (65 мс) Android «сливал» в тишину, 170 мс — плотность, при которой
+    серия читается ровно фоном, а не отъедает внимание от сильных пульсов символа. */
   try{
     if(tg && tg.HapticFeedback && typeof tg.HapticFeedback.impactOccurred==='function'){
       morseVibePulses=0;
       var pulse=function(){
-        morseHeavyPulse(35);
-        if(++morseVibePulses<700) morseVibeTimer=setTimeout(pulse, 110); // ~75 с — предохранитель
+        morseSoftPulse(16);
+        if(++morseVibePulses<700) morseVibeTimer=setTimeout(pulse, 170); // ~2 мин — предохранитель
       };
       pulse();
     } else if(typeof navigator!=='undefined' && typeof navigator.vibrate==='function'){
@@ -7789,5 +7455,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4664848acfaf78c',t:'MTc5MTMwNjY1Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a466fb055b60e3db',t:'MTc5MTMxMzk3Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

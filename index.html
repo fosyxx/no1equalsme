@@ -373,7 +373,7 @@ html.rm .ms-streak.rec svg{animation:none}
 @keyframes zoneFlashG{0%{opacity:0;transform:scale(1.14)}30%{opacity:1}100%{opacity:0;transform:scale(.86)}}
 @keyframes zoneFlashR{0%{opacity:0;transform:scale(1.14)}30%{opacity:1}100%{opacity:0;transform:scale(.86)}}
 .morse-zone.locked{cursor:default}
-/* Два рычага: одно поле, разделённое на две «ручки» (ямбический ключ) */
+/* «Ямбический ключ А»: одно поле, разделённое на две «ручки» (точки/тире) */
 .mz-levers{position:absolute;inset:0;display:flex;z-index:3;border-radius:inherit;overflow:hidden}
 .mz-lever{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
   color:var(--muted);font-size:13px;user-select:none;-webkit-user-select:none;touch-action:none;
@@ -1152,8 +1152,8 @@ html.rm .card-drag.flipped .card-front{opacity:0}
         <span class="set-sub">Как вводить точки и тире на тренировке</span>
       </div>
       <div class="seg" role="radiogroup" aria-label="Ввод морзе">
-        <button class="seg-btn" role="radio" aria-checked="false" data-keyer-btn="hold">Как сейчас</button>
-        <button class="seg-btn" role="radio" aria-checked="false" data-keyer-btn="iambic">Два рычага</button>
+        <button class="seg-btn" role="radio" aria-checked="false" data-keyer-btn="hold">Сингл</button>
+        <button class="seg-btn" role="radio" aria-checked="false" data-keyer-btn="iambic">Ямбический ключ А</button>
       </div>
     </div>
     <div class="set-row set-row-col">
@@ -4041,7 +4041,7 @@ var MORSE_CANCEL_MS=3500;   // удержание тире ≥3.5 с = «отм�
 var MORSE_MIN_MS=40;        // короче 40 мс — случайное касание, игнорируем
 var MORSE_CHECK_MS=500;     // пауза покоя перед автопроверкой
 var MORSE_RESULT_MS=1000;   // сколько держим экран результата
-var MORSE_IAMBIC_MS=300;    // период следования элементов в режиме «Два рычага»
+var MORSE_IAMBIC_MS=300;    // период следования элементов в «Ямбическом ключе А»
 
 var morseContent={ready:false, error:false, contentVersion:null, updatedAt:null, count:0};
 var MORSE_CARDS=[];
@@ -4197,7 +4197,7 @@ function loadMorseState(){
     mode:(['input','correct','incorrect','goal'].indexOf(s.mode)>=0) ? s.mode : 'input',
     freeMode:!!s.freeMode,
     sound:(typeof s.sound==='boolean') ? s.sound : true,
-    keyer:(s.keyer==='iambic') ? 'iambic' : 'hold',   // старые сохранения → «Как сейчас»
+    keyer:(s.keyer==='iambic') ? 'iambic' : 'hold',   // старые сохранения → «Сингл»
     /* Скорость при зажатии рычага: мс на символ, шкала ползунка 140..520 шаг 20.
        «Переключатель вибрации» и vibeInput из состояния убраны совсем — вся
        вибрация морзе слушается общий «Виброотклик». Старые сохранения с ритмом
@@ -4747,14 +4747,14 @@ function renderMorse(){
        обратно к 42vh и клавиатура дёргалась. В остальных режимах — снят. */
     ex.classList.toggle('kbd-mode', morseDrill==='dactyl');
   }
-  /* «Два рычага»: внутри обычного поля — две ручки (точки/тире) */
+  /* «Ямбический ключ А»: внутри обычного поля — две ручки (точки/тире) */
   var leversOn=(morseState.mode==='input' && morseKeyer()==='iambic' && morseDrill!=='dactyl');
   $('morseLevers').hidden=!leversOn;
   $('morseZoneMain').hidden=leversOn;
   $('morseZoneHint').hidden=leversOn;
   zone.setAttribute('aria-label', morseDrill==='dactyl'
     ? 'Поле ответа: нажми букву на клавиатуре ниже'
-    : (leversOn ? 'Два рычага: слева — точки, справа — тире; зажми оба — чередование'
+    : (leversOn ? 'Ямбический ключ А: слева — точки, справа — тире; зажми оба — чередование'
                 : 'Зона ввода: удерживай, коротко — точка, долго — тире'));
   if(locked && card){
     $('morseResLetter').textContent=card.letter;
@@ -5102,7 +5102,7 @@ function onMorseDown(e){
   try{ audioCtx(); }catch(err){}                  // resume() прямо в жесте: к моменту звука контекст активен
   if(e.pointerType==='mouse' && e.button!==0) return;
   if(morseKeyer()==='iambic'){
-    /* «Два рычага» — ДО гейта isPrimary. Второй палец мультитча ВСЕГДА
+    /* «Ямбический ключ А» — ДО гейта isPrimary. Второй палец мультитча ВСЕГДА
        isPrimary:false: старый порядок съедал его pointerdown, и «сжатие» было
        физически невозможно (второй рычаг не загорался и не ставил символ).
        У каждого рычага свой pointerId, в morseLocked/dactyl заходит ibPress. */
@@ -5167,6 +5167,14 @@ function onMorseUp(e){
 }
 function onMorseCancel(e){
   if(morseKeyer()==='iambic'){
+    /* R35: отмена — ТОЖЕ покадровая, по указателю. Браузер умеет прислать
+       pointercancel оставшемуся удерживаться пальцу в момент, когда другой
+       отпустили (жест системы, перехват скролла) — старый глобальный
+       ibStop(true) убивал «сжатие»: отпускаешь точку — и тире слетает.
+       Cancel с известным pointerId трактуем как отпускание ровно этого
+       пальца; без id (древние движки) — как раньше, стоп всё. */
+    var pidC=(e && typeof e.pointerId!=='undefined' && e.pointerId!==null) ? e.pointerId : null;
+    if(pidC!==null){ ibRelease(e); return; }
     var had=ib.dot!=null || ib.dash!=null;
     ibStop(true);
     if(had && morseState && morseState.sequence && morseState.mode==='input') scheduleMorseCheck();
@@ -5175,12 +5183,27 @@ function onMorseCancel(e){
   if(mz.t0===null || e.pointerId!==mz.pointerId) return;
   endHoldVisual(); // без символа и без запуска проверки
 }
-function onMorseLostCapture(){
+function onMorseLostCapture(e){
   if(morseKeyer()==='iambic'){
-    var had=ib.dot!=null || ib.dash!=null;
-    ibStop(true);
-    if(had && morseState && morseState.sequence && morseState.mode==='input') scheduleMorseCheck();
-    return;
+    /* R35: ГЛАВНЫЙ баг отпускания был здесь. Отпустил первый палец — у него
+       штатно теряется capture (lostpointercapture), и старый обработчик в
+       ямбике глушил ОБА рычага глобальным ibStop(true). Отсюда «отпускаю
+       точку — слетает и тире».
+       Теперь потеря capture что-то значит только для пальца, который ещё
+       «держится» (ушёл без pointerup) — для него это и есть отпускание.
+       Потеря capture уже отпущенного пальца игнорируется: второй рычаг
+       продолжает свой ритм (.-.– как задумано в сжатии). */
+    var pid=(e && typeof e.pointerId!=='undefined' && e.pointerId!==null) ? e.pointerId : null;
+    if(pid===null){
+      var had0=ib.dot!=null || ib.dash!=null;      // id нет — старая страховка: стоп всё
+      if(had0){
+        ibStop(true);
+        if(morseState && morseState.sequence && morseState.mode==='input') scheduleMorseCheck();
+      }
+      return;
+    }
+    if(ib.dot===pid || ib.dash===pid) ibRelease(e); // палец ушёл без «up»
+    return;                                         // capture уже отпущенного — мимо
   }
   if(mz.t0!==null) endHoldVisual(); // страховка: поле не должно зависнуть в состоянии удержания
 }
@@ -5577,7 +5600,7 @@ window.addEventListener('beforeunload', saveMorse);
 
 /* ---------- Старт модуля (независимо от слов) ---------- */
 loadMorseState();
-/* Ввод морзе: «Как сейчас» (удержание поля) или «Два рычага» (ямбический ключ) */
+/* Ввод морзе: «Сингл» (удержание поля) или «Ямбический ключ А» (ямбический ключ) */
 function syncKeyerSeg(){
   var v=morseKeyer();
   Array.prototype.slice.call(document.querySelectorAll('[data-keyer-btn]')).forEach(function(b){
@@ -7462,5 +7485,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4673d82c9363b83',t:'MTc5MTMxNjcwMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

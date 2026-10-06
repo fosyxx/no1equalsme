@@ -352,24 +352,37 @@ html.rm .ms-streak.rec svg{animation:none}
   box-shadow:inset 0 0 64px 10px rgba(93,140,255,.40)}
 .mz-lever[data-lever=dash].press{background:rgba(255,96,96,.15);color:#ffa5a5;
   box-shadow:inset 0 0 64px 10px rgba(255,96,96,.38)}
-/* Своя клавиатура «Дактиля»: панель букв под полем (системная в webview мигает) */
-.morse-keyboard{margin-top:12px;display:flex;flex-direction:column;gap:6px}
-/* «Дактиль»: жест + поле + 3 ряда букв должны помещаться на экране
-   телефона целиком. Компакт держится весь сеанс (не только до ответа),
-   иначе картинка прыгала бы на каждом «Верно/Неверно». */
-.morse-ex.kbd-mode{gap:8px}
-.morse-ex.kbd-mode .morse-imgwrap{width:min(100%,30vh)}
-.morse-ex.kbd-mode .morse-codewrap{min-height:38px}
-.morse-ex.kbd-mode .morse-zone{min-height:96px;padding:14px 16px 16px}
-.morse-ex.kbd-mode .morse-keyboard{margin-top:10px;gap:5px}
-.morse-ex.kbd-mode .mk-row{gap:4px}
-.morse-ex.kbd-mode .mk-key{min-height:37px;font-size:13.5px;border-radius:9px}
+/* Своя клавиатура «Дактиля»: приклеена к нижнему краю экрана (fixed) —
+   не зависит от прокрутки колонки упражнения и не может уехать за край.
+   Вне «Дактиля» на панели нет содержимого (клавиши демонтированы), а
+   attribute hidden гасит её глобальным [hidden]{display:none!important} —
+   своего !important здесь на display нет именно поэтому: иначе он бы
+   побеждал hidden и пустая плашка висела бы внизу чужих экранов. */
+.morse-keyboard{position:fixed;left:0;right:0;bottom:0;z-index:24;display:flex;flex-direction:column;gap:6px;
+  padding:10px 8px calc(10px + env(safe-area-inset-bottom));
+  background:var(--bg);border-top:1px solid var(--line)}
+/* Экран «Дактиль»: между жестом и приклеенной клавиатурой текста нет —
+   строка кода и поле-подсказка скрыты, весь фидбек живёт на клавишах.
+   Жест центрируется в свободной зоне; низ колонки отдан под панель
+   (3 ряда × 44px + промежутки + поля ≈ 186px, плюс safe-area снизу). */
+.morse-ex.kbd-mode{justify-content:center;padding-bottom:calc(186px + env(safe-area-inset-bottom))}
+.morse-ex.kbd-mode .morse-imgwrap{width:min(100%,52vh)}
+.morse-ex.kbd-mode .morse-codewrap,
+.morse-ex.kbd-mode .morse-zone{display:none}
 .mk-row{display:flex;gap:5px}
-.mk-key{flex:1;min-width:0;min-height:42px;border-radius:10px;border:1px solid var(--line);
+.mk-key{flex:1;min-width:0;min-height:44px;border-radius:10px;border:1px solid var(--line);
   background:var(--card2);color:var(--text);font:inherit;font-size:15px;font-weight:650;
   padding:0;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
-  touch-action:manipulation;transition:background .1s ease,border-color .1s ease}
+  touch-action:manipulation;transition:background .12s ease,border-color .12s ease,color .12s ease}
 .mk-key:active{background:var(--violet-soft);border-color:var(--violet-line)}
+/* Статусные цвета клавиш: красная — по ней промахнулись (горит до конца
+   вопроса), жёлтая пульсация — подсказка нужной буквы, зелёная — верный
+   тап загорается на полсекунды перед следующей буквой. */
+.mk-key.mk-bad{background:rgba(255,96,96,.20);border-color:#ff6060;color:#ffb3b3}
+.mk-key.mk-hint{background:rgba(255,206,84,.18);border-color:#ffce54;color:#ffe4a3;
+  animation:mkHint .9s ease-in-out infinite}
+.mk-key.mk-good{background:rgba(120,200,140,.24);border-color:#78c88c;color:#c4f0cd}
+@keyframes mkHint{0%,100%{box-shadow:0 0 0 0 rgba(255,206,84,0)}50%{box-shadow:0 0 16px 2px rgba(255,206,84,.45)}}
 .mz-result{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
 .mz-letter{font-size:36px;font-weight:800;line-height:1}
 .mz-codes{font-size:15.5px;font-weight:650;letter-spacing:.04em}
@@ -5007,7 +5020,7 @@ function renderMorse(){
      пересборка содержимого не ломает. */
   var kbdEl=$('morseKeyboard');
   if(kbdEl){
-    var wantKbd=(morseDrill==='dactyl' && !locked);
+    var wantKbd=(morseDrill==='dactyl');   // не прячем и на паузе 0.5 с: зелёная клавиша живёт на панели
     if(wantKbd && kbdEl.childElementCount===0) buildMorseKeyboard(kbdEl);
     if(!wantKbd && kbdEl.childElementCount>0) kbdEl.innerHTML='';
     kbdEl.hidden=!wantKbd;
@@ -5457,17 +5470,69 @@ function runMorseCheck(){
   morseAnsCorrect=prettyCode(card.morse);
   morseCommit(ok);
 }
-/* Режим «Дактиль»: буква приходит с клавиатуры, sequence не участвует */
+/* Режим «Дактиль»: ответ — буква своей клавиатуры, sequence не участвует.
+   Экрана «Верно/Неверно» здесь нет: подсветка живёт на клавишах.
+   Промах → клавиша краснеет, а нужная начинает пульсировать жёлтым
+   (вопрос НЕ завершается — надо нажать именно её). Верный тап → клавиша
+   зеленеет, через MORSE_NEXT_MS (0.5 с) переходим к следующей букве.
+   Учёт: одна попытка на карточку; был хоть один промах — карточка в
+   ошибки, закрыла с первой клавиши — в верные. */
+var MORSE_NEXT_MS=500;
+var dactylHold=false,dactylMiss=false,dactylTimer=null;
+function dactylFresh(){
+  if(dactylTimer){ clearTimeout(dactylTimer); dactylTimer=null; }
+  dactylHold=false; dactylMiss=false;
+  var host=$('morseKeyboard');
+  if(host){
+    var old=host.querySelectorAll('.mk-bad,.mk-hint,.mk-good');
+    for(var i=0;i<old.length;i++) old[i].classList.remove('mk-bad','mk-hint','mk-good');
+  }
+}
+function dactylKeyEl(host,letter){
+  var up=String(letter||'').toUpperCase();
+  if(!/^[А-ЯЁ]$/.test(up)) return null;
+  return host.querySelector('[data-key="'+up+'"]');
+}
 function runMorseKey(ch){
-  cancelMorseCheck();
-  if(!morseState || morseState.mode!=='input') return;
+  if(!morseState || morseState.mode!=='input' || dactylHold) return;
   if(!morseContent.ready) return;
   var card=currentMorseCard();
   if(!card) return;
-  var ok=morseKeyNorm(ch)===morseKeyNorm(card.letter);
-  morseAnsYour=String(ch);
-  morseAnsCorrect=card.letter;
-  morseCommit(ok);
+  var host=$('morseKeyboard');
+  if(!host) return;
+  var ok=(String(ch).toUpperCase()===String(card.letter).toUpperCase());
+  if(ok){
+    var good=dactylKeyEl(host,card.letter);
+    if(good){ good.classList.remove('mk-hint'); good.classList.add('mk-good'); }
+    dactylFinish(!dactylMiss);
+    return;
+  }
+  var bad=dactylKeyEl(host,ch);
+  if(bad) bad.classList.add('mk-bad');
+  if(!dactylMiss){
+    dactylMiss=true;
+    var hint=dactylKeyEl(host,card.letter);
+    if(hint) hint.classList.add('mk-hint');
+  }
+}
+function dactylFinish(firstTryOk){
+  var st=morseDrillStat('dactyl');
+  if(st){
+    st.attempts++;
+    if(firstTryOk) st.correct++; else st.errors++;
+    saveMorse();                       // счётчики не теряются, даже если закрыть раздел в паузе
+  }
+  dactylHold=true;
+  if(dactylTimer) clearTimeout(dactylTimer);
+  dactylTimer=setTimeout(function(){
+    dactylTimer=null;
+    if(!morseState) return;
+    morseState.currentId=pickNextMorseId(morseState.currentId);
+    morseState.sequence='';
+    saveMorse();
+    dactylFresh();                     // чистые клавиши — следующим буквам ничего не «горит»
+    renderMorse();                     // он же грузит новый жест в приоритете очереди
+  },MORSE_NEXT_MS);
 }
 function morseCommit(ok){
   var card=currentMorseCard();
@@ -5557,6 +5622,7 @@ function finishMorseResult(toGoal){
 
 /* ---------- Открытие раздела ---------- */
 function openMorse(){
+  dactylFresh();          // подсветка клавиш не переносится между заходами в раздел
   if(!morseContent.ready){
     toast(morseContent.error ? 'Не удалось загрузить карточки морзе.' : 'Карточки морзе ещё загружаются, подожди секунду.');
     return;

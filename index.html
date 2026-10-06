@@ -5099,12 +5099,19 @@ function ibLeverOf(e){
 }
 function onMorseDown(e){
   if(typeof state==='undefined' || !state || state.view!=='morse') return;
-  if(e.isPrimary===false) return;
   try{ audioCtx(); }catch(err){}                  // resume() прямо в жесте: к моменту звука контекст активен
   if(e.pointerType==='mouse' && e.button!==0) return;
+  if(morseKeyer()==='iambic'){
+    /* «Два рычага» — ДО гейта isPrimary. Второй палец мультитча ВСЕГДА
+       isPrimary:false: старый порядок съедал его pointerdown, и «сжатие» было
+       физически невозможно (второй рычаг не загорался и не ставил символ).
+       У каждого рычага свой pointerId, в morseLocked/dactyl заходит ibPress. */
+    ibPress(ibLeverOf(e), e);
+    return;
+  }
+  if(e.isPrimary===false) return;   // одиночный «hold»-жест: слушаем только основной палец
   if(morseLocked()) return;
   if(morseDrill==='dactyl') return;   // «Дактиль»: ввод только своей клавиатурой ниже поля
-  if(morseKeyer()==='iambic'){ ibPress(ibLeverOf(e), e); return; }  // «Два рычага»
   if(typeof e.preventDefault==='function') e.preventDefault();
   cancelMorseCheck();                     // новый pointerdown отменяет ожидание автопроверки
   morseHintId=null;                       // новый ввод начался — подсказка после ошибки убирается
@@ -7455,5 +7462,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a466fb055b60e3db',t:'MTc5MTMxMzk3Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

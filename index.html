@@ -358,13 +358,19 @@ html.rm .ms-streak.rec svg{animation:none}
    attribute hidden гасит её глобальным [hidden]{display:none!important} —
    своего !important здесь на display нет именно поэтому: иначе он бы
    побеждал hidden и пустая плашка висела бы внизу чужих экранов. */
-.morse-keyboard{position:fixed;left:0;right:0;bottom:0;z-index:24;display:flex;flex-direction:column;gap:4px;
-  padding:5px 4px calc(6px + env(safe-area-inset-bottom));background:var(--bg)}
+/* «Как системная»: Gboard — плавающая карточка, а не полоса от края до
+   края: свои поля по бокам, скругление, фон на тон светлее страницы и —
+   главное — ряды не липнут к нижнему краю: блок кончается над жестовой
+   полосой (14px + safe-area). Так же и тут. */
+.morse-keyboard{position:fixed;left:6px;right:6px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:24;
+  display:flex;flex-direction:column;gap:6px;padding:9px 6px;border-radius:18px;
+  background:var(--bg2);border:1px solid var(--line);box-shadow:0 12px 30px rgba(0,0,0,.45)}
 /* Экран «Дактиль»: между жестом и приклеенной клавиатурой текста нет —
    строка кода и поле-подсказка скрыты, весь фидбек живёт на клавишах.
    Жест центрируется в свободной зоне; низ колонки отдан под панель
-   (3 ряда × 52px + промежутки + поля ≈ 181px, плюс safe-area снизу). */
-.morse-ex.kbd-mode{justify-content:center;padding-bottom:calc(192px + env(safe-area-inset-bottom))}
+   (3 ряда × 52px + промежутки + поля карточки ≈ 199px, плюс 14px над
+   safe-area). */
+.morse-ex.kbd-mode{justify-content:center;padding-bottom:calc(213px + env(safe-area-inset-bottom))}
 .morse-ex.kbd-mode .morse-imgwrap{width:min(100%,52vh)}
 .morse-ex.kbd-mode .morse-codewrap,
 .morse-ex.kbd-mode .morse-zone{display:none}
@@ -7658,5 +7664,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4659c1a6843f425',t:'MTc5MTI5OTYwMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

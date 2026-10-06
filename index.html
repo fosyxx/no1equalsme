@@ -357,26 +357,26 @@ html.rm .ms-streak.rec svg{animation:none}
    Вне «Дактиля» на панели нет содержимого (клавиши демонтированы), а
    attribute hidden гасит её глобальным [hidden]{display:none!important} —
    своего !important здесь на display нет именно поэтому: иначе он бы
-   побеждал hidden и пустая плашка висела бы внизу чужих экранов. */
-/* «Как системная»: Gboard — плавающая карточка, а не полоса от края до
-   края: свои поля по бокам, скругление, фон на тон светлее страницы и —
-   главное — ряды не липнут к нижнему краю: блок кончается над жестовой
-   полосой (14px + safe-area). Так же и тут. */
-.morse-keyboard{position:fixed;left:6px;right:6px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:24;
-  display:flex;flex-direction:column;gap:6px;padding:9px 6px;border-radius:18px;
-  background:var(--bg2);border:1px solid var(--line);box-shadow:0 12px 30px rgba(0,0,0,.45)}
+   побеждал hidden и пустая плашка висела бы внизу чужих экранов.
+   Метрики — пиксель-в-пиксель со скриншота Gboard (физ. 1080x2400),
+   пересчёт в доли ширины: клавиша 132ф=12.22vw, межрядный зазор 28ф=
+   2.59vw, зазор клавиш и поля 12ф=1.11vw, буква ~68ф=6.3vw. Снизу —
+   «подбородок» 23vw+safe-area: у Gboard текстовый ряд кончается в 321ф
+   от низа экрана (туда попадают строка пробела и системная навигация),
+   панель же тянется до самого края. */
+.morse-keyboard{position:fixed;left:0;right:0;bottom:0;z-index:24;display:flex;flex-direction:column;gap:2.59vw;
+  padding:1.11vw calc(1.11vw - 1px) calc(23vw + env(safe-area-inset-bottom));background:var(--bg)}
 /* Экран «Дактиль»: между жестом и приклеенной клавиатурой текста нет —
    строка кода и поле-подсказка скрыты, весь фидбек живёт на клавишах.
-   Жест центрируется в свободной зоне; низ колонки отдан под панель
-   (3 ряда × 52px + промежутки + поля карточки ≈ 199px, плюс 14px над
-   safe-area). */
-.morse-ex.kbd-mode{justify-content:center;padding-bottom:calc(213px + env(safe-area-inset-bottom))}
-.morse-ex.kbd-mode .morse-imgwrap{width:min(100%,52vh)}
+   Жест центрируется; низ колонки отдан под панель: 1.11 + 3×12.22 +
+   2×2.59 + 23 ≈ 66vw (плюс safe-area). */
+.morse-ex.kbd-mode{justify-content:center;padding-bottom:calc(66vw + env(safe-area-inset-bottom))}
+.morse-ex.kbd-mode .morse-imgwrap{width:min(100%,42vh)}
 .morse-ex.kbd-mode .morse-codewrap,
 .morse-ex.kbd-mode .morse-zone{display:none}
-.mk-row{display:flex;gap:4px}
-.mk-key{flex:1;min-width:0;min-height:52px;border-radius:12px;border:1px solid transparent;
-  background:var(--card2);color:var(--text);font:inherit;font-size:18px;font-weight:600;
+.mk-row{display:flex;gap:1.11vw}
+.mk-key{flex:1;min-width:0;min-height:12.22vw;border-radius:2.4vw;border:1px solid transparent;
+  background:var(--card2);color:var(--text);font:inherit;font-size:6.3vw;font-weight:600;
   padding:0;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
   touch-action:manipulation;transition:background .12s ease,border-color .12s ease,color .12s ease}
 .mk-key:active{background:var(--violet-soft);border-color:var(--violet-line)}

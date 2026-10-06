@@ -358,20 +358,19 @@ html.rm .ms-streak.rec svg{animation:none}
    attribute hidden гасит её глобальным [hidden]{display:none!important} —
    своего !important здесь на display нет именно поэтому: иначе он бы
    побеждал hidden и пустая плашка висела бы внизу чужих экранов. */
-.morse-keyboard{position:fixed;left:0;right:0;bottom:0;z-index:24;display:flex;flex-direction:column;gap:6px;
-  padding:10px 8px calc(10px + env(safe-area-inset-bottom));
-  background:var(--bg);border-top:1px solid var(--line)}
+.morse-keyboard{position:fixed;left:0;right:0;bottom:0;z-index:24;display:flex;flex-direction:column;gap:4px;
+  padding:5px 4px calc(6px + env(safe-area-inset-bottom));background:var(--bg)}
 /* Экран «Дактиль»: между жестом и приклеенной клавиатурой текста нет —
    строка кода и поле-подсказка скрыты, весь фидбек живёт на клавишах.
    Жест центрируется в свободной зоне; низ колонки отдан под панель
-   (3 ряда × 44px + промежутки + поля ≈ 186px, плюс safe-area снизу). */
-.morse-ex.kbd-mode{justify-content:center;padding-bottom:calc(186px + env(safe-area-inset-bottom))}
+   (3 ряда × 52px + промежутки + поля ≈ 181px, плюс safe-area снизу). */
+.morse-ex.kbd-mode{justify-content:center;padding-bottom:calc(192px + env(safe-area-inset-bottom))}
 .morse-ex.kbd-mode .morse-imgwrap{width:min(100%,52vh)}
 .morse-ex.kbd-mode .morse-codewrap,
 .morse-ex.kbd-mode .morse-zone{display:none}
-.mk-row{display:flex;gap:5px}
-.mk-key{flex:1;min-width:0;min-height:44px;border-radius:10px;border:1px solid var(--line);
-  background:var(--card2);color:var(--text);font:inherit;font-size:15px;font-weight:650;
+.mk-row{display:flex;gap:4px}
+.mk-key{flex:1;min-width:0;min-height:52px;border-radius:12px;border:1px solid transparent;
+  background:var(--card2);color:var(--text);font:inherit;font-size:18px;font-weight:600;
   padding:0;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
   touch-action:manipulation;transition:background .12s ease,border-color .12s ease,color .12s ease}
 .mk-key:active{background:var(--violet-soft);border-color:var(--violet-line)}
@@ -5782,7 +5781,10 @@ document.addEventListener('keydown', function(e){
 function buildMorseKeyboard(host){
   if(!host) return;
   host.innerHTML='';
-  var rows=['ЙЦУКЕНГШЩЗХЪ','ФЫВАПРОЛДЖЭ','ЯЧСМИТЬБЮЁ'];
+  /* Раскладка — один в один с системной (Gboard): те же три ряда и
+     разбивка. Ъ и Ё в Gboard живут в долгом нажатии, но под них есть
+     отдельные карточки, поэтому добавлены в конец третьего ряда. */
+  var rows=['ЙЦУКЕНГШЩЗХ','ФЫВАПРОЛДЖЭ','ЯЧСМИТЬБЮЪЁ'];
   for(var r=0;r<rows.length;r++){
     var rowEl=document.createElement('span'); rowEl.className='mk-row';
     for(var i=0;i<rows[r].length;i++){
@@ -7656,5 +7658,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4659c1a6843f425',t:'MTc5MTI5OTYwMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

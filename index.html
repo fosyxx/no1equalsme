@@ -105,8 +105,8 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 
 .view{position:absolute;inset:0;display:flex;flex-direction:column;min-height:0;
   padding:calc(env(safe-area-inset-top,0px) + 10px) 16px calc(env(safe-area-inset-bottom,0px) + 12px);
-  opacity:0;visibility:hidden;transform:translateY(10px);pointer-events:none;
-  transition:opacity var(--dur) ease,transform var(--dur) ease,visibility 0s linear var(--dur)}
+  opacity:0;visibility:hidden;transform:translateY(10px) scale(.996);pointer-events:none;
+  transition:opacity var(--dur) ease,transform var(--dur) cubic-bezier(.2,.9,.3,1.04),visibility 0s linear var(--dur)}
 .view.active{opacity:1;visibility:visible;transform:none;pointer-events:auto;
   transition:opacity var(--dur) ease,transform var(--dur) ease}
 
@@ -141,9 +141,9 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 /* Строка раздела: одна кнопка целиком (иконка + название + состояние + действие) */
 .sec-row{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:12px 6px;
   background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;
-  color:var(--text);font:inherit;text-align:left;cursor:pointer;transition:background .15s ease}
+  color:var(--text);font:inherit;text-align:left;cursor:pointer;transition:background .15s ease,transform .12s ease}
 .sec-row:last-child{border-bottom:0}
-.sec-row:active{background:rgba(143,116,224,.06)}
+.sec-row:active{background:rgba(143,116,224,.06);transform:scale(.994)}
 .sec-row:focus-visible{outline:2px solid var(--violet);outline-offset:-2px;border-radius:14px}
 .sec-row:disabled{opacity:.55;pointer-events:none}
 .sec-ic{width:40px;height:40px;flex:none;border-radius:13px;background:var(--violet-soft);color:var(--violet);display:grid;place-items:center;transition:background .15s,color .15s}
@@ -157,7 +157,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .sec-arr{font-size:16px;font-weight:800;line-height:1;flex:none}
 .sec-check{display:none;font-weight:800;color:var(--green);flex:none}
 .sec-prog{display:none;height:4px;border-radius:99px;background:var(--track);overflow:hidden;margin-top:2px}
-.sec-prog i{display:block;height:100%;width:0;border-radius:99px;background:var(--violet);transition:width .25s ease}
+.sec-prog i{display:block;height:100%;width:0;border-radius:99px;background:var(--violet);transition:width .38s cubic-bezier(.25,.9,.3,1),background .25s ease}
 /* «Ещё разделы»: разворачивает список режимов морзе (Морзе / Дактиль) */
 .sec-more{width:100%;min-height:44px;display:flex;align-items:center;justify-content:center;gap:6px;
   background:transparent;border:0;border-bottom:1px solid var(--line);color:var(--muted);
@@ -176,13 +176,15 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 /* Компактная pill-кнопка результата дня — сразу под сводкой */
 .pill-result{display:inline-flex;align-self:flex-start;align-items:center;gap:6px;min-height:44px;
   padding:8px 16px;margin:0 0 4px;border-radius:999px;border:1px solid var(--green-line);
-  background:var(--green-soft);color:var(--green);font-weight:700;font-size:13.5px;transition:filter .15s}
+  background:var(--green-soft);color:var(--green);font-weight:700;font-size:13.5px;
+  transition:filter .15s;animation:pillIn .3s cubic-bezier(.2,1.45,.35,1) both}
+@keyframes pillIn{from{opacity:0;transform:translateY(6px) scale(.85)}}
 .pill-result:active{filter:brightness(.96)}
 .pill-result:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 .cat-name{font-weight:650;font-size:16px}
 .name-tight{font-size:15px}
 .cat-sub{color:var(--muted);font-size:13px;line-height:1.4}
-.chip{flex:none;font-size:12px;font-weight:600;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 10px;white-space:nowrap}
+.chip{flex:none;font-size:12px;font-weight:600;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 10px;white-space:nowrap;transition:color .2s ease,border-color .2s ease,background .2s ease}
 .chip.is-active{color:var(--violet);border-color:var(--violet-line);background:var(--violet-soft)}
 .chip.is-done{color:var(--green);border-color:var(--green-line);background:var(--green-soft)}
 .arch-row{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:6px 16px;min-height:52px;margin-top:12px;font-weight:600;font-size:14.5px;color:var(--text)}
@@ -206,9 +208,13 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .card-drag{flex:1;min-height:0;max-height:476px;width:100%;max-width:440px;margin-left:auto;margin-right:auto;position:relative;will-change:transform;user-select:none;-webkit-user-select:none;cursor:grab}
 .card-drag.is-drag{cursor:grabbing}
 .card-drag.anim{transition:transform var(--flydur) cubic-bezier(.25,.7,.3,1)}
+/* Улетает — с ускорением (как брошенная), возвращается — с легким
+   перелётом через центр (пружина). Разные кривые для двух фаз. */
+.card-drag.anim.fly{transition-timing-function:cubic-bezier(.6,.04,.85,.32)}
+.card-drag.anim.spring{transition-timing-function:cubic-bezier(.25,1.32,.4,1)}
 .card-drag.no-anim{transition:none!important}
 @keyframes cardIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
-.card-drag.enter{animation:cardIn .24s ease both}
+.card-drag.enter{animation:cardIn .22s cubic-bezier(.2,.9,.28,1.08) both}
 .card-inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform var(--flipdur) cubic-bezier(.35,.1,.25,1)}
 .card-inner.no-anim{transition:none!important}
 .card-drag.flipped .card-inner{transform:rotateY(180deg)}
@@ -319,6 +325,10 @@ html.rm .ms-streak.rec svg{animation:none}
    без инверсий, без белого прямоугольника, object-fit: contain */
 .morse-imgwrap{width:min(100%,42vh);aspect-ratio:1/1;flex:none;margin:0 auto;position:relative;border-radius:22px;overflow:hidden;background:#0b0b0f;border:1px solid var(--line);display:grid;place-items:center;padding:10px}
 .morse-imgwrap img{width:100%;height:100%;object-fit:contain;display:block}
+/* смена карточки: контейнер жеста (или буквы) мягко «въезжает» — взгляд
+   понимает, что это уже другой вопрос, без резкой подмены */
+.morse-imgwrap.swap,.morse-bigletter.swap{animation:swapIn .24s cubic-bezier(.2,.9,.3,1.05) both}
+@keyframes swapIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
 .morse-img-load{color:#7b7490;font-size:13px}
 /* Режим «Морзе»: вместо жеста — крупная буква того же размера, что и картинка */
 .morse-bigletter{width:min(100%,42vh);aspect-ratio:1/1;flex:none;margin:0 auto;border-radius:22px;
@@ -327,23 +337,32 @@ html.rm .ms-streak.rec svg{animation:none}
 .morse-img-err{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;color:var(--muted);font-size:13px;padding:14px}
 .morse-codewrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:54px}
 .morse-code{font-size:28px;font-weight:750;letter-spacing:.14em;min-height:34px;color:var(--text)}
+/* свіжий символ «вбивається» в рядок з розгоном — відчуття натискання */
+.morse-code .cs{display:inline-block}
+.morse-code .cs.new{animation:csPop .18s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes csPop{from{opacity:0;transform:scale(.3) translateY(-6px)}to{opacity:1;transform:none}}
+#morseStreakN{display:inline-block}
+#morseStreakN.bump{animation:streakBump .34s cubic-bezier(.2,1.6,.4,1)}
+@keyframes streakBump{40%{transform:translateY(-3px) scale(1.3)}}
 .morse-cue{font-size:13px;color:var(--faint)}
 /* Единственная зона ввода: удержание = точка/тире, кнопки «Проверить» нет */
-.morse-zone{position:relative;width:100%;min-height:220px;border-radius:20px;border:1px solid var(--line);background:var(--card2);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:18px 16px 24px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer;transition:border-color .12s ease,background .12s ease,box-shadow .12s ease;text-align:center;font:inherit}
+.morse-zone{position:relative;width:100%;min-height:220px;border-radius:20px;border:1px solid var(--line);background:var(--card2);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:18px 16px 24px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer;transition:border-color .12s ease,background .12s ease,box-shadow .2s ease;text-align:center;font:inherit}
 .mz-idle{display:flex;flex-direction:column;align-items:center;gap:6px}
 .mz-main{font-size:19px;font-weight:750}
 .mz-sub{font-size:13px;color:var(--muted)}
 .mz-whint{font-size:13.5px;font-weight:650;color:var(--muted);line-height:1.4}
 .morse-zone.press{border-color:var(--violet-line);background:var(--violet-soft)}
 .morse-zone.press .mz-main{color:var(--violet)}
-.morse-zone.ok{border-color:var(--green-line);background:var(--green-soft);box-shadow:0 0 30px rgba(130,185,145,.18)}
-.morse-zone.bad{border-color:var(--red-line);background:var(--red-soft);box-shadow:0 0 30px rgba(214,141,141,.18)}
+.morse-zone.ok{border-color:var(--green-line);background:var(--green-soft);box-shadow:0 0 30px rgba(130,185,145,.18);animation:zoneOk .38s cubic-bezier(.2,1.55,.4,1)}
+.morse-zone.bad{border-color:var(--red-line);background:var(--red-soft);box-shadow:0 0 30px rgba(214,141,141,.18);animation:zoneBad .3s ease}
+@keyframes zoneOk{0%{transform:scale(1)}32%{transform:scale(1.013)}100%{transform:scale(1)}}
+@keyframes zoneBad{15%,45%,75%{transform:translateX(-3px)}30%,60%,90%{transform:translateX(3px)}}
 .morse-zone.locked{cursor:default}
 /* Два рычага: одно поле, разделённое на две «ручки» (ямбический ключ) */
 .mz-levers{position:absolute;inset:0;display:flex;z-index:3;border-radius:inherit;overflow:hidden}
 .mz-lever{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
   color:var(--muted);font-size:13px;user-select:none;-webkit-user-select:none;touch-action:none;
-  transition:background .1s ease,color .1s ease}
+  transition:background .1s ease,color .1s ease,box-shadow .22s ease}
 .mz-lever+.mz-lever{border-left:1px solid var(--line)}
 /* Подсветка нажатой половины. Подписей на рычагах больше нет: они
    накладывались на подсказку «верный код», которая показывается под ними.
@@ -365,7 +384,10 @@ html.rm .ms-streak.rec svg{animation:none}
    от низа экрана (туда попадают строка пробела и системная навигация),
    панель же тянется до самого края. */
 .morse-keyboard{position:fixed;left:0;right:0;bottom:0;z-index:24;display:flex;flex-direction:column;gap:2.59vw;
-  padding:1.11vw calc(1.11vw - 1px) calc(23vw + env(safe-area-inset-bottom));background:var(--bg)}
+  padding:1.11vw calc(1.11vw - 1px) calc(23vw + env(safe-area-inset-bottom));background:var(--bg);
+  animation:kbdRise .26s cubic-bezier(.2,.9,.3,1) both}
+/* панель «виїжджає» з-під краю, як системна клавіатура */
+@keyframes kbdRise{from{transform:translateY(40%);opacity:0}to{transform:none;opacity:1}}
 /* Экран «Дактиль»: между жестом и приклеенной клавиатурой текста нет —
    строка кода и поле-подсказка скрыты, весь фидбек живёт на клавишах.
    Жест центрируется; низ колонки отдан под панель: 1.11 + 3×12.22 +
@@ -378,25 +400,36 @@ html.rm .ms-streak.rec svg{animation:none}
 .mk-key{flex:1;min-width:0;min-height:12.22vw;border-radius:2.4vw;border:1px solid transparent;
   background:var(--card2);color:var(--text);font:inherit;font-size:6.3vw;font-weight:600;
   padding:0;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
-  touch-action:manipulation;transition:background .12s ease,border-color .12s ease,color .12s ease}
-.mk-key:active{background:var(--violet-soft);border-color:var(--violet-line)}
+  touch-action:manipulation;transition:background .12s ease,border-color .12s ease,color .12s ease,transform .12s cubic-bezier(.3,1.4,.4,1)}
+.mk-key:active{background:var(--violet-soft);border-color:var(--violet-line);transform:scale(.9)}
 /* Статусные цвета клавиш: красная — по ней промахнулись (горит до конца
    вопроса), жёлтая пульсация — подсказка нужной буквы, зелёная — верный
    тап загорается на полсекунды перед следующей буквой. */
-.mk-key.mk-bad{background:rgba(255,96,96,.20);border-color:#ff6060;color:#ffb3b3}
+.mk-key.mk-bad{background:rgba(255,96,96,.20);border-color:#ff6060;color:#ffb3b3;animation:mkBad .24s ease}
 .mk-key.mk-hint{background:rgba(255,206,84,.18);border-color:#ffce54;color:#ffe4a3;
   animation:mkHint .9s ease-in-out infinite}
-.mk-key.mk-good{background:rgba(120,200,140,.24);border-color:#78c88c;color:#c4f0cd}
-@keyframes mkHint{0%,100%{box-shadow:0 0 0 0 rgba(255,206,84,0)}50%{box-shadow:0 0 16px 2px rgba(255,206,84,.45)}}
+.mk-key.mk-good{background:rgba(120,200,140,.24);border-color:#78c88c;color:#c4f0cd;animation:mkGood .36s cubic-bezier(.2,1.6,.4,1)}
+@keyframes mkHint{0%,100%{box-shadow:0 0 0 0 rgba(255,206,84,0);transform:scale(1)}50%{box-shadow:0 0 16px 2px rgba(255,206,84,.45);transform:scale(1.05)}}
+@keyframes mkBad{20%,60%{transform:translateX(-3px)}40%,80%{transform:translateX(3px)}}
+@keyframes mkGood{35%{transform:scale(1.14);box-shadow:0 0 0 5px rgba(120,200,140,.22)}}
 .mz-result{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
-.mz-letter{font-size:36px;font-weight:800;line-height:1}
-.mz-codes{font-size:15.5px;font-weight:650;letter-spacing:.04em}
-.mz-verdict{font-size:15px;font-weight:800;letter-spacing:.1em}
+/* Каскад раскрытия результата: буква «штампуется», код и вердикт
+   подплывают с шагом 80 мс — взгляд успевает прочитать по порядку. */
+.mz-letter{font-size:36px;font-weight:800;line-height:1;animation:stampIn .28s cubic-bezier(.2,1.5,.4,1) both}
+.mz-codes{font-size:15.5px;font-weight:650;letter-spacing:.04em;animation:riseSoft .2s .08s both}
+.mz-verdict{font-size:15px;font-weight:800;letter-spacing:.1em;animation:riseSoft .2s .16s both}
+@keyframes stampIn{from{opacity:0;transform:scale(.55) rotate(-6deg)}to{opacity:1;transform:none}}
+@keyframes riseSoft{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 .morse-zone.ok .mz-verdict{color:var(--green)}
 .morse-zone.bad .mz-verdict{color:var(--red)}
 .mz-hint{font-size:12.5px;color:var(--muted);line-height:1.45;max-width:46ch}
-.morse-goal{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:10px 4px}
-.morse-goal-ic{width:64px;height:64px;border-radius:50%;background:var(--green-soft);border:1px solid var(--green-line);display:grid;place-items:center;color:var(--green);margin-bottom:2px}
+.morse-goal{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:10px 4px;animation:goalIn .32s cubic-bezier(.2,.9,.3,1.04) both}
+@keyframes goalIn{from{opacity:0;transform:translateY(14px) scale(.98)}}
+.morse-goal-ic{width:64px;height:64px;border-radius:50%;background:var(--green-soft);border:1px solid var(--green-line);display:grid;place-items:center;color:var(--green);margin-bottom:2px;animation:icPop .42s .1s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes icPop{from{opacity:0;transform:scale(.4)}}
+/* галочка «дорисовывается» — у цели есть момент, его стоит отметить */
+.morse-goal-ic svg path{stroke-dasharray:34;stroke-dashoffset:34;animation:drawCheck .4s .28s ease forwards}
+@keyframes drawCheck{to{stroke-dashoffset:0}}
 .morse-goal-ic svg{width:30px;height:30px}
 .morse-goal h2{font-size:23px;font-weight:750}
 .mg-line{font-size:15px;color:var(--muted)}
@@ -578,13 +611,16 @@ html.rm .ms-streak.rec svg{animation:none}
 .backup-note{font-size:12px;color:var(--muted);line-height:1.45;margin-top:10px}
 
 /* ---------- Тост ---------- */
-.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%) translateY(8px);z-index:80;max-width:min(88vw,380px);background:var(--card2);border:1px solid var(--line);color:var(--text);font-size:13.5px;line-height:1.4;padding:11px 16px;border-radius:14px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;text-align:center;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%) translateY(8px);z-index:80;max-width:min(88vw,380px);background:var(--card2);border:1px solid var(--line);color:var(--text);font-size:13.5px;line-height:1.4;padding:11px 16px;border-radius:14px;opacity:0;transform:translateX(-50%) translateY(8px) scale(.97);transition:opacity .2s,transform .26s cubic-bezier(.2,1.25,.35,1);pointer-events:none;text-align:center;box-shadow:0 12px 30px rgba(0,0,0,.45)}
 .toast.show{opacity:1;transform:translateX(-50%)}
 
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion:reduce){
   :root{--dur:.05s;--flipdur:.02s;--flydur:.08s}
   .card-drag.enter{animation:none}
+  /* новый «слой» анимаций тоже гасим целиком: никаких pop'ов, трясок,
+     пульсаций и каскадов — только мгновенная смена состояний */
+  *,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
 }
 html.rm .card-inner{transform:none!important;transition:none!important}
 html.rm .card-back{transform:none;opacity:0;visibility:hidden;transition:opacity .14s ease,visibility 0s linear .14s}
@@ -2565,28 +2601,28 @@ function setDragVisual(dx){
 function springBack(cb){
   elCardDrag.classList.remove('is-drag');
   elCardDrag.classList.remove('enter');
-  elCardDrag.classList.add('anim');
+  elCardDrag.classList.add('anim','spring');
   elCardDrag.style.transform='';
   clearDragVisual();
-  setTimeout(function(){ elCardDrag.classList.remove('anim'); if(cb) cb(); }, D.spring);
+  setTimeout(function(){ elCardDrag.classList.remove('anim','spring'); if(cb) cb(); }, D.spring);
 }
 /* Плавно вернуть карточку в центр из положения свайпа (без засчитывания ответа) */
 function returnToCenter(){
   elCardDrag.classList.remove('is-drag','enter');
   clearDragVisual();
   if(elCardDrag.style.transform){
-    elCardDrag.classList.add('anim');
+    elCardDrag.classList.add('anim','spring');
     elCardDrag.style.transform='';
-    setTimeout(function(){ elCardDrag.classList.remove('anim'); }, D.spring);
+    setTimeout(function(){ elCardDrag.classList.remove('anim','spring'); }, D.spring);
   }
 }
 function flyCard(dir, cb){
   elCardDrag.classList.remove('is-drag','enter');
-  elCardDrag.classList.add('anim');
+  elCardDrag.classList.add('anim','fly');
   var w=(elCardArea.clientWidth||window.innerWidth)+120;
-  elCardDrag.style.transform='translateX('+(dir*w)+'px) rotate('+(dir*9)+'deg)';
+  elCardDrag.style.transform='translateX('+(dir*w)+'px) rotate('+(dir*9)+'deg) scale(.93)';
   setTimeout(function(){
-    elCardDrag.classList.remove('anim');
+    elCardDrag.classList.remove('anim','fly');
     elCardDrag.classList.add('no-anim');
     elCardDrag.style.transform='';
     clearDragVisual();
@@ -4925,6 +4961,9 @@ function renderMorseHome(){
    нового ввода (см. onMorseDown). Живёт в памяти — косметика, состояние
    пароля/счётчиков не затрагивает. */
 var morseHintId=null;
+/* косметика анимаций: длина кода на прошлом рендере (pop только у свежего
+   символа) и id показанной карточки (фейд при смене вопроса) */
+var morseCodeLen=0,morseShownCardId=null,morseShownStreak=-1;
 function renderMorse(){
   if(!morseState) return;
   ensureMorseDay();
@@ -4965,6 +5004,9 @@ function renderMorse(){
     if(isSign){
       var sc=morseState.streak|0;
       stkN.textContent=String(sc);
+      /* рост серии — короткий «bump» цифры: прогресс должен быть ощутим */
+      if(sc>0 && sc!==morseShownStreak){ stkN.classList.remove('bump'); void stkN.offsetWidth; stkN.classList.add('bump'); }
+      morseShownStreak=sc;
       stk.classList.toggle('rec', sc>0 && sc>=(morseState.streakBest|0));
     }
   }
@@ -4996,8 +5038,33 @@ function renderMorse(){
       img.hidden=true; imgLoad.hidden=false; imgErr.hidden=true;
     }
   }
-  /* строка введённого кода */
-  $('morseCode').textContent=prettyCode(morseState.sequence);
+  /* строка введённого кода: символы в span'ах — последний «вбивается»
+     анимацией. textContent остаётся посимвольно равным prettyCode(),
+     строковые проверки не зависят от разметки. */
+  var codeEl=$('morseCode');
+  var codeStr=prettyCode(morseState.sequence);
+  var codeLen=codeStr?codeStr.split(' ').length:0;
+  if(codeStr){
+    var cparts=codeStr.split(' ');
+    var chtm='';
+    for(var q=0;q<cparts.length;q++){
+      chtm+='<span class="cs'+(q===cparts.length-1&&codeLen!==morseCodeLen?' new':'')+'">'+cparts[q]+'</span>';
+      if(q<cparts.length-1) chtm+=' ';
+    }
+    codeEl.innerHTML=chtm;
+  } else {
+    codeEl.innerHTML='';
+  }
+  morseCodeLen=codeLen;
+  /* смена вопроса — фейд картинки/буквы (первый показ тоже считается) */
+  var shownNow=card?card.id:null;
+  if(shownNow!==morseShownCardId){
+    morseShownCardId=shownNow;
+    if(shownNow){
+      var swEl=(morseDrill==='letter')?bigL:imgWrap;
+      if(swEl){ swEl.classList.remove('swap'); void swEl.offsetWidth; swEl.classList.add('swap'); }
+    }
+  }
   /* Подсказка после ошибки: какая это буква и каким кодом она пишется.
      Показывается, пока ввод не начался заново; заменяет cue, чтобы не
      дублировать две строки с одинаковым смыслом. */
@@ -6790,11 +6857,11 @@ function lsBackProceed(){
 /* ---------- Анимации и жесты (по образцу слов) ---------- */
 function lsFly(dir, cb){
   $('lsDrag').classList.remove('is-drag','enter');
-  $('lsDrag').classList.add('anim');
+  $('lsDrag').classList.add('anim','fly');
   var w=($('lsCardArea').clientWidth||window.innerWidth)+120;
-  $('lsDrag').style.transform='translateX('+(dir*w)+'px) rotate('+(dir*9)+'deg)';
+  $('lsDrag').style.transform='translateX('+(dir*w)+'px) rotate('+(dir*9)+'deg) scale(.93)';
   setTimeout(function(){
-    $('lsDrag').classList.remove('anim');
+    $('lsDrag').classList.remove('anim','fly');
     $('lsDrag').classList.add('no-anim');
     $('lsDrag').style.transform='';
     lsClearVisual();
@@ -6831,10 +6898,10 @@ function lsSetVisual(dx){
 }
 function lsSpringBack(cb){
   $('lsDrag').classList.remove('is-drag','enter');
-  $('lsDrag').classList.add('anim');
+  $('lsDrag').classList.add('anim','spring');
   $('lsDrag').style.transform='';
   lsClearVisual();
-  setTimeout(function(){ $('lsDrag').classList.remove('anim'); if(cb) cb(); }, D.spring);
+  setTimeout(function(){ $('lsDrag').classList.remove('anim','spring'); if(cb) cb(); }, D.spring);
 }
 function lsOnDown(e){
   if(!(typeof state!=='undefined' && state && state.view==='langsession')) return;

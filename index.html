@@ -345,13 +345,21 @@ html.rm .ms-streak.rec svg{animation:none}
   color:var(--muted);font-size:13px;user-select:none;-webkit-user-select:none;touch-action:none;
   transition:background .1s ease,color .1s ease}
 .mz-lever+.mz-lever{border-left:1px solid var(--line)}
-.mz-lever b{font-size:27px;line-height:1;color:var(--text);font-weight:800;transition:color .1s}
-.mz-lever.press{background:var(--violet-soft);color:var(--violet)}
-.mz-lever.press b{color:var(--violet)}
-/* Поле для системной клавиатуры (дактиль): невидимо, но фокусируемо */
-.morse-keyinput{position:absolute;inset:0;width:100%;height:100%;opacity:0;border:0;outline:0;
-  background:transparent;color:transparent;caret-color:transparent;font-size:16px;
-  z-index:6;pointer-events:none}
+/* Подсветка нажатой половины. Подписей на рычагах больше нет: они
+   накладывались на подсказку «верный код», которая показывается под ними.
+   Feedback даёт цвет: слева (точки) — синее свечение, справа (тире) — красное. */
+.mz-lever[data-lever=dot].press{background:rgba(93,140,255,.16);color:#9db4ff;
+  box-shadow:inset 0 0 64px 10px rgba(93,140,255,.40)}
+.mz-lever[data-lever=dash].press{background:rgba(255,96,96,.15);color:#ffa5a5;
+  box-shadow:inset 0 0 64px 10px rgba(255,96,96,.38)}
+/* Своя клавиатура «Дактиля»: панель букв под полем (системная в webview мигает) */
+.morse-keyboard{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.mk-row{display:flex;gap:5px}
+.mk-key{flex:1;min-width:0;min-height:42px;border-radius:10px;border:1px solid var(--line);
+  background:var(--card2);color:var(--text);font:inherit;font-size:15px;font-weight:650;
+  padding:0;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;transition:background .1s ease,border-color .1s ease}
+.mk-key:active{background:var(--violet-soft);border-color:var(--violet-line)}
 .mz-result{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
 .mz-letter{font-size:36px;font-weight:800;line-height:1}
 .mz-codes{font-size:15.5px;font-weight:650;letter-spacing:.04em}
@@ -810,16 +818,9 @@ html.rm .card-drag.flipped .card-front{opacity:0}
             <span class="mz-whint" id="morseWrongHint" hidden></span>
           </span>
           <span class="mz-levers" id="morseLevers" hidden>
-            <span class="mz-lever" id="leverDot" data-lever="dot"><b>•</b><span>точки</span></span>
-            <span class="mz-lever" id="leverDash" data-lever="dash"><b>—</b><span>тире</span></span>
+            <span class="mz-lever" id="leverDot" data-lever="dot" aria-label="Точки"></span>
+            <span class="mz-lever" id="leverDash" data-lever="dash" aria-label="Тире"></span>
           </span>
-          <!-- Невидимая «приёмная» для системной клавиатуры: на телефоне
-               буквальная клавиатура недоступна, фокус на этом поле открывает
-               её; тапы идут в поле зоны (pointer-events:none), фокус ставим
-               сами в onMorseDown. -->
-          <input type="text" class="morse-keyinput" id="morseKeyInput"
-            autocomplete="off" autocorrect="off" autocapitalize="off"
-            spellcheck="false" inputmode="text" aria-label="Ввод буквы">
           <span class="mz-result" id="morseResult" hidden>
             <b class="mz-letter" id="morseResLetter"></b>
             <span class="mz-codes" id="morseResCodes"></span>
@@ -827,6 +828,10 @@ html.rm .card-drag.flipped .card-front{opacity:0}
             <span class="mz-hint" id="morseResHint"></span>
           </span>
         </button>
+        <!-- Своя клавиатура для «Дактиля»: строки ЙЦУКЕН, 33 буквы.
+             Системную не зовём вовсе: в мобильном webview она открывается
+             и сразу закрывается, а панель всегда под глазами. -->
+        <div class="morse-keyboard" id="morseKeyboard" hidden></div>
       </div>
       <div class="morse-goal" id="morseGoal" hidden>
         <div class="morse-goal-ic" aria-hidden="true">
@@ -2269,9 +2274,6 @@ function updateTgBack(){
 function showView(v){
   try{ stopLangSpeech(); }catch(e){}   // любой переход гасит речь
   try{ if(typeof langAudioStop==='function') langAudioStop(); }catch(e){}  // и MP3: новая карточка/выход/сворачивание
-  if(v!=='morse'){ // клавиатура дактиля закрывается при уходе с экрана
-    try{ var ki0=$('morseKeyInput'); if(ki0 && document.activeElement===ki0) ki0.blur(); }catch(e){}
-  }
   state.view=v; save();
   Object.keys(elViews).forEach(function(k){ elViews[k].classList.toggle('active', k===v); });
   if(v==='home') renderHome();
@@ -4988,13 +4990,25 @@ function renderMorse(){
   zone.classList.toggle('locked', locked);
   $('morseZoneIdle').hidden=locked;
   $('morseResult').hidden=!locked;
+  /* Своя клавиатура: только «Дактиль» и только пока идёт ввод. Пока она
+     не нужна — полностью демонтируется: скрытый текст букв в DOM не должен
+     светиться ни в одном другом режиме (тот же принцип, что «буква не
+     видна до проверки»). Слушатель кликов висит на контейнере — его
+     пересборка содержимого не ломает. */
+  var kbdEl=$('morseKeyboard');
+  if(kbdEl){
+    var wantKbd=(morseDrill==='dactyl' && !locked);
+    if(wantKbd && kbdEl.childElementCount===0) buildMorseKeyboard(kbdEl);
+    if(!wantKbd && kbdEl.childElementCount>0) kbdEl.innerHTML='';
+    kbdEl.hidden=!wantKbd;
+  }
   /* «Два рычага»: внутри обычного поля — две ручки (точки/тире) */
   var leversOn=(morseState.mode==='input' && morseKeyer()==='iambic' && morseDrill!=='dactyl');
   $('morseLevers').hidden=!leversOn;
   $('morseZoneMain').hidden=leversOn;
   $('morseZoneHint').hidden=leversOn;
   zone.setAttribute('aria-label', morseDrill==='dactyl'
-    ? 'Поле ответа: нажми букву на клавиатуре'
+    ? 'Поле ответа: нажми букву на клавиатуре ниже'
     : (leversOn ? 'Два рычага: слева — точки, справа — тире; зажми оба — чередование'
                 : 'Зона ввода: удерживай, коротко — точка, долго — тире'));
   if(locked && card){
@@ -5011,8 +5025,8 @@ function renderMorse(){
     }
   } else if(!locked){
     if(morseDrill==='dactyl'){
-      $('morseZoneMain').textContent='Клавиатура';
-      $('morseZoneHint').textContent='нажми нужную букву';
+      $('morseZoneMain').textContent='Дактиль';
+      $('morseZoneHint').textContent='нажми букву на клавиатуре ниже';
     } else {
       $('morseZoneMain').textContent='Удерживай';
       $('morseZoneHint').textContent='коротко — точка · долго — тире —';
@@ -5332,10 +5346,7 @@ function onMorseDown(e){
   if(e.isPrimary===false) return;
   if(e.pointerType==='mouse' && e.button!==0) return;
   if(morseLocked()) return;
-  if(morseDrill==='dactyl'){          // «Дактиль»: только с клавиатуры; тап открывает её
-    focusMorseKey();
-    return;
-  }
+  if(morseDrill==='dactyl') return;   // «Дактиль»: ввод только своей клавиатурой ниже поля
   if(morseKeyer()==='iambic'){ ibPress(ibLeverOf(e), e); return; }  // «Два рычага»
   if(typeof e.preventDefault==='function') e.preventDefault();
   cancelMorseCheck();                     // новый pointerdown отменяет ожидание автопроверки
@@ -5531,20 +5542,12 @@ function finishMorseResult(toGoal){
 }
 
 /* ---------- Открытие раздела ---------- */
-function focusMorseKey(){
-  try{
-    if(morseDrill!=='dactyl' || !state || state.view!=='morse') return;
-    var ki=$('morseKeyInput');
-    if(ki && document.activeElement!==ki) ki.focus({preventScroll:true});
-  }catch(e){}
-}
 function openMorse(){
   if(!morseContent.ready){
     toast(morseContent.error ? 'Не удалось загрузить карточки морзе.' : 'Карточки морзе ещё загружаются, подожди секунду.');
     return;
   }
   ensureMorseDay();
-  var ki0=$('morseKeyInput'); if(ki0) ki0.value=''; // мусор от прошлой раскладки не мешает
   if(morseDrill!=='sign' && (morseState.mode==='correct' || morseState.mode==='incorrect')){
     /* экран результата принадлежал другому разделу — гасим его, ввод чистый */
     morseState.sequence='';
@@ -5569,7 +5572,6 @@ function openMorse(){
   preloadMorseImages(); // остальные — той же очередью (лимит MORSE_IMG_PAR запросов)
   if(morseState.mode==='correct'||morseState.mode==='incorrect') armResultHold();
   showView('morse');
-  focusMorseKey(); // дактиль: открыли по тапу — системная клавиатура сразу готова
 }
 
 /* ---------- События ---------- */
@@ -5693,21 +5695,33 @@ document.addEventListener('keydown', function(e){
   if(typeof e.preventDefault==='function') e.preventDefault();
   runMorseKey(k);
 });
-/* Мобильные клавиатуры iOS/Android присылают букву через событие input
-   (keydown там ненадёжен) — ловим оба пути. Двойной зачёт невозможен:
-   если сначала сработал keydown, режим уже не input и эта ветка молчит. */
-(function(){
-  var kiEl=$('morseKeyInput');
-  if(!kiEl) return;
-  kiEl.addEventListener('input', function(){
-    var v=kiEl.value||'';
-    kiEl.value='';
-    if(!v) return;
-    if(!state || state.view!=='morse' || morseDrill!=='dactyl' || morseLocked()) return;
-    var ch=v.charAt(v.length-1);
-    if(/^[а-яёa-z]$/i.test(ch)) runMorseKey(ch);
-  });
-})();
+/* Своя клавиатура «Дактиля»: раскладка ЙЦУКЕН (Ё — в третьем ряду),
+   все 33 буквы из карточек. Клик идёт в тот же runMorseKey, что и
+   физическая клавиатура. Лишние нажатия молчат: гейт режима
+   в runMorseKey снимает ввод сразу после первого ответа. */
+function buildMorseKeyboard(host){
+  if(!host) return;
+  host.innerHTML='';
+  var rows=['ЙЦУКЕНГШЩЗХЪ','ФЫВАПРОЛДЖЭ','ЯЧСМИТЬБЮЁ'];
+  for(var r=0;r<rows.length;r++){
+    var rowEl=document.createElement('span'); rowEl.className='mk-row';
+    for(var i=0;i<rows[r].length;i++){
+      var ch=rows[r].charAt(i);
+      var b=document.createElement('button');
+      b.type='button'; b.className='mk-key'; b.textContent=ch;
+      b.setAttribute('data-key',ch);
+      rowEl.appendChild(b);
+    }
+    host.appendChild(rowEl);
+  }
+}
+$('morseKeyboard').addEventListener('click', function(e){
+  var b=(e.target && typeof e.target.closest==='function')?e.target.closest('button[data-key]'):null;
+  if(!b) return;
+  if(typeof state==='undefined' || !state || state.view!=='morse') return;
+  if(morseDrill!=='dactyl' || morseLocked()) return;
+  runMorseKey(b.getAttribute('data-key'));
+});
 window.addEventListener('pagehide', saveMorse);
 window.addEventListener('beforeunload', saveMorse);
 

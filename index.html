@@ -208,9 +208,8 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);ou
 .card-drag{flex:1;min-height:0;max-height:476px;width:100%;max-width:440px;margin-left:auto;margin-right:auto;position:relative;will-change:transform;user-select:none;-webkit-user-select:none;cursor:grab}
 .card-drag.is-drag{cursor:grabbing}
 .card-drag.anim{transition:transform var(--flydur) cubic-bezier(.25,.7,.3,1)}
-/* Улетает — с ускорением (как брошенная), возвращается — с легким
-   перелётом через центр (пружина). Разные кривые для двух фаз. */
-.card-drag.anim.fly{transition-timing-function:cubic-bezier(.6,.04,.85,.32)}
+/* Возврат недотянутой карточки — с легким перелётом через центр (пружина).
+   Улёт оставлен как был: отдельная «ускоряющая» фаза не прижилась. */
 .card-drag.anim.spring{transition-timing-function:cubic-bezier(.25,1.32,.4,1)}
 .card-drag.no-anim{transition:none!important}
 @keyframes cardIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
@@ -353,10 +352,12 @@ html.rm .ms-streak.rec svg{animation:none}
 .mz-whint{font-size:13.5px;font-weight:650;color:var(--muted);line-height:1.4}
 .morse-zone.press{border-color:var(--violet-line);background:var(--violet-soft)}
 .morse-zone.press .mz-main{color:var(--violet)}
-.morse-zone.ok{border-color:var(--green-line);background:var(--green-soft);box-shadow:0 0 30px rgba(130,185,145,.18);animation:zoneOk .38s cubic-bezier(.2,1.55,.4,1)}
-.morse-zone.bad{border-color:var(--red-line);background:var(--red-soft);box-shadow:0 0 30px rgba(214,141,141,.18);animation:zoneBad .3s ease}
-@keyframes zoneOk{0%{transform:scale(1)}32%{transform:scale(1.013)}100%{transform:scale(1)}}
-@keyframes zoneBad{15%,45%,75%{transform:translateX(-3px)}30%,60%,90%{transform:translateX(3px)}}
+.morse-zone.ok{border-color:var(--green-line);background:var(--green-soft);box-shadow:0 0 30px rgba(130,185,145,.18);animation:zoneOk .5s ease}
+.morse-zone.bad{border-color:var(--red-line);background:var(--red-soft);box-shadow:0 0 30px rgba(214,141,141,.18);animation:zoneBad .5s ease}
+/* Никаких transform на самой зоне: у неё overflow:hidden, и тряска/рост
+   «срезали» содержимое (рычаги, рамку). Отклик — свечением рамки. */
+@keyframes zoneOk{30%{box-shadow:0 0 46px 8px rgba(130,185,145,.42),0 0 0 1px rgba(130,185,145,.5)}}
+@keyframes zoneBad{30%{box-shadow:0 0 46px 8px rgba(214,141,141,.42),0 0 0 1px rgba(214,141,141,.5)}}
 .morse-zone.locked{cursor:default}
 /* Два рычага: одно поле, разделённое на две «ручки» (ямбический ключ) */
 .mz-levers{position:absolute;inset:0;display:flex;z-index:3;border-radius:inherit;overflow:hidden}
@@ -1159,6 +1160,17 @@ html.rm .card-drag.flipped .card-front{opacity:0}
       <div class="seg" role="radiogroup" aria-label="Ввод морзе">
         <button class="seg-btn" role="radio" aria-checked="false" data-keyer-btn="hold">Как сейчас</button>
         <button class="seg-btn" role="radio" aria-checked="false" data-keyer-btn="iambic">Два рычага</button>
+      </div>
+    </div>
+    <div class="set-row set-row-col">
+      <div class="set-text">
+        <span class="set-name">Ритм «двух рычагов»</span>
+        <span class="set-sub">Как быстро ставятся символы, пока рычаг зажат</span>
+      </div>
+      <div class="seg" role="radiogroup" aria-label="Ритм ключа">
+        <button class="seg-btn" role="radio" aria-checked="false" data-rhythm-btn="420">Размеренно</button>
+        <button class="seg-btn" role="radio" aria-checked="false" data-rhythm-btn="300">Средне</button>
+        <button class="seg-btn" role="radio" aria-checked="false" data-rhythm-btn="210">Быстро</button>
       </div>
     </div>
     <div class="set-row set-row-col">
@@ -2618,11 +2630,11 @@ function returnToCenter(){
 }
 function flyCard(dir, cb){
   elCardDrag.classList.remove('is-drag','enter');
-  elCardDrag.classList.add('anim','fly');
+  elCardDrag.classList.add('anim');
   var w=(elCardArea.clientWidth||window.innerWidth)+120;
-  elCardDrag.style.transform='translateX('+(dir*w)+'px) rotate('+(dir*9)+'deg) scale(.93)';
+  elCardDrag.style.transform='translateX('+(dir*w)+'px) rotate('+(dir*9)+'deg)';
   setTimeout(function(){
-    elCardDrag.classList.remove('anim','fly');
+    elCardDrag.classList.remove('anim');
     elCardDrag.classList.add('no-anim');
     elCardDrag.style.transform='';
     clearDragVisual();
@@ -2948,6 +2960,7 @@ function openSettings(){
   syncTestSwitch();
   renderTestBlock();
   try{ syncKeyerSeg(); }catch(e){}   // переключатель «Ввод морзе»
+  try{ syncRhythmSeg(); }catch(e){}  // и «Ритм двух рычагов»
   elArchSettingsCount.textContent=String(learnedCount());
   requestAnimationFrame(function(){ elOverlay.classList.add('show'); });
 }
@@ -4523,7 +4536,7 @@ function loadMorseContent(){
 function freshMorseState(){
   return {schemaVersion:1, day:realToday(), dailyCorrect:0, dailyAttempts:0, dailyErrors:0,
           weaknessScore:{}, currentId:null, sequence:'', mode:'input', freeMode:false,
-          sound:true, vibeInput:false, keyer:'hold', history:{}, letterStats:{}, streak:0, streakBest:0, updatedAt:Date.now(),
+          sound:true, vibeInput:false, keyer:'hold', rhythm:300, history:{}, letterStats:{}, streak:0, streakBest:0, updatedAt:Date.now(),
           /* Своя точность у «Морзе» и «Дактиль»: отдельные счётчики, своя
              суточная сброска, без дневной нормы. Живут только локально в этом
              ключе — в статистику дня и в облако не попадают. */
@@ -4564,6 +4577,9 @@ function loadMorseState(){
     sound:(typeof s.sound==='boolean') ? s.sound : true,
     vibeInput:!!s.vibeInput,
     keyer:(s.keyer==='iambic') ? 'iambic' : 'hold',   // старые сохранения → «Как сейчас»
+    /* Ритм ямбического ключа (мс на символ при зажатом рычаге). Три ступени;
+       всё, что не попало в них (включая старые сохранения), — «Средне». */
+    rhythm:(s.rhythm===420 || s.rhythm===210) ? s.rhythm : 300,
     drills:normalizeMorseDrills(s.drills),
     history:normalizeMorseHistory(s.history),
     letterStats:normalizeMorseLetterStats(s.letterStats),
@@ -5189,10 +5205,13 @@ function sndVolF(){ // общий ползунок громкости из на�
 /* Мягкий колокольчик: короткий подъём (~20 мс) и плавное экспоненциальное
    затухание. Без щелчков на старте/на конце и без «пилы» — спокойный
    музыкальный темб; мелодии собственные, чужие не копируем. */
-function softBell(ctx, freq, durMs, vol, attackMs){
+function softBell(ctx, freq, durMs, vol, attackMs, startMs){
   try{
     if(!ctx) return;
-    var t=ctx.currentTime, dur=Math.max(0.05, durMs/1000);
+    /* startMs — старт относительно «сейчас» по ВНУТРЕННЕЙ шкале контекста:
+       вторая нота не зависит от setTimeout (в фоновом webview таймауты
+       режутся — звук доезжал с «лютой задержкой») */
+    var t=ctx.currentTime + (startMs>0 ? startMs/1000 : 0), dur=Math.max(0.05, durMs/1000);
     var at=Math.max(0.005, (typeof attackMs==='number')?attackMs:0.02);
     var v=Math.max(0.0002, ((typeof vol==='number')?vol:0.05)*sndVolF());
     var osc=ctx.createOscillator(), g=ctx.createGain();
@@ -5236,7 +5255,8 @@ function sfxWord(ok){ // звуковое сопровождение ответ�
   var ctx=audioCtx(); if(!ctx) return;
   if(ok){
     softBell(ctx, 523.25, 260, 0.05, 0.018);  // спокойный «да»: мягкий C5…
-    setTimeout(function(){ softBell(audioCtx(), 784, 360, 0.05, 0.018); }, 95); // …и выше G5
+    softBell(ctx, 784, 360, 0.05, 0.018, 95);    // …и выше G5 — тоже по таймлайну аудио, без таймера
+
   } else {
     sfxWrong(ctx); // «бом-бух»: короткий мягкий знак ошибки
   }
@@ -5277,6 +5297,9 @@ function morseLocked(){
   return !morseState || !morseContent.ready || morseState.mode!=='input';
 }
 function morseKeyer(){ return (morseState && morseState.keyer==='iambic') ? 'iambic' : 'hold'; }
+/* Период автоповтора символа при зажатом рычаге — из настроек.
+   MORSE_IAMBIC_MS остаётся запасным значением по умолчанию. */
+function morseRhythmMs(){ return (morseState && (morseState.rhythm===420 || morseState.rhythm===210)) ? morseState.rhythm : MORSE_IAMBIC_MS; }
 function cancelMorseCheck(){
   if(morseCheckTimer){ clearTimeout(morseCheckTimer); morseCheckTimer=null; }
 }
@@ -5367,7 +5390,10 @@ function ibEmit(el){
   morseState.sequence+=el;
   ib.last=el;
   morseTick(el==='-');
-  if(morseState.vibeInput) morseHeavyPulse(45);
+  /* Сильный толчок на каждый поставленный символ. В «Два рычага» он включён
+     всегда: режим «ручной», отдача обязательна. Переключатель «Вибрация при
+     вводе» сверху дополнительно даёт непрерывный гул удержания. */
+  if(morseState.vibeInput || morseKeyer()==='iambic') morseHeavyPulse(45);
   saveMorse();
   renderMorse();
 }
@@ -5392,7 +5418,7 @@ function ibPress(lever, e){
 /* Ритм через рекурсивный setTimeout (в модуле морзе запрещён непрерывный таймер) */
 function ibTimerStart(){
   if(ib.timer) return;
-  ib.timer=setTimeout(function(){ ib.timer=null; ibTick(); }, MORSE_IAMBIC_MS);
+  ib.timer=setTimeout(function(){ ib.timer=null; ibTick(); }, morseRhythmMs());
 }
 function ibTick(){
   if(!morseState || morseLocked()){ ibStop(true); return; }
@@ -5443,6 +5469,7 @@ function ibLeverOf(e){
 function onMorseDown(e){
   if(typeof state==='undefined' || !state || state.view!=='morse') return;
   if(e.isPrimary===false) return;
+  try{ audioCtx(); }catch(err){}                  // resume() прямо в жесте: к моменту звука контекст активен
   if(e.pointerType==='mouse' && e.button!==0) return;
   if(morseLocked()) return;
   if(morseDrill==='dactyl') return;   // «Дактиль»: ввод только своей клавиатурой ниже поля
@@ -5572,10 +5599,13 @@ function runMorseKey(ch){
   if(!card) return;
   var host=$('morseKeyboard');
   if(!host) return;
+  try{ audioCtx(); }catch(e){}                     // тап по клавише — жест: греем контекст
+  haptic('light'); morseTick(false);               // отклик мгновенно: микро-толчок + щелчок клавиши
   var ok=(String(ch).toUpperCase()===String(card.letter).toUpperCase());
   if(ok){
     var good=dactylKeyEl(host,card.letter);
     if(good){ good.classList.remove('mk-hint'); good.classList.add('mk-good'); }
+    haptic('success'); morseSoundResult(true);
     dactylFinish(!dactylMiss);
     return;
   }
@@ -5583,6 +5613,7 @@ function runMorseKey(ch){
   if(bad) bad.classList.add('mk-bad');
   if(!dactylMiss){
     dactylMiss=true;
+    haptic('error'); morseSoundResult(false);       // первый промах — сигнал ошибки; дальше только клик
     var hint=dactylKeyEl(host,card.letter);
     if(hint) hint.classList.add('mk-hint');
   }
@@ -5694,6 +5725,7 @@ function finishMorseResult(toGoal){
 
 /* ---------- Открытие раздела ---------- */
 function openMorse(){
+  try{ audioCtx(); }catch(e){} // «прогрев» аудиоконтекста жестом открытия — первый звук без задержки
   dactylFresh();          // подсветка клавиш не переносится между заходами в раздел
   if(!morseContent.ready){
     toast(morseContent.error ? 'Не удалось загрузить карточки морзе.' : 'Карточки морзе ещё загружаются, подожди секунду.');
@@ -5857,7 +5889,7 @@ function buildMorseKeyboard(host){
   /* Раскладка — один в один с системной (Gboard): те же три ряда и
      разбивка. Ъ и Ё в Gboard живут в долгом нажатии, но под них есть
      отдельные карточки, поэтому добавлены в конец третьего ряда. */
-  var rows=['ЙЦУКЕНГШЩЗХ','ФЫВАПРОЛДЖЭ','ЯЧСМИТЬБЮЪЁ'];
+  var rows=['ЙЦУКЕНГШЩЗХ','ФЫВАПРОЛДЖЭ','ЪЯЧСМИТЬБЮЁ'];
   for(var r=0;r<rows.length;r++){
     var rowEl=document.createElement('span'); rowEl.className='mk-row';
     for(var i=0;i<rows[r].length;i++){
@@ -5901,6 +5933,31 @@ Array.prototype.slice.call(document.querySelectorAll('[data-keyer-btn]')).forEac
     saveMorse();
     syncKeyerSeg();
     if(typeof state!=='undefined' && state && state.view==='morse') renderMorse();
+  });
+});
+/* Ритм ключа: три ступени (420/300/210 мс). Хранится в morseState — вместе
+   с остальными настройками морзе он НЕ уезжает в облако и не влияет на
+   статистику: это чистая эргономика ввода. */
+function syncRhythmSeg(){
+  var v=String(morseRhythmMs());
+  Array.prototype.slice.call(document.querySelectorAll('[data-rhythm-btn]')).forEach(function(b){
+    var on=b.getAttribute('data-rhythm-btn')===v;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-checked', String(on));
+  });
+}
+Array.prototype.slice.call(document.querySelectorAll('[data-rhythm-btn]')).forEach(function(b){
+  b.addEventListener('click', function(){
+    var v=+b.getAttribute('data-rhythm-btn');
+    if(v!==420 && v!==300 && v!==210) return;
+    if(!morseState) return;
+    if(morseState.rhythm===v){ syncRhythmSeg(); return; }
+    morseState.rhythm=v;
+    saveMorse();
+    syncRhythmSeg();
+    /* если ритм меняют прямо во время «зажатия» — пересобрать таймер,
+       иначе текущая очередь будет идти по-старому до конца удержания */
+    if(ib.timer){ clearTimeout(ib.timer); ib.timer=null; if(!morseLocked() && (ib.dot!=null || ib.dash!=null)) ibTimerStart(); }
   });
 });
 
@@ -6857,11 +6914,11 @@ function lsBackProceed(){
 /* ---------- Анимации и жесты (по образцу слов) ---------- */
 function lsFly(dir, cb){
   $('lsDrag').classList.remove('is-drag','enter');
-  $('lsDrag').classList.add('anim','fly');
+  $('lsDrag').classList.add('anim');
   var w=($('lsCardArea').clientWidth||window.innerWidth)+120;
-  $('lsDrag').style.transform='translateX('+(dir*w)+'px) rotate('+(dir*9)+'deg) scale(.93)';
+  $('lsDrag').style.transform='translateX('+(dir*w)+'px) rotate('+(dir*9)+'deg)';
   setTimeout(function(){
-    $('lsDrag').classList.remove('anim','fly');
+    $('lsDrag').classList.remove('anim');
     $('lsDrag').classList.add('no-anim');
     $('lsDrag').style.transform='';
     lsClearVisual();
@@ -7682,8 +7739,9 @@ function stopMorseVibe(){
 function morseBeep(freq, durMs, vol){ softBell(morseAudioCtx(), freq, durMs, vol); }
 function morseSoundResult(ok){
   if(ok){
-    softBell(morseAudioCtx(), 523.25, 260, 0.05, 0.018);  // мягкий «да»: C5…
-    setTimeout(function(){ softBell(morseAudioCtx(), 784, 360, 0.05, 0.018); }, 95); // …и выше G5
+    var ctx=morseAudioCtx();
+    softBell(ctx, 523.25, 260, 0.05, 0.018);      // мягкий «да»: C5…
+    softBell(ctx, 784, 360, 0.05, 0.018, 95);      // …и выше G5 — по таймлайну аудио, не по таймеру
   } else {
     sfxWrong(morseAudioCtx()); // «бом-бух»: короткий мягкий знак ошибки
   }
@@ -7731,5 +7789,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4664848acfaf78c',t:'MTc5MTMwNjY1Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

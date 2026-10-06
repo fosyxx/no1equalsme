@@ -354,6 +354,16 @@ html.rm .ms-streak.rec svg{animation:none}
   box-shadow:inset 0 0 64px 10px rgba(255,96,96,.38)}
 /* Своя клавиатура «Дактиля»: панель букв под полем (системная в webview мигает) */
 .morse-keyboard{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+/* «Дактиль»: жест + поле + 3 ряда букв должны помещаться на экране
+   телефона целиком. Компакт держится весь сеанс (не только до ответа),
+   иначе картинка прыгала бы на каждом «Верно/Неверно». */
+.morse-ex.kbd-mode{gap:8px}
+.morse-ex.kbd-mode .morse-imgwrap{width:min(100%,30vh)}
+.morse-ex.kbd-mode .morse-codewrap{min-height:38px}
+.morse-ex.kbd-mode .morse-zone{min-height:96px;padding:14px 16px 16px}
+.morse-ex.kbd-mode .morse-keyboard{margin-top:10px;gap:5px}
+.morse-ex.kbd-mode .mk-row{gap:4px}
+.morse-ex.kbd-mode .mk-key{min-height:37px;font-size:13.5px;border-radius:9px}
 .mk-row{display:flex;gap:5px}
 .mk-key{flex:1;min-width:0;min-height:42px;border-radius:10px;border:1px solid var(--line);
   background:var(--card2);color:var(--text);font:inherit;font-size:15px;font-weight:650;
@@ -5001,6 +5011,10 @@ function renderMorse(){
     if(wantKbd && kbdEl.childElementCount===0) buildMorseKeyboard(kbdEl);
     if(!wantKbd && kbdEl.childElementCount>0) kbdEl.innerHTML='';
     kbdEl.hidden=!wantKbd;
+    /* Компакт держится весь сеанс «Дактиля» (включая экран ответа), а не
+       только минуты ввода: иначе на «Верно/Неверно» картинка прыгала бы
+       обратно к 42vh и клавиатура дёргалась. В остальных режимах — снят. */
+    ex.classList.toggle('kbd-mode', morseDrill==='dactyl');
   }
   /* «Два рычага»: внутри обычного поля — две ручки (точки/тире) */
   var leversOn=(morseState.mode==='input' && morseKeyer()==='iambic' && morseDrill!=='dactyl');

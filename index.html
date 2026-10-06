@@ -348,6 +348,10 @@ html.rm .ms-streak.rec svg{animation:none}
 .mz-lever b{font-size:27px;line-height:1;color:var(--text);font-weight:800;transition:color .1s}
 .mz-lever.press{background:var(--violet-soft);color:var(--violet)}
 .mz-lever.press b{color:var(--violet)}
+/* Поле для системной клавиатуры (дактиль): невидимо, но фокусируемо */
+.morse-keyinput{position:absolute;inset:0;width:100%;height:100%;opacity:0;border:0;outline:0;
+  background:transparent;color:transparent;caret-color:transparent;font-size:16px;
+  z-index:6;pointer-events:none}
 .mz-result{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
 .mz-letter{font-size:36px;font-weight:800;line-height:1}
 .mz-codes{font-size:15.5px;font-weight:650;letter-spacing:.04em}
@@ -809,6 +813,13 @@ html.rm .card-drag.flipped .card-front{opacity:0}
             <span class="mz-lever" id="leverDot" data-lever="dot"><b>•</b><span>точки</span></span>
             <span class="mz-lever" id="leverDash" data-lever="dash"><b>—</b><span>тире</span></span>
           </span>
+          <!-- Невидимая «приёмная» для системной клавиатуры: на телефоне
+               буквальная клавиатура недоступна, фокус на этом поле открывает
+               её; тапы идут в поле зоны (pointer-events:none), фокус ставим
+               сами в onMorseDown. -->
+          <input type="text" class="morse-keyinput" id="morseKeyInput"
+            autocomplete="off" autocorrect="off" autocapitalize="off"
+            spellcheck="false" inputmode="text" aria-label="Ввод буквы">
           <span class="mz-result" id="morseResult" hidden>
             <b class="mz-letter" id="morseResLetter"></b>
             <span class="mz-codes" id="morseResCodes"></span>
@@ -2258,6 +2269,9 @@ function updateTgBack(){
 function showView(v){
   try{ stopLangSpeech(); }catch(e){}   // любой переход гасит речь
   try{ if(typeof langAudioStop==='function') langAudioStop(); }catch(e){}  // и MP3: новая карточка/выход/сворачивание
+  if(v!=='morse'){ // клавиатура дактиля закрывается при уходе с экрана
+    try{ var ki0=$('morseKeyInput'); if(ki0 && document.activeElement===ki0) ki0.blur(); }catch(e){}
+  }
   state.view=v; save();
   Object.keys(elViews).forEach(function(k){ elViews[k].classList.toggle('active', k===v); });
   if(v==='home') renderHome();
@@ -4443,7 +4457,11 @@ function loadMorseContent(){
 function freshMorseState(){
   return {schemaVersion:1, day:realToday(), dailyCorrect:0, dailyAttempts:0, dailyErrors:0,
           weaknessScore:{}, currentId:null, sequence:'', mode:'input', freeMode:false,
-          sound:true, vibeInput:false, keyer:'hold', history:{}, letterStats:{}, streak:0, streakBest:0, updatedAt:Date.now()};
+          sound:true, vibeInput:false, keyer:'hold', history:{}, letterStats:{}, streak:0, streakBest:0, updatedAt:Date.now(),
+          /* Своя точность у «Морзе» и «Дактиль»: отдельные счётчики, своя
+             суточная сброска, без дневной нормы. Живут только локально в этом
+             ключе — в статистику дня и в облако не попадают. */
+          drills:{letter:{attempts:0,correct:0,errors:0}, dactyl:{attempts:0,correct:0,errors:0}}};
 }
 function clampInt(v, lo, hi){
   return (typeof v==='number' && isFinite(v)) ? Math.min(hi, Math.max(lo, Math.floor(v))) : lo;
@@ -4480,6 +4498,7 @@ function loadMorseState(){
     sound:(typeof s.sound==='boolean') ? s.sound : true,
     vibeInput:!!s.vibeInput,
     keyer:(s.keyer==='iambic') ? 'iambic' : 'hold',   // старые сохранения → «Как сейчас»
+    drills:normalizeMorseDrills(s.drills),
     history:normalizeMorseHistory(s.history),
     letterStats:normalizeMorseLetterStats(s.letterStats),
     updatedAt:(typeof s.updatedAt==='number') ? s.updatedAt : Date.now()
@@ -4512,6 +4531,21 @@ function normalizeMorseHistory(h){
   }
   return out;
 }
+/* Дриллы в старых сохранениях отсутствуют — создаём нули */
+function normalizeMorseDrills(d){
+  var out={letter:{attempts:0,correct:0,errors:0}, dactyl:{attempts:0,correct:0,errors:0}};
+  if(d && typeof d==='object'){
+    ['letter','dactyl'].forEach(function(k){
+      var v=d[k];
+      if(v && typeof v==='object'){
+        out[k]={attempts:clampInt(v.attempts,0,1000000),
+                correct:clampInt(v.correct,0,1000000),
+                errors:clampInt(v.errors,0,1000000)};
+      }
+    });
+  }
+  return out;
+}
 function normalizeMorseLetterStats(h){
   var out={};
   if(h && typeof h==='object' && !Array.isArray(h)){
@@ -4537,8 +4571,12 @@ function ensureMorseDay(){
     morseState.mode='input';
     morseState.currentId=null;
     morseState.sequence='';
+    morseState.drills={letter:{attempts:0,correct:0,errors:0}, dactyl:{attempts:0,correct:0,errors:0}}; // и своя точность — по суткам
     saveMorse();
   }
+  // дриллы есть всегда (в т.ч. в старых сохранениях)
+  if(!morseState.drills || typeof morseState.drills!=='object') morseState.drills=normalizeMorseDrills(null);
+  else morseState.drills=normalizeMorseDrills(morseState.drills);
 }
 function morseWeak(id){
   var w=morseState.weaknessScore[id];
@@ -4565,6 +4603,19 @@ function currentMorseCard(){
 function morseAccuracyText(){
   if(!morseState || !morseState.dailyAttempts) return '—';
   return Math.round(((morseState.dailyAttempts-morseState.dailyErrors)/morseState.dailyAttempts)*100)+'%';
+}
+/* Точность «Морзе» и «Дактиль» — своя (morseState.drills), не путается с
+   дневными счётчиками «Морзе + Дактиль» (daily*) и не уходит в статистику. */
+function morseDrillStat(d){
+  d=d||morseDrill;
+  if(!morseState || (d!=='letter' && d!=='dactyl')) return null;
+  var st=morseState.drills ? morseState.drills[d] : null;
+  return (st && typeof st==='object') ? st : null;
+}
+function morseDrillAccText(d){
+  var st=morseDrillStat(d);
+  if(!st || !st.attempts) return '—';
+  return Math.round(((st.attempts-st.errors)/st.attempts)*100)+'%';
 }
 function prettyCode(seq){
   var out=[];
@@ -4782,39 +4833,50 @@ function preloadMorseImages(){ MORSE_CARDS.forEach(function(c){ loadMorseImage(c
 function renderMorseHome(){
   if(!morseState) return;
   ensureMorseDay();
-  /* Три строки одного модуля — «Морзе + Дактиль», «Морзе» и «Дактиль»:
-     общая дневная цель, поэтому состояние/действие/полоса зеркальны,
-     различается только подпись и открываемый режим (morseDrill). */
+  /* Три строки модуля: «Морзе + Дактиль» живёт по дневной цели (полоса,
+     «Готово», «Продолжить тренировку»). У «Морзе» и «Дактиль» своя точность
+     и дневной нормы нет — без «Готово» и без полосы; их счётчики не уходят
+     ни в статистику дня, ни в облако. */
   var rows=[
-    {name:'Морзе + Дактиль', id:'btnMorseStart', chip:'morseChip', sub:'morseSub', act:'morseAct', prog:'morseProg'},
-    {name:'Морзе',  id:'btnDrillLetter', chip:'letterChip', sub:'letterSub', act:'letterAct', prog:'letterProg'},
-    {name:'Дактиль', id:'btnDrillDactyl', chip:'dactylChip', sub:'dactylSub', act:'dactylAct', prog:'dactylProg'}
+    {name:'Морзе + Дактиль', id:'btnMorseStart', chip:'morseChip', sub:'morseSub', act:'morseAct', prog:'morseProg', drill:'sign'},
+    {name:'Морзе',  id:'btnDrillLetter', chip:'letterChip', sub:'letterSub', act:'letterAct', prog:'letterProg', drill:'letter'},
+    {name:'Дактиль', id:'btnDrillDactyl', chip:'dactylChip', sub:'dactylSub', act:'dactylAct', prog:'dactylProg', drill:'dactyl'}
   ];
-  var v;
+  var vSign;
   if(!morseContent.ready){
-    v={chipCls:'chip', chip:morseContent.error?'Ошибка':'Загрузка',
+    vSign={chipCls:'chip', chip:morseContent.error?'Ошибка':'Загрузка',
        sub:morseContent.error?'Карточки морзе не загрузились':'Загружаем карточки…',
        act:'Начать', prog:0, disabled:true, quiet:false, done:false};
   } else if(morseState.dailyCorrect>=MORSE_GOAL){
     /* Цель достигнута: строки зелёные, но активны — «Продолжить тренировку»
        серое, как «Пройти заново» (не «горит») */
-    v={chipCls:'chip is-done', chip:'Готово',
+    vSign={chipCls:'chip is-done', chip:'Готово',
        sub:'Цель выполнена · '+MORSE_GOAL+' из '+MORSE_GOAL,
        act:'Продолжить тренировку', prog:100, disabled:false, quiet:true, done:true};
   } else {
     var left=MORSE_GOAL-morseState.dailyCorrect;
     var mins=Math.max(1, Math.round(left*20/60));
     var started=!!(morseState.currentId || morseState.dailyAttempts>0 || morseState.mode!=='input');
-    v={chipCls:'chip'+(started?' is-active':''), chip:started?'В процессе':'Сегодня',
+    vSign={chipCls:'chip'+(started?' is-active':''), chip:started?'В процессе':'Сегодня',
        sub:morseState.dailyCorrect+' из '+MORSE_GOAL+' правильных · около '
            +mins+' '+plural(mins,'минуты','минут','минут'),
        act:started?'Продолжить':'Начать',
        prog:Math.round(morseState.dailyCorrect*100/MORSE_GOAL),
        disabled:false, quiet:false, done:false};
   }
+  /* Строка дрилла: только своя точность, нормы нет — «Готово» не бывает */
+  function vDrill(st, acc){
+    var started=!!(st && st.attempts>0);
+    return {chipCls:'chip'+(started?' is-active':''), chip:started?'В процессе':'Сегодня',
+            sub:started ? ('Точность '+acc+' · ошибок '+(st.errors|0)) : 'Точность —',
+            act:started?'Продолжить':'Начать',
+            prog:0, disabled:false, quiet:false, done:false};
+  }
   rows.forEach(function(r){
     var btn=$(r.id), chip=$(r.chip), sub=$(r.sub), act=$(r.act);
     if(!btn || !chip || !sub || !act) return;
+    var v=vSign;
+    if(morseContent.ready && r.drill!=='sign') v=vDrill(morseDrillStat(r.drill), morseDrillAccText(r.drill));
     chip.className=v.chipCls;
     chip.textContent=v.chip;
     sub.textContent=v.sub;
@@ -4850,17 +4912,31 @@ function renderMorse(){
   ex.hidden=false;
   goal.hidden=true;
   status.hidden=false;
-  $('morseStatusMain').textContent=morseState.freeMode
-    ? 'Свободная тренировка'
-    : ('Правильно: '+morseState.dailyCorrect+' / '+MORSE_GOAL);
-  $('morseStatusSub').textContent='Точность: '+morseAccuracyText();
+  var isSign=(morseDrill==='sign');
+  if(isSign){
+    $('morseStatusMain').textContent=morseState.freeMode
+      ? 'Свободная тренировка'
+      : ('Правильно: '+morseState.dailyCorrect+' / '+MORSE_GOAL);
+    $('morseStatusSub').textContent='Точность: '+morseAccuracyText();
+  } else {
+    /* Дриллы без дневной нормы: показываем только свою точность */
+    var stD=morseDrillStat(morseDrill);
+    $('morseStatusMain').textContent='Точность: '+morseDrillAccText(morseDrill);
+    $('morseStatusSub').textContent=(stD && stD.attempts)
+      ? ('Верных '+stD.correct+' из '+stD.attempts)
+      : 'Ответов пока нет';
+  }
   /* Стрик и рекордная подсветка: rec горит, когда серия равна рекорду —
-     следующая верная буква станет новым рекордом. */
+     следующая верная буква станет новым рекордом. Стрик — часть дневной
+     цели «Морзе + Дактиль», в дриллах его нет. */
   var stk=$('morseStreak'), stkN=$('morseStreakN');
   if(stk && stkN){
-    var sc=morseState.streak|0;
-    stkN.textContent=String(sc);
-    stk.classList.toggle('rec', sc>0 && sc>=(morseState.streakBest|0));
+    stk.hidden=!isSign;
+    if(isSign){
+      var sc=morseState.streak|0;
+      stkN.textContent=String(sc);
+      stk.classList.toggle('rec', sc>0 && sc>=(morseState.streakBest|0));
+    }
   }
   var card=currentMorseCard();
   var imgWrap=$('morseImgWrap'), bigL=$('morseBigLetter');
@@ -5256,7 +5332,10 @@ function onMorseDown(e){
   if(e.isPrimary===false) return;
   if(e.pointerType==='mouse' && e.button!==0) return;
   if(morseLocked()) return;
-  if(morseDrill==='dactyl') return;   // «Дактиль»: ответ вводится только с клавиатуры
+  if(morseDrill==='dactyl'){          // «Дактиль»: только с клавиатуры; тап открывает её
+    focusMorseKey();
+    return;
+  }
   if(morseKeyer()==='iambic'){ ibPress(ibLeverOf(e), e); return; }  // «Два рычага»
   if(typeof e.preventDefault==='function') e.preventDefault();
   cancelMorseCheck();                     // новый pointerdown отменяет ожидание автопроверки
@@ -5368,6 +5447,22 @@ function runMorseKey(ch){
 function morseCommit(ok){
   var card=currentMorseCard();
   if(!card || !morseState || morseState.mode!=='input') return;
+  if(morseDrill!=='sign'){
+    /* «Морзе» и «Дактиль»: только свои счётчики точности — без дневной нормы,
+       без стрика/слабых букв и без записи в статистику/облако */
+    var st=morseDrillStat(morseDrill);
+    if(st){
+      st.attempts=(st.attempts|0)+1;
+      if(ok) st.correct=(st.correct|0)+1; else st.errors=(st.errors|0)+1;
+    }
+    morseState.mode=ok?'correct':'incorrect';
+    if(ok){ morseHintId=null; haptic('success'); morseSoundResult(true); }
+    else { morseHintId=card.id; haptic('error'); morseSoundResult(false); }
+    saveMorse();
+    renderMorse();
+    armResultHold(false); // экран цели недостижим — нормы у дриллов нет
+    return;
+  }
   var wasBelow=morseState.dailyCorrect<MORSE_GOAL; // только для экрана цели (10-й верный)
   morseState.dailyAttempts++;
   if(!morseState.letterStats || typeof morseState.letterStats!=='object') morseState.letterStats={};
@@ -5436,12 +5531,26 @@ function finishMorseResult(toGoal){
 }
 
 /* ---------- Открытие раздела ---------- */
+function focusMorseKey(){
+  try{
+    if(morseDrill!=='dactyl' || !state || state.view!=='morse') return;
+    var ki=$('morseKeyInput');
+    if(ki && document.activeElement!==ki) ki.focus({preventScroll:true});
+  }catch(e){}
+}
 function openMorse(){
   if(!morseContent.ready){
     toast(morseContent.error ? 'Не удалось загрузить карточки морзе.' : 'Карточки морзе ещё загружаются, подожди секунду.');
     return;
   }
   ensureMorseDay();
+  var ki0=$('morseKeyInput'); if(ki0) ki0.value=''; // мусор от прошлой раскладки не мешает
+  if(morseDrill!=='sign' && (morseState.mode==='correct' || morseState.mode==='incorrect')){
+    /* экран результата принадлежал другому разделу — гасим его, ввод чистый */
+    morseState.sequence='';
+    morseState.mode='input';
+    saveMorse();
+  }
   if(morseState.mode==='goal'){
     // цель уже показана ранее — кнопка «Продолжить тренировку» ведёт в свободный режим
     morseState.freeMode=true;
@@ -5460,6 +5569,7 @@ function openMorse(){
   preloadMorseImages(); // остальные — той же очередью (лимит MORSE_IMG_PAR запросов)
   if(morseState.mode==='correct'||morseState.mode==='incorrect') armResultHold();
   showView('morse');
+  focusMorseKey(); // дактиль: открыли по тапу — системная клавиатура сразу готова
 }
 
 /* ---------- События ---------- */
@@ -5583,6 +5693,21 @@ document.addEventListener('keydown', function(e){
   if(typeof e.preventDefault==='function') e.preventDefault();
   runMorseKey(k);
 });
+/* Мобильные клавиатуры iOS/Android присылают букву через событие input
+   (keydown там ненадёжен) — ловим оба пути. Двойной зачёт невозможен:
+   если сначала сработал keydown, режим уже не input и эта ветка молчит. */
+(function(){
+  var kiEl=$('morseKeyInput');
+  if(!kiEl) return;
+  kiEl.addEventListener('input', function(){
+    var v=kiEl.value||'';
+    kiEl.value='';
+    if(!v) return;
+    if(!state || state.view!=='morse' || morseDrill!=='dactyl' || morseLocked()) return;
+    var ch=v.charAt(v.length-1);
+    if(/^[а-яёa-z]$/i.test(ch)) runMorseKey(ch);
+  });
+})();
 window.addEventListener('pagehide', saveMorse);
 window.addEventListener('beforeunload', saveMorse);
 
@@ -7437,6 +7562,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>

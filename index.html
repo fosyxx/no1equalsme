@@ -5035,7 +5035,10 @@ function ibPress(lever, e){
   if(lever==='dot') ib.dot=e.pointerId; else ib.dash=e.pointerId;
   ibVisual();
   startMorseTone();
-  startMorseVibe();
+  /* R35: в «Ямбическом ключе А» фоновый вибро-цикл удержания НЕ запускается:
+     он дублирует то, для чего в сингле служит порог «точка→тире», — в ямбике
+     каждый символ уже помечен сильным пульсом из ibEmit, а «мотор» под пальцем
+     только мешает. Цикл удержания остаётся исключительно в «Сингле» (onMorseDown). */
   if(ib.dot!=null && ib.dash!=null){
     /* «сжатие»/оба сразу: вставляем элемент второго рычага и продолжаем ритм */
     ibEmit(ib.last==='.' ? '-' : (ib.last==='-' ? '.' : (lever==='dot' ? '.' : '-')));
@@ -7485,5 +7488,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4673d82c9363b83',t:'MTc5MTMxNjcwMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

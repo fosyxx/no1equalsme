@@ -349,7 +349,7 @@ html.rm .ms-streak.rec svg{animation:none}
 @keyframes streakBump{40%{transform:translateY(-3px) scale(1.3)}}
 .morse-cue{font-size:13px;color:var(--faint)}
 /* Единственная зона ввода: удержание = точка/тире, кнопки «Проверить» нет */
-.morse-zone{position:relative;width:100%;min-height:220px;border-radius:20px;border:1px solid var(--line);background:var(--card2);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:18px 16px 24px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer;transition:border-color .12s ease,background .12s ease,box-shadow .2s ease;text-align:center;font:inherit}
+.morse-zone{position:relative;width:100%;min-height:220px;border-radius:20px;border:1px solid var(--line);background:var(--card2);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:18px 16px 24px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:pointer;transition:border-color .12s ease,background .12s ease,box-shadow .2s ease;text-align:center;font:inherit}
 .mz-idle{display:flex;flex-direction:column;align-items:center;gap:6px}
 .mz-main{font-size:19px;font-weight:750}
 .mz-sub{font-size:13px;color:var(--muted)}
@@ -376,7 +376,7 @@ html.rm .ms-streak.rec svg{animation:none}
 /* «Ямбический ключ А»: одно поле, разделённое на две «ручки» (точки/тире) */
 .mz-levers{position:absolute;inset:0;display:flex;z-index:3;border-radius:inherit;overflow:hidden}
 .mz-lever{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
-  color:var(--muted);font-size:13px;user-select:none;-webkit-user-select:none;touch-action:none;
+  color:var(--muted);font-size:13px;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none;
   transition:background .1s ease,color .1s ease,box-shadow .22s ease}
 .mz-lever+.mz-lever{border-left:1px solid var(--line)}
 /* Подсветка нажатой половины. Подписей на рычагах больше нет: они
@@ -1158,14 +1158,14 @@ html.rm .card-drag.flipped .card-front{opacity:0}
     </div>
     <div class="set-row set-row-col">
       <div class="set-text">
-        <span class="set-name">Скорость символов при зажатии</span>
-        <span class="set-sub" id="rhythmSub">Символов в секунду: 3.3</span>
+        <span class="set-name">Скорость «Ямбического ключа А» (WPM)</span>
+        <span class="set-sub" id="rhythmSub">Точка 60 мс · тире 180 мс (WPM 20)</span>
       </div>
       <div class="sens-row">
-        <span class="sens-cap">Медленно</span>
-        <input type="range" id="rgRhythm" class="sens-range" min="140" max="520" step="20" value="360"
-               aria-label="Скорость печати символов при зажатом рычаге: правее — быстрее, вибрация подстраивается под ритм">
-        <span class="sens-cap">Быстро</span>
+        <span class="sens-cap">5 WPM</span>
+        <input type="range" id="rgRhythm" class="sens-range" min="5" max="40" step="1" value="20"
+               aria-label="Скорость ямбического ключа в словах в минуту (Paris): длительность точки = 1.2/WPM">
+        <span class="sens-cap">40 WPM</span>
       </div>
     </div>
     <div class="set-row set-row-col">
@@ -4041,7 +4041,8 @@ var MORSE_CANCEL_MS=3500;   // удержание тире ≥3.5 с = «отм�
 var MORSE_MIN_MS=40;        // короче 40 мс — случайное касание, игнорируем
 var MORSE_CHECK_MS=500;     // пауза покоя перед автопроверкой
 var MORSE_RESULT_MS=1000;   // сколько держим экран результата
-var MORSE_IAMBIC_MS=300;    // период следования элементов в «Ямбическом ключе А»
+/* R36: скорость «Ямбического ключа А» задаётся в WPM (стандарт Paris):
+   UNIT = 1.2/WPM. Движок и запасное значение — в блоке MORSE_WPM/ibUnitMs. */
 
 var morseContent={ready:false, error:false, contentVersion:null, updatedAt:null, count:0};
 var MORSE_CARDS=[];
@@ -4158,7 +4159,7 @@ function loadMorseContent(){
 function freshMorseState(){
   return {schemaVersion:1, day:realToday(), dailyCorrect:0, dailyAttempts:0, dailyErrors:0,
           weaknessScore:{}, currentId:null, sequence:'', mode:'input', freeMode:false,
-          sound:true, keyer:'hold', rhythm:300, history:{}, letterStats:{}, streak:0, streakBest:0, updatedAt:Date.now(),
+          sound:true, keyer:'hold', wpm:20, history:{}, letterStats:{}, streak:0, streakBest:0, updatedAt:Date.now(),
           /* Своя точность у «Морзе» и «Дактиль»: отдельные счётчики, своя
              суточная сброска, без дневной нормы. Живут только локально в этом
              ключе — в статистику дня и в облако не попадают. */
@@ -4198,11 +4199,10 @@ function loadMorseState(){
     freeMode:!!s.freeMode,
     sound:(typeof s.sound==='boolean') ? s.sound : true,
     keyer:(s.keyer==='iambic') ? 'iambic' : 'hold',   // старые сохранения → «Сингл»
-    /* Скорость при зажатии рычага: мс на символ, шкала ползунка 140..520 шаг 20.
-       «Переключатель вибрации» и vibeInput из состояния убраны совсем — вся
-       вибрация морзе слушается общий «Виброотклик». Старые сохранения с ритмом
-       420/300/210 попадают в шкалу и живут как есть. */
-    rhythm:(typeof s.rhythm==='number' && s.rhythm>=140 && s.rhythm<=520) ? Math.round(s.rhythm/20)*20 : 300,
+    /* Скорость «Ямбического ключа А» в WPM (Paris): UNIT = 1.2/WPM сек.
+       Старое поле rhythm (мс/символ трёхступенчатого ползунка) игнорируется —
+       шкала теперь другая. */
+    wpm:(typeof s.wpm==='number' && s.wpm>=5 && s.wpm<=40) ? Math.round(s.wpm) : 20,
     drills:normalizeMorseDrills(s.drills),
     history:normalizeMorseHistory(s.history),
     letterStats:normalizeMorseLetterStats(s.letterStats),
@@ -4922,9 +4922,6 @@ function morseLocked(){
   return !morseState || !morseContent.ready || morseState.mode!=='input';
 }
 function morseKeyer(){ return (morseState && morseState.keyer==='iambic') ? 'iambic' : 'hold'; }
-/* Период автоповтора символа при зажатом рычаге — из настроек.
-   MORSE_IAMBIC_MS остаётся запасным значением по умолчанию. */
-function morseRhythmMs(){ var r=morseState ? +morseState.rhythm : 0; return (r>=140 && r<=520) ? r : MORSE_IAMBIC_MS; }
 function cancelMorseCheck(){
   if(morseCheckTimer){ clearTimeout(morseCheckTimer); morseCheckTimer=null; }
 }
@@ -4992,39 +4989,76 @@ function triggerMorseCancel(){
   var z=$('morseZoneMain'); if(z) z.textContent='Отмена';  // ПОСЛЕ renderMorse — чтобы не затерлось
   haptic('done');
 }
-/* ---------- Ямбический ключ (два рычага) ----------
-   Левый рычаг — точки, правый — тире (как в Jambic Keyer):
-   - зажат один рычаг → его элементы идут своим ритмом;
-   - зажаты оба (или второй нажат, пока зажат первый — «сжатие») →
-     вставляется элемент второго рычага, и дальше ритм ЖЁСТКО чередуется
-     (.-.-.-… если первым была точка, -.-.-… если первым было тире),
-     пока держатся оба;
-   - отпустили один — оставшийся продолжает свой одиночный ритм,
-     отпустили второй — стоп. */
-var ib={dot:null, dash:null, timer:null, last:null};
-function ibEmit(el){
-  if(!morseState || morseLocked()) return;
-  cancelMorseCheck();
-  morseHintId=null;
-  var whEl=$('morseWrongHint'); if(whEl) whEl.hidden=true;
+/* ---------- Ямбический ключ А — единичная логика (спецификация R36) ----------
+   Скорость задаётся в WPM (стандарт Paris): UNIT = 1.2/WPM секунд.
+   DOT  = 1 UNIT звука, DASH = 3 UNIT звука, пауза после любого знака = 1 UNIT.
+   Входы — «фланговые» флаги: левый (точка) и правый (тире); их устанавливают
+   pointerdown/up и они не зависят от темпа.
+   Цикл (рекурсивный setTimeout — непрерывный таймер в модуле морзе запрещён):
+     - нажат только левый  → DOT  + пауза;
+     - нажат только правый → DASH + пауза;
+     - нажаты оба          → строгое чередование DOT→пауза→DASH→пауза…,
+       начиная с противоположного ПОСЛЕДНЕМУ СЫГРАННОМУ;
+     - ничего не нажато    → ждёт (стоп).
+   Специфика режима А: состояние входов проверяется СТРОГО после окончания
+   текущей паузы. Начатый символ не обрывается, но если к моменту проверки
+   входы отпущены — цикл прерывается сразу, лишние знаки не генерируются.
+   Нажатие второго рычага «на лету» не вставляет символ досрочно: оно лишь
+   поднимает флаг, и цикл увидит его на ближайшей границе паузы. */
+var MORSE_WPM=20;                       // запасная скорость, если в состоянии WPM нет
+var ib={lid:null, rid:null, timer:null, last:null, running:false};
+function ibUnitMs(){
+  var w=morseState ? +morseState.wpm : 0;
+  if(!(w>=5 && w<=40)) w=MORSE_WPM;
+  return Math.round(1200/w);            // UNIT = 1.2/WPM сек → мс
+}
+/* Точка проверки: сразу после окончания предыдущей паузы.
+   Выбираем следующий знак по флагам и «проигрываем» его, либо встаём. */
+function ibCycle(){
+  ib.timer=null;
+  if(!morseState || morseLocked()){ ibStop(true); return; }
+  var el=null;
+  if(ib.lid!=null && ib.rid!=null){
+    /* оба: чередуем строго от противоположного последнему сыгранному */
+    el = ib.last==='.' ? '-' : (ib.last==='-' ? '.' : (ib.lid!==null ? '.' : '-'));
+  }
+  else if(ib.lid!=null){ el='.'; }
+  else if(ib.rid!=null){ el='-'; }
+  else {                                 /* ничего не нажато — режим А: цикл встает */
+    ib.running=false;
+    stopMorseTone(); stopMorseVibe();
+    if(morseState.sequence && morseState.mode==='input') scheduleMorseCheck();
+    return;
+  }
   if(morseState.sequence.length>=MORSE_MAX_INPUT){
-    /* пятый элемент не влезает: сигнал переполнения и проверка имеющегося */
-    haptic('error');
-    morseErrorBeep();
+    /* Пятый элемент не влезает. R35.2: в ямбике переполнение — «машинное»
+       событие: глушим цикл и проверяем набранное молча (проверка сама
+       отметит ошибку). В «Сингле» шестой тап остаётся ошибкой пользователя. */
     ibStop(true);
     if(morseState.sequence) runMorseCheck();
     return;
   }
-  morseState.sequence+=el;
+  ib.running=true;
   ib.last=el;
-  morseTick(el==='-');
-  /* Сильный толчок на каждый поставленный символ: пульсует сам ibEmit,
-     поэтому частота точно равна скорости с ползунка (вибрация подстраивается).
-     Отдельных выключателей нет — всё гасится общим «Виброоткликом»
-     (проверка внутри morseHeavyPulse). */
-  morseHeavyPulse(90);
+  cancelMorseCheck();
+  morseHintId=null;
+  var whEl=$('morseWrongHint'); if(whEl) whEl.hidden=true;
+  morseState.sequence+=el;
+  morseTick(el==='-');                  // щелчок поверх тона — момент символа
+  morseHeavyPulse(90);                   // сильный пульс на каждый символ;
+                                         // его частота = ритму UNIT (WPM-ползунок)
+  startMorseTone();                      // тон = сам символ: 1 или 3 UNIT
   saveMorse();
   renderMorse();
+  var u=ibUnitMs();
+  /* символ «звучит» → тон off → 1 UNIT тишины → следующая проверка.
+     UNIT перечитывается на каждой границе: смена WPM на лету входит
+     в силу со следующего знака, текущий не дробится. */
+  ib.timer=setTimeout(function(){
+    stopMorseTone();
+    if(!morseState || morseLocked()){ ibStop(true); return; }
+    ib.timer=setTimeout(ibCycle, ibUnitMs());
+  }, (el==='.' ? 1 : 3)*u);
 }
 function ibPress(lever, e){
   if(!morseState || morseLocked() || morseDrill==='dactyl') return;
@@ -5032,57 +5066,39 @@ function ibPress(lever, e){
   morseHintId=null;
   var whEl=$('morseWrongHint'); if(whEl) whEl.hidden=true;
   try{ if(e && e.target && typeof e.target.setPointerCapture==='function') e.target.setPointerCapture(e.pointerId); }catch(_){}
-  if(lever==='dot') ib.dot=e.pointerId; else ib.dash=e.pointerId;
+  if(lever==='dot') ib.lid=e.pointerId; else ib.rid=e.pointerId;
   ibVisual();
-  startMorseTone();
-  /* R35: в «Ямбическом ключе А» фоновый вибро-цикл удержания НЕ запускается:
-     он дублирует то, для чего в сингле служит порог «точка→тире», — в ямбике
-     каждый символ уже помечен сильным пульсом из ibEmit, а «мотор» под пальцем
-     только мешает. Цикл удержания остаётся исключительно в «Сингле» (onMorseDown). */
-  if(ib.dot!=null && ib.dash!=null){
-    /* «сжатие»/оба сразу: вставляем элемент второго рычага и продолжаем ритм */
-    ibEmit(ib.last==='.' ? '-' : (ib.last==='-' ? '.' : (lever==='dot' ? '.' : '-')));
-  } else {
-    ibEmit(lever==='dot' ? '.' : '-');
-  }
-  if(!ib.timer && !morseLocked()) ibTimerStart();
-}
-/* Ритм через рекурсивный setTimeout (в модуле морзе запрещён непрерывный таймер) */
-function ibTimerStart(){
-  if(ib.timer) return;
-  ib.timer=setTimeout(function(){ ib.timer=null; ibTick(); }, morseRhythmMs());
-}
-function ibTick(){
-  if(!morseState || morseLocked()){ ibStop(true); return; }
-  /* оба держат — строгое чередование: после точки тире, после тире точка,
-     до тех пор пока не отпущен хоть один рычаг (дальше — одиночный ритм) */
-  if(ib.dot!=null && ib.dash!=null){ ibEmit(ib.last==='.' ? '-' : '.'); }
-  else if(ib.dot!=null){ ibEmit('.'); }
-  else if(ib.dash!=null){ ibEmit('-'); }
-  else { ibStop(false); return; }
-  if((ib.dot!=null || ib.dash!=null) && !ib.timer && !morseLocked()) ibTimerStart();
+  /* R35: фонового цикла удержания в ямбике нет — только сильные пульсы
+     на символы (внутри ibCycle). */
+  if(ib.running) return;                 // цикл идёт: флаг поднят, увидит на паузе (режим А)
+  if(ib.timer){ clearTimeout(ib.timer); ib.timer=null; }
+  ibCycle();                             // передний фронт: стартуем сразу
 }
 function ibVisual(){
   var l=$('leverDot'), r=$('leverDash');
-  if(l) l.classList.toggle('press', ib.dot!=null);
-  if(r) r.classList.toggle('press', ib.dash!=null);
+  if(l) l.classList.toggle('press', ib.lid!=null);
+  if(r) r.classList.toggle('press', ib.rid!=null);
 }
 function ibStop(hard){
   if(ib.timer){ clearTimeout(ib.timer); ib.timer=null; }
+  ib.running=false;
   stopMorseTone();
   stopMorseVibe();
-  if(hard){ ib.dot=null; ib.dash=null; ibVisual(); }
+  if(hard){ ib.lid=null; ib.rid=null; ibVisual(); }
 }
 function ibRelease(e){
   var id=(e && typeof e.pointerId!=='undefined') ? e.pointerId : null;
   var released=false;
-  if(id!==null && ib.dot===id){ ib.dot=null; released=true; }
-  if(id!==null && ib.dash===id){ ib.dash=null; released=true; }
+  if(id!==null && ib.lid===id){ ib.lid=null; released=true; }
+  if(id!==null && ib.rid===id){ ib.rid=null; released=true; }
   if(!released) return;
   try{ if(e && e.target && typeof e.target.releasePointerCapture==='function') e.target.releasePointerCapture(id); }catch(_){}
   ibVisual();
-  if(ib.dot==null && ib.dash==null){
-    ibStop(true);
+  /* Режим А: отпускание ничего не обрывает досрочно — цикл сам увидит
+     пустые флаги на конце текущей паузы. Если же цикл уже остановлен и
+     ничего не запланировано — гасим тон и просим проверку вручную. */
+  if(!ib.running && !ib.timer && ib.lid==null && ib.rid==null){
+    stopMorseTone(); stopMorseVibe();
     if(morseState && morseState.sequence && morseState.mode==='input') scheduleMorseCheck();
   }
 }
@@ -5109,6 +5125,12 @@ function onMorseDown(e){
        isPrimary:false: старый порядок съедал его pointerdown, и «сжатие» было
        физически невозможно (второй рычаг не загорался и не ставил символ).
        У каждого рычага свой pointerId, в morseLocked/dactyl заходит ibPress. */
+    /* R35.2: preventDefault — как в пути «Сингла», но раньше ямбика возвращалась
+       раньше. На Android долгое касание экрана поднимает СИСТЕМНЫЙ «лонг-пресс»
+       с резким вибро (~300–500 мс после касания) — это и был «странный гул
+       примерно на третьем символе». Отменив дефолт, тач не считается жестом
+       для контекстного меню/выделения, и ОС-ной вибрации нет. */
+    if(typeof e.preventDefault==='function') e.preventDefault();
     ibPress(ibLeverOf(e), e);
     return;
   }
@@ -5138,7 +5160,7 @@ function onMorseDown(e){
   }, MORSE_DOT_MS);
 }
 function onMorseUp(e){
-  if(morseKeyer()==='iambic'){ if(ib.dot!=null || ib.dash!=null) ibRelease(e); return; }
+  if(morseKeyer()==='iambic'){ if(ib.lid!=null || ib.rid!=null) ibRelease(e); return; }
   if(mz.t0===null || e.pointerId!==mz.pointerId) return;
   var dur=Date.now()-mz.t0;
   var wasCancel=mz.cancelled;   // читаем ДО endHoldVisual — там жест сбрасывается
@@ -5178,7 +5200,7 @@ function onMorseCancel(e){
        пальца; без id (древние движки) — как раньше, стоп всё. */
     var pidC=(e && typeof e.pointerId!=='undefined' && e.pointerId!==null) ? e.pointerId : null;
     if(pidC!==null){ ibRelease(e); return; }
-    var had=ib.dot!=null || ib.dash!=null;
+    var had=ib.lid!=null || ib.rid!=null;
     ibStop(true);
     if(had && morseState && morseState.sequence && morseState.mode==='input') scheduleMorseCheck();
     return;
@@ -5198,14 +5220,14 @@ function onMorseLostCapture(e){
        продолжает свой ритм (.-.– как задумано в сжатии). */
     var pid=(e && typeof e.pointerId!=='undefined' && e.pointerId!==null) ? e.pointerId : null;
     if(pid===null){
-      var had0=ib.dot!=null || ib.dash!=null;      // id нет — старая страховка: стоп всё
+      var had0=ib.lid!=null || ib.rid!=null;       // id нет — старая страховка: стоп всё
       if(had0){
         ibStop(true);
         if(morseState && morseState.sequence && morseState.mode==='input') scheduleMorseCheck();
       }
       return;
     }
-    if(ib.dot===pid || ib.dash===pid) ibRelease(e); // палец ушёл без «up»
+    if(ib.lid===pid || ib.rid===pid) ibRelease(e);  // палец ушёл без «up»
     return;                                         // capture уже отпущенного — мимо
   }
   if(mz.t0!==null) endHoldVisual(); // страховка: поле не должно зависнуть в состоянии удержания
@@ -5628,24 +5650,22 @@ Array.prototype.slice.call(document.querySelectorAll('[data-keyer-btn]')).forEac
    с остальными настройками морзе он НЕ уезжает в облако и не влияет на
    статистику: это чистая эргономика ввода. */
 function syncRhythmSlider(){
-  var ms=morseRhythmMs();
+  var w=(morseState && +morseState.wpm>=5 && +morseState.wpm<=40) ? Math.round(+morseState.wpm) : MORSE_WPM;
   var el=document.getElementById('rgRhythm');
-  if(el) el.value=String(660-ms);   // инверсия шкалы: правее = быстрее
+  if(el) el.value=String(w);
   var sub=document.getElementById('rhythmSub');
-  if(sub) sub.textContent='Символов в секунду: '+(1000/ms).toFixed(1)+' · пауза '+ms+' мс';
+  if(sub){ var u=Math.round(1200/w); sub.textContent='Точка '+u+' мс · тире '+(3*u)+' мс (WPM '+w+')'; }
 }
 (function(){
   var el=document.getElementById('rgRhythm'); if(!el) return;
   el.addEventListener('input', function(){
     if(!morseState) return;
-    var ms=660-(parseInt(el.value,10)||360);
-    ms=Math.round(Math.max(140,Math.min(520,ms))/20)*20;
-    if(morseState.rhythm!==ms){ morseState.rhythm=ms; saveMorse(); }   // только локально, в облако не идёт
+    var w=Math.max(5, Math.min(40, parseInt(el.value,10)||MORSE_WPM));
+    if(morseState.wpm!==w){ morseState.wpm=w; saveMorse(); }   // только локально, в облако не идёт
     syncRhythmSlider();
-    /* если скорость меняют прямо во время «зажатия» — пересобрать таймер,
-       иначе текущая очередь будет идти по-старому до конца удержания.
-       Вибропульсы ставит ibEmit, значит отдача сама идёт в такт ползунку */
-    if(ib.timer){ clearTimeout(ib.timer); ib.timer=null; if(!morseLocked() && (ib.dot!=null || ib.dash!=null)) ibTimerStart(); }
+    /* таймер не пересобираем: UNIT перечитывается на каждой границе паузы,
+       и новая скорость вступает в силу со следующего знака — по режиму А
+       цикл и так принимает решения только «после паузы» */
   });
 })();
 
@@ -7488,5 +7508,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a46d8c2f8e5e2c5c',t:'MTc5MTM4MjgzNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

@@ -1,0 +1,1235 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": 1,
+  "updatedAt": "2026-10-12",
+  "system": {
+    "id": "gess-sokolov",
+    "name": "Государственная единая система стенографии (система Н. Н. Соколова)",
+    "language": "ru"
+  },
+  "canvas": {
+    "viewBox": [
+      0,
+      0,
+      256,
+      256
+    ],
+    "controlLineY": 80,
+    "baseLineY": 180,
+    "oneMeasurePx": 100,
+    "background": "transparent",
+    "stroke": "#ffffff"
+  },
+  "cards": [
+    {
+      "id": "steno-01-a",
+      "letter": "А",
+      "letterLower": "а",
+      "system": "gess-sokolov",
+      "baseSign": "a_ya",
+      "baseLabel": "А—Я",
+      "sizeClass": "two",
+      "sizeLabel": "две меры",
+      "writingDirection": "снизу вверх",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-01-a.svg",
+          "png": "./assets/stenography/signs/steno-01-a.png",
+          "strokes": [
+            "M 194.97 109.69 L 61.03 208.26"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "а"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-02-b",
+      "letter": "Б",
+      "letterLower": "б",
+      "system": "gess-sokolov",
+      "baseSign": "b",
+      "baseLabel": "Б",
+      "sizeClass": "two",
+      "sizeLabel": "две меры",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-02-b.svg",
+          "png": "./assets/stenography/signs/steno-02-b.png",
+          "strokes": [
+            "M 166.46 67.44 L 100.85 156.55 C 100.85 156.55 89.54 171.65 99.34 176.94 C 109.15 182.22 121.97 173.16 128 164.86"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "б"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-03-v",
+      "letter": "В",
+      "letterLower": "в",
+      "system": "gess-sokolov",
+      "baseSign": "v",
+      "baseLabel": "В",
+      "sizeClass": "one",
+      "sizeLabel": "одна мера",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-03-v.svg",
+          "png": "./assets/stenography/signs/steno-03-v.png",
+          "strokes": [
+            "M 107.75 178.3 L 133.67 137.74 C 133.67 137.74 148.25 116.65 138.53 112.6 C 128.81 108.54 120.71 117.46 114.23 126.39"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "в"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-04-g",
+      "letter": "Г",
+      "letterLower": "г",
+      "system": "gess-sokolov",
+      "baseSign": "g",
+      "baseLabel": "Г",
+      "sizeClass": "two",
+      "sizeLabel": "две меры",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-04-g.svg",
+          "png": "./assets/stenography/signs/steno-04-g.png",
+          "strokes": [
+            "M 95.55 179.13 L 123.86 109.6 C 123.86 109.6 141.44 71.61 147.58 63.64 C 153.72 55.66 160.45 54.4 160.45 65.7 C 160.45 73.96 138.79 108.19 123.55 111.32"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "г"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-05-d",
+      "letter": "Д",
+      "letterLower": "д",
+      "system": "gess-sokolov",
+      "baseSign": "d",
+      "baseLabel": "Д",
+      "sizeClass": "small",
+      "sizeLabel": "1/3 меры",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-05-d.svg",
+          "png": "./assets/stenography/signs/steno-05-d.png",
+          "strokes": [
+            "M 107.47 158.72 C 114.52 158.93 130.84 153.75 132.85 165.14 C 134.85 176.54 125.31 180.5 117.8 177.79 C 110.29 175.07 119.06 159.04 127.77 158.37 C 136.47 157.7 146.1 158.44 148.53 157.7"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "д"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-06-e",
+      "letter": "Е",
+      "letterLower": "е",
+      "system": "gess-sokolov",
+      "baseSign": "e_yo_eh",
+      "baseLabel": "Е—Ё—Э",
+      "sizeClass": "half",
+      "sizeLabel": "полмеры",
+      "writingDirection": "снизу вверх",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-06-e.svg",
+          "png": "./assets/stenography/signs/steno-06-e.png",
+          "strokes": [
+            "M 83.48 178.99 L 172.52 127.8"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "е",
+        "ё"
+      ],
+      "ambiguityNote": "В изолированном алфавитном знаке Е и Ё совпадают.",
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-07-yo",
+      "letter": "Ё",
+      "letterLower": "ё",
+      "system": "gess-sokolov",
+      "baseSign": "e_yo_eh",
+      "baseLabel": "Е—Ё—Э",
+      "sizeClass": "half",
+      "sizeLabel": "полмеры",
+      "writingDirection": "снизу вверх",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-07-yo.svg",
+          "png": "./assets/stenography/signs/steno-07-yo.png",
+          "strokes": [
+            "M 83.48 178.99 L 172.52 127.8"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "е",
+        "ё"
+      ],
+      "ambiguityNote": "В изолированном алфавитном знаке Е и Ё совпадают.",
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-08-zh",
+      "letter": "Ж",
+      "letterLower": "ж",
+      "system": "gess-sokolov",
+      "baseSign": "zh",
+      "baseLabel": "Ж",
+      "sizeClass": "one",
+      "sizeLabel": "одна мера",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-08-zh.svg",
+          "png": "./assets/stenography/signs/steno-08-zh.png",
+          "strokes": [
+            "M 118.48 126.06 C 129.07 114.09 152.26 100.7 146.27 123.77 C 140.27 146.84 118.39 184 111.06 178.6 C 103.74 173.21 118.68 157.83 130.64 158.2"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "ж"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-09-z",
+      "letter": "З",
+      "letterLower": "з",
+      "system": "gess-sokolov",
+      "baseSign": "z",
+      "baseLabel": "З",
+      "sizeClass": "small",
+      "sizeLabel": "1/3 меры",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-09-z.svg",
+          "png": "./assets/stenography/signs/steno-09-z.png",
+          "strokes": [
+            "M 106.62 177.79 C 110.63 177.92 126.93 180.59 133.88 161.61 C 128 179.26 130 181.26 149.38 175.25"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "з"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-10-i",
+      "letter": "И",
+      "letterLower": "и",
+      "system": "gess-sokolov",
+      "baseSign": "i_y",
+      "baseLabel": "И—Ы",
+      "sizeClass": "one",
+      "sizeLabel": "одна мера",
+      "writingDirection": "снизу вверх",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-10-i.svg",
+          "png": "./assets/stenography/signs/steno-10-i.png",
+          "strokes": [
+            "M 70.44 179.38 L 185.56 111.14"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "и"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-11-y-kratkoe",
+      "letter": "Й",
+      "letterLower": "й",
+      "system": "gess-sokolov",
+      "baseSign": "modifier",
+      "baseLabel": "Диакритика",
+      "sizeClass": "modifier",
+      "sizeLabel": "диакритика",
+      "writingDirection": "короткий отдельный знак",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-11-y-kratkoe.svg",
+          "png": "./assets/stenography/signs/steno-11-y-kratkoe.png",
+          "strokes": [
+            "M 123 78 C 134 77 137 85 129 95 C 126 99 123 101 119 103"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "й"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-12-k",
+      "letter": "К",
+      "letterLower": "к",
+      "system": "gess-sokolov",
+      "baseSign": "k",
+      "baseLabel": "К",
+      "sizeClass": "one",
+      "sizeLabel": "одна мера",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-12-k.svg",
+          "png": "./assets/stenography/signs/steno-12-k.png",
+          "strokes": [
+            "M 109.67 179.38 L 146.33 111.14"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "к"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-13-l",
+      "letter": "Л",
+      "letterLower": "л",
+      "system": "gess-sokolov",
+      "baseSign": "l",
+      "baseLabel": "Л",
+      "sizeClass": "one",
+      "sizeLabel": "одна мера",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-13-l.svg",
+          "png": "./assets/stenography/signs/steno-13-l.png",
+          "strokes": [
+            "M 143.05 177 C 138.46 177.43 109.58 180.9 104.8 167.2 C 100.19 153.97 117.91 135.41 125.36 126.6 C 132.82 117.78 146.12 108.28 155.75 111.37 C 165.39 114.47 157.93 135.75 154.57 141.56 C 150.81 148.07 142.11 159.05 133.93 168.01 C 126.53 176.11 106.36 178.41 90.61 177.18"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "л"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-14-m",
+      "letter": "М",
+      "letterLower": "м",
+      "system": "gess-sokolov",
+      "baseSign": "m",
+      "baseLabel": "М",
+      "sizeClass": "one",
+      "sizeLabel": "одна мера",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-14-m.svg",
+          "png": "./assets/stenography/signs/steno-14-m.png",
+          "strokes": [
+            "M 137.52 163.57 C 126.93 175.53 103.74 188.92 109.73 165.85 C 115.73 142.78 137.61 105.62 144.94 111.02 C 152.26 116.41 135.45 135.54 123.49 135.17"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "м"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-15-n",
+      "letter": "Н",
+      "letterLower": "н",
+      "system": "gess-sokolov",
+      "baseSign": "n",
+      "baseLabel": "Н",
+      "sizeClass": "small",
+      "sizeLabel": "1/3 меры",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-15-n.svg",
+          "png": "./assets/stenography/signs/steno-15-n.png",
+          "strokes": [
+            "M 105.7 178.16 C 112.48 174.24 114.82 170.32 121.61 170.32 C 128.4 170.32 130.69 177.64 137.52 177.64 C 144.35 177.64 150.3 168.76 150.3 168.76"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "н"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-16-o",
+      "letter": "О",
+      "letterLower": "о",
+      "system": "gess-sokolov",
+      "baseSign": "o",
+      "baseLabel": "О",
+      "sizeClass": "half",
+      "sizeLabel": "полмеры",
+      "writingDirection": "снизу вверх",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-16-o.svg",
+          "png": "./assets/stenography/signs/steno-16-o.png",
+          "strokes": [
+            "M 144.13 169.4 L 111.87 169.5"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "о"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-17-p",
+      "letter": "П",
+      "letterLower": "п",
+      "system": "gess-sokolov",
+      "baseSign": "p",
+      "baseLabel": "П",
+      "sizeClass": "one",
+      "sizeLabel": "одна мера",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-17-p.svg",
+          "png": "./assets/stenography/signs/steno-17-p.png",
+          "strokes": [
+            "M 148.25 111.53 L 122.33 152.08 C 122.33 152.08 107.75 173.17 117.47 177.23 C 127.19 181.29 135.29 172.36 141.77 163.44"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "п"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-18-r",
+      "letter": "Р",
+      "letterLower": "р",
+      "system": "gess-sokolov",
+      "baseSign": "r",
+      "baseLabel": "Р",
+      "sizeClass": "small",
+      "sizeLabel": "1/3 меры",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-18-r.svg",
+          "png": "./assets/stenography/signs/steno-18-r.png",
+          "strokes": [
+            "M 148.53 174.69 C 141.48 174.48 125.16 181.58 123.15 170.18 C 121.15 158.78 126.86 156.1 134.37 158.82 C 141.88 161.53 136.94 176.28 128.23 176.95 C 119.53 177.62 109.9 176.89 107.47 177.62"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "р"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-19-s",
+      "letter": "С",
+      "letterLower": "с",
+      "system": "gess-sokolov",
+      "baseSign": "s",
+      "baseLabel": "С",
+      "sizeClass": "small",
+      "sizeLabel": "1/3 меры",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-19-s.svg",
+          "png": "./assets/stenography/signs/steno-19-s.png",
+          "strokes": [
+            "M 122.47 165.26 C 111.82 176.76 130.12 186.97 144.18 164.62"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "с"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-20-t",
+      "letter": "Т",
+      "letterLower": "т",
+      "system": "gess-sokolov",
+      "baseSign": "t",
+      "baseLabel": "Т",
+      "sizeClass": "small",
+      "sizeLabel": "1/3 меры",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-20-t.svg",
+          "png": "./assets/stenography/signs/steno-20-t.png",
+          "strokes": [
+            "M 133.53 180.13 C 144.18 168.64 125.88 158.42 111.82 180.77"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "т"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-21-u",
+      "letter": "У",
+      "letterLower": "у",
+      "system": "gess-sokolov",
+      "baseSign": "u_yu",
+      "baseLabel": "У—Ю",
+      "sizeClass": "two",
+      "sizeLabel": "две меры",
+      "writingDirection": "снизу вверх",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-21-u.svg",
+          "png": "./assets/stenography/signs/steno-21-u.png",
+          "strokes": [
+            "M 176.21 169.4 L 79.79 169.5"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "у"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-22-f",
+      "letter": "Ф",
+      "letterLower": "ф",
+      "system": "gess-sokolov",
+      "baseSign": "f",
+      "baseLabel": "Ф",
+      "sizeClass": "one",
+      "sizeLabel": "одна мера",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-22-f.svg",
+          "png": "./assets/stenography/signs/steno-22-f.png",
+          "strokes": [
+            "M 118.48 125.99 C 129.07 114.02 152.26 100.63 146.27 123.7 C 140.27 146.77 118.39 183.93 111.06 178.53 C 103.74 173.14 118.68 157.76 130.64 158.12"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "ф"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-23-h",
+      "letter": "Х",
+      "letterLower": "х",
+      "system": "gess-sokolov",
+      "baseSign": "h",
+      "baseLabel": "Х",
+      "sizeClass": "one",
+      "sizeLabel": "одна мера",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-23-h.svg",
+          "png": "./assets/stenography/signs/steno-23-h.png",
+          "strokes": [
+            "M 108.18 179.06 L 125.47 140.22 C 125.47 140.22 136.2 119.01 139.95 114.55 C 143.71 110.1 147.82 109.4 147.82 115.71 C 147.82 120.32 134.59 139.44 125.28 141.19"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "х"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-24-ts",
+      "letter": "Ц",
+      "letterLower": "ц",
+      "system": "gess-sokolov",
+      "baseSign": "ts_initial",
+      "baseLabel": "Ц (начальное)",
+      "sizeClass": "two",
+      "sizeLabel": "две меры",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-24-ts.svg",
+          "png": "./assets/stenography/signs/steno-24-ts.png",
+          "strokes": [
+            "M 150.69 142.7 C 161.06 140.75 174.52 121.37 174.52 116.23 C 174.52 109.2 169.94 109.99 165.76 114.95 C 161.58 119.91 149.62 143.55 149.62 143.55 L 105.46 233.76 C 100.61 241.73 86.15 243.87 83.81 234.9 C 81.48 225.93 108.93 181.49 131.11 181.49"
+          ]
+        },
+        {
+          "variant": "final",
+          "svg": "./assets/stenography/signs/steno-24-ts-final.svg",
+          "png": "./assets/stenography/signs/steno-24-ts-final.png",
+          "strokes": [
+            "M 100.55 179.98 C 106.93 176.79 131.19 161.46 143.32 168.49 C 155.45 175.5 145.24 179.34 138.85 178.06 C 132.47 176.79 123.53 166.57 123.53 166.57"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "ц"
+      ],
+      "ambiguityNote": "У Ц два позиционных начертания: начальное и конечное.",
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-25-ch",
+      "letter": "Ч",
+      "letterLower": "ч",
+      "system": "gess-sokolov",
+      "baseSign": "ch",
+      "baseLabel": "Ч",
+      "sizeClass": "two",
+      "sizeLabel": "две меры",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-25-ch.svg",
+          "png": "./assets/stenography/signs/steno-25-ch.png",
+          "strokes": [
+            "M 142.87 155.13 C 126.33 173.82 90.12 194.73 99.48 158.7 C 108.84 122.68 143.01 64.65 154.45 73.08 C 165.88 81.5 139.64 111.37 120.96 110.79"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "ч"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-26-sh",
+      "letter": "Ш",
+      "letterLower": "ш",
+      "system": "gess-sokolov",
+      "baseSign": "sh",
+      "baseLabel": "Ш",
+      "sizeClass": "one",
+      "sizeLabel": "одна мера",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-26-sh.svg",
+          "png": "./assets/stenography/signs/steno-26-sh.png",
+          "strokes": [
+            "M 155.49 110.74 C 139.24 111.2 126.15 124.76 122.25 129.66 C 118.34 134.56 117.18 134.58 122.28 138.99 C 127.37 143.4 128.2 145.1 128.2 151.98 C 128.2 158.85 125.22 162.97 122.48 167.1 C 119.73 171.22 111.5 183.59 106 175.57 C 100.51 167.55 121.33 159.53 131.86 159.08"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "ш"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-27-shch",
+      "letter": "Щ",
+      "letterLower": "щ",
+      "system": "gess-sokolov",
+      "baseSign": "shch",
+      "baseLabel": "Щ",
+      "sizeClass": "one",
+      "sizeLabel": "одна мера",
+      "writingDirection": "сверху вниз",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-27-shch.svg",
+          "png": "./assets/stenography/signs/steno-27-shch.png",
+          "strokes": [
+            "M 112.95 110.99 C 117.54 110.56 146.43 107.09 151.2 120.8 C 155.81 134.02 138.09 152.58 130.64 161.4 C 123.18 170.21 109.88 179.71 100.25 176.62 C 90.61 173.52 98.07 152.24 101.43 146.43 C 105.19 139.92 113.89 128.94 122.07 119.98 C 129.47 111.88 149.64 109.58 165.39 110.81"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "щ"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-28-hard",
+      "letter": "Ъ",
+      "letterLower": "ъ",
+      "system": "gess-sokolov",
+      "baseSign": "modifier",
+      "baseLabel": "Диакритика",
+      "sizeClass": "modifier",
+      "sizeLabel": "диакритика",
+      "writingDirection": "короткий отдельный знак",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-28-hard.svg",
+          "png": "./assets/stenography/signs/steno-28-hard.png",
+          "strokes": [
+            "M 128 89 L 128.2 89.2"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "ъ",
+        "ь"
+      ],
+      "ambiguityNote": "В ГЕСС мягкий и твёрдый знаки передаются одной надстрочной точкой и различаются по контексту.",
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-29-y",
+      "letter": "Ы",
+      "letterLower": "ы",
+      "system": "gess-sokolov",
+      "baseSign": "i_y",
+      "baseLabel": "И—Ы",
+      "sizeClass": "one",
+      "sizeLabel": "одна мера",
+      "writingDirection": "снизу вверх",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-29-y.svg",
+          "png": "./assets/stenography/signs/steno-29-y.png",
+          "strokes": [
+            "M 70.44 179.38 L 185.56 111.14",
+            "M 143 211 L 153 190"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "ы"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-30-soft",
+      "letter": "Ь",
+      "letterLower": "ь",
+      "system": "gess-sokolov",
+      "baseSign": "modifier",
+      "baseLabel": "Диакритика",
+      "sizeClass": "modifier",
+      "sizeLabel": "диакритика",
+      "writingDirection": "короткий отдельный знак",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-30-soft.svg",
+          "png": "./assets/stenography/signs/steno-30-soft.png",
+          "strokes": [
+            "M 128 89 L 128.2 89.2"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "ъ",
+        "ь"
+      ],
+      "ambiguityNote": "В ГЕСС мягкий и твёрдый знаки передаются одной надстрочной точкой и различаются по контексту.",
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-31-eh",
+      "letter": "Э",
+      "letterLower": "э",
+      "system": "gess-sokolov",
+      "baseSign": "e_yo_eh",
+      "baseLabel": "Е—Ё—Э",
+      "sizeClass": "half",
+      "sizeLabel": "полмеры",
+      "writingDirection": "снизу вверх",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-31-eh.svg",
+          "png": "./assets/stenography/signs/steno-31-eh.png",
+          "strokes": [
+            "M 83.48 178.99 L 172.52 127.8",
+            "M 143 211 L 153 190"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "э"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-32-yu",
+      "letter": "Ю",
+      "letterLower": "ю",
+      "system": "gess-sokolov",
+      "baseSign": "u_yu",
+      "baseLabel": "У—Ю",
+      "sizeClass": "two",
+      "sizeLabel": "две меры",
+      "writingDirection": "снизу вверх",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-32-yu.svg",
+          "png": "./assets/stenography/signs/steno-32-yu.png",
+          "strokes": [
+            "M 176.21 169.4 L 79.79 169.5",
+            "M 143 211 L 153 190"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "ю"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    },
+    {
+      "id": "steno-33-ya",
+      "letter": "Я",
+      "letterLower": "я",
+      "system": "gess-sokolov",
+      "baseSign": "a_ya",
+      "baseLabel": "А—Я",
+      "sizeClass": "two",
+      "sizeLabel": "две меры",
+      "writingDirection": "снизу вверх",
+      "templates": [
+        {
+          "variant": "main",
+          "svg": "./assets/stenography/signs/steno-33-ya.svg",
+          "png": "./assets/stenography/signs/steno-33-ya.png",
+          "strokes": [
+            "M 194.97 109.69 L 61.03 208.26",
+            "M 143 211 L 153 190"
+          ]
+        }
+      ],
+      "reverseAcceptedLetters": [
+        "я"
+      ],
+      "ambiguityNote": null,
+      "guide": {
+        "viewBox": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "controlLineY": 80,
+        "baseLineY": 180,
+        "preserveAspectRatio": true
+      }
+    }
+  ],
+  "notes": [
+    "В ГЕСС не существует 33 полностью независимых буквенных рисунков: используются 21 знак для согласных и 5 для групп гласных.",
+    "Гласные А/Я, Е/Ё/Э, И/Ы и У/Ю имеют общую основу; точное различение некоторых вариантов выполняется нижним штрихом.",
+    "Й обозначается надстрочной запятой, а Ъ/Ь — одинаковой надстрочной точкой и различаются по контексту.",
+    "Ц имеет начальное и конечное начертание; оба шаблона допустимы в тренировке."
+  ]
+}

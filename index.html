@@ -635,14 +635,17 @@ html.rm .card-drag.flipped .card-front{opacity:0}
    Поле рисования квадратное: лист 256×256 целиком, линии-направляющие —
    контрольная y=80 и основная y=176. touch-action:none — палец рисует,
    страница не скроллится. */
-.steno-stage{padding:0 16px 22px;display:flex;flex-direction:column;gap:12px}
-.steno-ex{display:flex;flex-direction:column;gap:10px}
-.steno-drawpane{display:flex;flex-direction:column;gap:10px}
+.steno-stage{padding:0 16px 22px;display:flex;flex-direction:column;gap:12px;flex:1;min-height:0}
+.steno-ex{display:flex;flex-direction:column;gap:10px;flex:1;min-height:0}
+/* «как у Морзе»: режим чтения — своя клавиатура приклеена снизу, знак над ней */
+.steno-ex.kbd-mode{padding-bottom:calc(66vw + env(safe-area-inset-bottom))}
+.steno-ex.kbd-mode .steno-sign{min-height:26vh}
+.steno-drawpane{display:flex;flex-direction:column;gap:10px;flex:1;min-height:0}
 .steno-ask{display:flex;align-items:baseline;gap:14px;min-height:56px}
 .steno-bigletter{font-size:54px;font-weight:800;line-height:1;color:var(--text)}
 .steno-hint{font-size:13px;color:var(--muted);flex:1}
-.steno-padwrap{position:relative;border-radius:18px;background:var(--card);border:1px solid var(--line);overflow:hidden;transition:box-shadow .18s,border-color .18s}
-.steno-padwrap canvas{display:block;width:100%;height:auto;touch-action:none;cursor:crosshair}
+.steno-padwrap{position:relative;margin-top:auto;border-radius:18px;background:var(--card);border:1px solid var(--line);overflow:hidden;transition:box-shadow .18s,border-color .18s}
+.steno-padwrap canvas{display:block;width:100%;height:auto;aspect-ratio:1/1;touch-action:none;cursor:crosshair}
 .steno-padwrap.is-ok{border-color:var(--green-line);box-shadow:0 0 0 2px var(--green-soft),0 0 26px rgba(130,185,145,.18)}
 .steno-padwrap.is-bad{border-color:var(--red-line);box-shadow:0 0 0 2px var(--red-soft)}
 .steno-mark{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;font-size:64px;font-weight:800;opacity:0;transition:opacity .16s}
@@ -651,7 +654,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
 .steno-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .steno-score{font-size:13px;color:var(--muted)}
 .steno-note{font-size:12.5px;color:var(--violet);background:var(--violet-soft);border:1px solid var(--violet-line);border-radius:12px;padding:8px 12px}
-.steno-read{display:flex;flex-direction:column;gap:12px}
+.steno-read{display:flex;flex-direction:column;gap:12px;flex:1;min-height:0}
 .steno-sign{border-radius:18px;background:var(--card);border:1px solid var(--line);padding:8px;display:grid;place-items:center;min-height:190px}
 .steno-sign img,.steno-sign svg,.steno-sign canvas{width:100%;max-width:270px;height:auto;display:block;color:var(--text)}
 .steno-sign img{background:#1b2130;border-radius:14px;padding:6px}  /* PNG-фолбэк (белый на прозрачном) — всегда на тёмной плашке */
@@ -989,30 +992,30 @@ html.rm .card-drag.flipped .card-front{opacity:0}
       <span class="ms-sub" id="stenoStatusSub">Рисуй знак по букве</span>
     </div>
     <main class="steno-stage">
-      <div class="steno-ex">
+      <div class="steno-ex" id="stenoEx">
         <div class="steno-drawpane" id="stenoDrawPane">
           <div class="steno-ask">
             <span class="steno-bigletter" id="stenoBigLetter" aria-live="polite"></span>
             <span class="steno-hint" id="stenoHint"></span>
           </div>
+          <div class="steno-row">
+            <span class="steno-score" id="stenoScore">0 из 10 правильных</span>
+            <button class="btn-ghost" id="btnStenoClear" type="button">Очистить</button>
+          </div>
+          <div class="steno-note" id="stenoTraceNote" hidden>После ошибки верный знак показан серым — обведи его</div>
           <div class="steno-padwrap" id="stenoPadWrap">
             <canvas id="stenoPad" aria-label="Поле рисования: проведи знак пальцем"></canvas>
             <span class="steno-mark ok" aria-hidden="true">&#10003;</span>
             <span class="steno-mark bad" aria-hidden="true">&#10007;</span>
           </div>
-          <div class="steno-row">
-            <span class="steno-score" id="stenoScore">0 из 10 правильных</span>
-            <button class="btn-ghost" id="btnStenoClear" type="button">Очистить</button>
-          </div>
-          <div class="steno-note" id="stenoTraceNote" hidden>После ошибки показан верный знак серым — обведи его</div>
         </div>
         <div class="steno-read" id="stenoReadPane" hidden>
           <div class="steno-sign" id="stenoSign" role="img" aria-label="Знак стенограммы"></div>
-          <label class="steno-read-q" for="stenoReadInput">Какая это буква? Введи её — проверка автоматическая</label>
-          <input class="steno-input" id="stenoReadInput" type="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" maxlength="2" aria-label="Буква знака">
+          <p class="steno-read-q">Какая это буква? Нажми клавишу — проверка автоматическая</p>
           <div class="steno-read-note" id="stenoReadNote" hidden></div>
           <div class="steno-score" id="stenoReadScore"></div>
         </div>
+        <div class="morse-keyboard" id="stenoKeyboard" hidden></div>
         <div class="morse-goal" id="stenoGoal" hidden>
           <div class="morse-goal-ic" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
@@ -2417,6 +2420,7 @@ function showView(v){
   try{ if(typeof langAudioStop==='function') langAudioStop(); }catch(e){}  // и MP3: новая карточка/выход/сворачивание
   state.view=v; save();
   Object.keys(elViews).forEach(function(k){ elViews[k].classList.toggle('active', k===v); });
+  if(v!=='steno'){ var skb=$('stenoKeyboard'); if(skb) skb.hidden=true; }
   if(v==='home') renderHome();
   else if(v==='session'){ renderSession({instantFlip:true}); requestAnimationFrame(function(){ fitBackWord(false); }); }
   else if(v==='result') renderResult();
@@ -6946,7 +6950,7 @@ var stenoDraw=[];               // штрихи текущей попытки в
 var stenoPid=null;              // pointerId основного пальца (мультитач игнорируется)
 var stenoBusy=false;            // окно фидбека — ввод заморожен
 var stenoCheckTimer=null, stenoNextTimer=null, stenoClrTimer=null, stenoReadTimer=null;
-var stenoSignMem={};            // id → {kind:'svg'|'png'|'tmpl', data}
+var stenoSignMem={}, stenoSignPreDone=false;            // id → {kind:'svg'|'png'|'tmpl', data}
 var stenoLastTimer=null;
 
 function stenoCancelTimers(){
@@ -7013,6 +7017,29 @@ function stenoValidatePkg(root){
           space:{size:256, controlY:sp.controlY, baselineY:sp.baselineY},
           updatedAt:(typeof root.updatedAt==='string'?root.updatedAt.slice(0,40):null)};
 }
+/* Предзагрузка знаков фоном (как в «Дактиле»: картинка ждёт, а не грузится
+   при открытии). Стартует через ~0.9с после готовности контента, по одному
+   файлу, молча; повторные показы берут знак из памяти мгновенно. */
+function stenoPrefetchSigns(){
+  if(stenoSignPreDone || typeof fetch!=='function') return;
+  stenoSignPreDone=true;
+  var q=[];
+  for(var i=0;i<STENO_CARDS.length;i++){ var c=STENO_CARDS[i]; if(c && !stenoSignMem[c.id] && c.svg) q.push(c); }
+  var idx=0;
+  function pump(){
+    if(idx>=q.length) return;
+    var c=q[idx++];
+    if(stenoSignMem[c.id]){ pump(); return; }
+    fetch(c.svg,{cache:'default',credentials:'same-origin'}).then(function(res){
+      if(!res.ok) throw new Error('sign http '+res.status);
+      return res.text();
+    }).then(function(text){
+      var s=stenoSanitizeSvg(String(text||''));
+      if(s) stenoSignMem[c.id]={kind:'svg',data:s};
+    }).catch(function(){}).then(function(){ setTimeout(pump, 25); });
+  }
+  setTimeout(pump, 900);
+}
 function stenoSetCards(cards, space){
   STENO_CARDS=cards; STENO_MAP={};
   for(var i=0;i<cards.length;i++) STENO_MAP[cards[i].id]=cards[i];
@@ -7021,6 +7048,7 @@ function stenoSetCards(cards, space){
     stenoContent.space=space;
   }
   stenoContent.ready=true; stenoContent.error=false; stenoContent.count=cards.length;
+  try{ stenoPrefetchSigns(); }catch(e){}
 }
 function stenoReadCache(){
   try{
@@ -7354,7 +7382,11 @@ function stenoSizePad(){
   var css=stenoCanvasCssW();
   var dpr=Math.max(1, Math.min(3, window.devicePixelRatio||1));
   var px=Math.round(css*dpr);
-  if(cv.width!==px){ cv.width=px; cv.style.height=css+'px'; }
+  /* буфер обязан быть КВАДРАТНЫМ по обеим осям: раньше height оставался
+     дефолтным 150, браузер растягивал 1080x150 в CSS-боксе — штрихи улетали
+     по вертикали, обрезались, кисть становилась эллипсом, эталон не дорисовывался */
+  if(cv.width!==px || cv.height!==px){ cv.width=px; cv.height=px; }
+  if(cv.style.height!==css+'px'){ cv.style.height=css+'px'; }
   var ctx=null; try{ ctx=cv.getContext('2d'); }catch(e){ ctx=null; }
   return {cv:cv, ctx:ctx, dpr:dpr, css:css};
 }
@@ -7380,7 +7412,7 @@ function stenoPaint(){
   var card=STENO_MAP[stenoState&&stenoState.currentId];
   if(stenoTrace && card && card.templates[0]){   // серый эталон ПОД штрихом
     ctx.save();
-    ctx.strokeStyle=stenoVar('--muted','#888'); ctx.globalAlpha=.55;
+    ctx.strokeStyle=stenoVar('--muted','#999'); ctx.globalAlpha=.85;   // эталон виден на любой теме
     ctx.lineWidth=13; ctx.lineCap='round'; ctx.lineJoin='round';
     var t=card.templates[0];
     for(var ti=0;ti<t.length;ti++){
@@ -7406,9 +7438,10 @@ function stenoPt(e){
   var cv=$('stenoPad'); if(!cv) return [0,0];
   var rect=null; try{ rect=cv.getBoundingClientRect(); }catch(err){}
   var w=(rect && rect.width>40) ? rect.width : cv.clientWidth || stenoCanvasCssW();
+  var h=(rect && rect.height>40) ? rect.height : w;   // независимые оси: неквадратный бокс не искажает
   var ox=(rect && rect.left) || 0, oy=(rect && rect.top) || 0;
-  var sc=STENO_SHEET/(w||STENO_SHEET);
-  return [( (e.clientX||0) - ox )*sc, ( (e.clientY||0) - oy )*sc];
+  var sx=STENO_SHEET/(w||STENO_SHEET), sy=STENO_SHEET/(h||STENO_SHEET);
+  return [( (e.clientX||0) - ox )*sx, ( (e.clientY||0) - oy )*sy];
 }
 function stenoDown(e){
   if(stenoBusy || stenoMode!=='draw' || !stenoContent.ready) return;
@@ -7472,6 +7505,7 @@ function stenoCheck(){
     haptic('error');
     var w=$('stenoPadWrap'); if(w){ w.classList.remove('is-ok'); w.classList.add('is-bad'); }
     var tn0=$('stenoTraceNote'); if(tn0) tn0.hidden=false;   // заметка об обводке — сразу, не после клиринга
+    stenoPaint();   // серый эталон — сразу под штрихом
     stenoRenderStatus();
     saveSteno();
     renderStenoHome();
@@ -7500,6 +7534,14 @@ function stenoNormChar(chRaw){
   if(lat[ch]) ch=lat[ch];
   if(ch==='Ё') return 'Ё';
   return (/^[А-Я]$/.test(ch)) ? ch : '';
+}
+function stenoSanitizeSvg(text){
+  /* общий санитар для инлайна: SVG целиком, без script/handlers/javascript:.
+     Белая обводка исходников переводится в currentColor — тема решает цвет. */
+  var s=String(text||'').trim().replace(/stroke=["']#(ffffff|fff)["']/gi,'stroke="currentColor"');
+  if(!/^<svg[\s>][\s\S]*<\/svg>$/i.test(s)) return null;
+  if(/<script/i.test(s) || /\son[a-z]+\s*=/i.test(s) || /javascript:/i.test(s)) return null;
+  return s;
 }
 function stenoLoadSign(card, box){
   if(!card || !box) return;
@@ -7569,25 +7611,30 @@ function stenoSignTmplDraw(box, tmpl){
   }catch(e){}
 }
 function stenoReadRender(){
-  var box=$('stenoSign'), inp=$('stenoReadInput'), note=$('stenoReadNote');
+  var box=$('stenoSign'), kb=$('stenoKeyboard'), note=$('stenoReadNote');
   var st=stenoReadState;
   var card=st && STENO_MAP[st.currentId];
-  if(inp){ inp.value=''; inp.classList.remove('is-ok'); inp.classList.remove('is-bad'); inp.disabled=!card; }
+  if(kb){
+    if(!kb.childNodes.length && typeof buildMorseKeyboard==='function') buildMorseKeyboard(kb);   // своя раскладка, как в «Дактиле»
+    var keys=kb.querySelectorAll ? kb.querySelectorAll('button[data-key]') : [];
+    for(var qk=0;qk<keys.length;qk++){ keys[qk].classList.remove('mk-good'); keys[qk].classList.remove('mk-bad'); keys[qk].disabled=!card; }
+  }
   if(note){ note.hidden=true; note.textContent=''; note.className='steno-read-note'; }
   if(card) stenoLoadSign(card, box);
   else if(box) box.innerHTML='';
   var sc=$('stenoReadScore');
   if(sc) sc.textContent = st && st.dailyAttempts ? ('Сегодня: '+st.dailyCorrect+' правильных · Точность '+Math.round(st.dailyCorrect*100/st.dailyAttempts)+'%') : 'Сегодня: 0 правильных · Точность —';
 }
-function stenoReadInput(){
-  var inp=$('stenoReadInput'), st=stenoReadState;
-  if(!inp || !st || stenoBusy) return;
+function stenoReadKey(chRaw, btn){
+  var st=stenoReadState;
+  if(!st || stenoBusy) return;
   var card=STENO_MAP[st.currentId]; if(!card) return;
-  var v=inp.value||'';
-  var ch='';
-  for(var i=v.length-1;i>=0 && !ch;i--) ch=stenoNormChar(v.charAt(i));
-  if(!ch) return;
-  inp.value=ch;
+  var ch=stenoNormChar(chRaw); if(!ch) return;
+  function flash(ok){
+    if(!btn || !btn.classList) return;
+    btn.classList.remove(ok?'mk-bad':'mk-good'); btn.classList.add(ok?'mk-good':'mk-bad');
+    setTimeout(function(){ try{ btn.classList.remove('mk-good'); btn.classList.remove('mk-bad'); }catch(e){} }, 560);
+  }
   var acc=card.reverseAcceptedLetters;
   st.dailyAttempts++;
   var note=$('stenoReadNote');
@@ -7595,7 +7642,7 @@ function stenoReadInput(){
     st.dailyCorrect++;
     if(st.weights[card.id]!=null){ var nw=st.weights[card.id]-1; if(nw>0) st.weights[card.id]=nw; else delete st.weights[card.id]; }
     stenoBusy=true;
-    inp.classList.add('is-ok');
+    flash(true);
     haptic('success');
     if(note){
       if(acc.length>1 && card.ambiguityNote){ note.textContent=card.ambiguityNote; }   // неоднозначный знак: короткая заметка, не ошибка
@@ -7614,11 +7661,10 @@ function stenoReadInput(){
   } else {
     st.dailyErrors++;
     st.weights[card.id]=Math.min(16, stenoWeight(st, card.id)+1);
-    inp.classList.add('is-bad');
+    flash(false);
     haptic('error');
     if(note){ note.textContent='Не «'+ch+'». Допустимы: '+acc.join(', '); note.classList.remove('ok'); note.classList.add('bad'); note.hidden=false; }
     saveStenoRead(); renderStenoHome();
-    setTimeout(function(){ inp.classList.remove('is-bad'); inp.value=''; inp.focus&&inp.focus(); }, 420);
   }
 }
 
@@ -7698,6 +7744,12 @@ function renderSteno(){
   if(view) view.setAttribute('data-mode', stenoMode);
   if(draw) draw.hidden = stenoMode!=='draw';
   if(read) read.hidden = stenoMode!=='read';
+  var ex=$('stenoEx'), kb=$('stenoKeyboard');
+  if(ex) ex.classList.toggle('kbd-mode', stenoMode==='read');
+  if(kb){
+    if(stenoMode==='read'){ if(!kb.childNodes.length && typeof buildMorseKeyboard==='function') buildMorseKeyboard(kb); }
+    kb.hidden = stenoMode!=='read';
+  }
   if(stenoMode==='read'){ if(goal) goal.hidden=true; stenoReadRender(); stenoRenderStatus(); return; }
   stenoCancelTimers();
   var card=STENO_MAP[stenoState.currentId] || (STENO_CARDS.length?STENO_MAP[stenoPick(stenoState)]:null);
@@ -7761,9 +7813,14 @@ if(elStenoPad){
   elStenoPad.addEventListener('pointercancel', stenoUp);
   elStenoPad.addEventListener('lostpointercapture', stenoUp);
 }
-var elStenoInp=$('stenoReadInput');
-if(elStenoInp){
-  elStenoInp.addEventListener('input', stenoReadInput);
+var elStenoKb=$('stenoKeyboard');
+if(elStenoKb){
+  elStenoKb.addEventListener('click', function(e){
+    var b=(e.target&&typeof e.target.closest==='function')?e.target.closest('button[data-key]'):null;
+    if(!b) return;
+    if(stenoMode!=='read' || !state || state.view!=='steno') return;
+    stenoReadKey(b.getAttribute('data-key'), b);
+  });
 }
 window.addEventListener('pagehide', function(){ try{ saveSteno(); saveStenoRead(); }catch(e){} });
 window.addEventListener('resize', function(){ if(stenoMode==='draw' && state.view==='steno'){ try{ stenoPaint(); }catch(e){} } });

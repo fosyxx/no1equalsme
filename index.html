@@ -635,35 +635,32 @@ html.rm .card-drag.flipped .card-front{opacity:0}
    Поле рисования квадратное: лист 256×256 целиком, линии-направляющие —
    контрольная y=80 и основная y=176. touch-action:none — палец рисует,
    страница не скроллится. */
-.steno-stage{padding:0 16px 22px;display:flex;flex-direction:column;gap:12px;flex:1;min-height:0}
+.steno-stage{padding:0 12px 8px;display:flex;flex-direction:column;gap:6px;flex:1;min-height:0}
 .steno-ex{display:flex;flex-direction:column;gap:12px;flex:1;min-height:0}
 /* «как у Морзе»: режим чтения — своя клавиатура приклеена снизу, знак над ней */
 .steno-ex.kbd-mode{padding-bottom:calc(66vw + env(safe-area-inset-bottom))}
-.steno-drawpane{display:flex;flex-direction:column;gap:12px;flex:1;min-height:0}
+.steno-drawpane{display:flex;flex-direction:column;gap:6px;flex:1;min-height:0;overflow:hidden}
 .steno-hint{font-size:12.5px;color:var(--muted);text-align:center}
+.steno-bigletter{width:min(100%,14vh);font-size:clamp(36px,8vh,58px);border-radius:18px}
 /* поле = «зона» как у Морзе: карточка --card2, радиус 20, квадрат, прижата вниз */
-.steno-padwrap{position:relative;width:min(100%,44vh);margin-top:auto;align-self:center;border-radius:20px;background:var(--card2);border:1px solid var(--line);overflow:hidden;aspect-ratio:1/1;touch-action:none;transition:box-shadow .18s,border-color .18s}
+.steno-padwrap{position:relative;width:min(100%,50vh);height:min(100%,50vh);flex:0 0 auto;min-height:0;margin-top:auto;align-self:center;border-radius:20px;background:var(--card2);border:1px solid var(--line);overflow:hidden;aspect-ratio:1/1;touch-action:none;transition:box-shadow .18s,border-color .18s}
 .steno-padwrap canvas{position:absolute;inset:0;display:block;width:100%;height:100%;touch-action:none;cursor:crosshair}
 .steno-padwrap.is-ok{border-color:var(--green-line);box-shadow:0 0 0 2px var(--green-soft),0 0 26px rgba(130,185,145,.18)}
 .steno-padwrap.is-bad{border-color:var(--red-line);box-shadow:0 0 0 2px var(--red-soft)}
 .steno-mark{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;font-size:64px;font-weight:800;opacity:0;transition:opacity .16s}
 .steno-padwrap.is-ok .steno-mark.ok{opacity:1;color:var(--green)}
 .steno-padwrap.is-bad .steno-mark.bad{opacity:1;color:var(--red)}
-.steno-note{font-size:12.5px;color:var(--violet);background:var(--violet-soft);border:1px solid var(--violet-line);border-radius:12px;padding:8px 12px}
+.steno-note{flex:none;font-size:11.5px;line-height:1.25;text-align:center;color:var(--violet);background:var(--violet-soft);border:1px solid var(--violet-line);border-radius:12px;padding:6px 10px}
 .steno-read{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;flex:1;min-height:0}
 /* знак — карточка один-в-один как кадр жеста в «Дактиле» (.morse-imgwrap), подпись внутри */
 .steno-sign{color:#efeaff;margin:0 auto}
 .steno-sign-inner{width:100%;height:100%;display:grid;place-items:center}
 .steno-sign-inner img,.steno-sign-inner svg,.steno-sign-inner canvas{width:100%;height:100%;object-fit:contain;display:block}
 .steno-sign-inner img{background:#1b2130;border-radius:14px}  /* PNG-фолбэк (белый на прозрачном) — всегда на тёмной плашке */
-.steno-sign .steno-read-note{position:absolute;left:8px;right:8px;bottom:8px;text-align:center}
-.steno-read-note{font-size:12.5px;border-radius:12px;padding:8px 12px}
 /* настройки кисти стено */
 .steno-dots{display:flex;gap:10px;flex-wrap:wrap}
 .steno-dot{width:38px;height:38px;min-height:38px;border-radius:50%;background:var(--spd,var(--violet-deep));border:2px solid transparent;cursor:pointer;padding:0}
 .steno-dot.on{border-color:var(--text);box-shadow:0 0 0 2px var(--violet-soft)}
-.steno-read-note.ok{color:var(--green);background:var(--green-soft)}
-.steno-read-note.bad{color:var(--red);background:var(--red-soft)}
 .view[data-mode="read"] .steno-drawpane{display:none}
 .view[data-mode="draw"] .steno-read{display:none}
 </style>
@@ -996,22 +993,21 @@ html.rm .card-drag.flipped .card-front{opacity:0}
     <main class="steno-stage">
       <div class="steno-ex" id="stenoEx">
         <div class="steno-drawpane" id="stenoDrawPane">
-          <div class="morse-bigletter" id="stenoBigLetter" aria-live="polite"></div>
+          <div class="morse-bigletter steno-bigletter" id="stenoBigLetter" aria-live="polite"></div>
           <div class="morse-codewrap">
             <div class="morse-cue" id="stenoCue">Рисуй знак по букве</div>
             <div class="steno-hint" id="stenoHint"></div>
           </div>
+          <div class="steno-note" id="stenoTraceNote" hidden>Верный знак показан серым — обведи его</div>
           <div class="steno-padwrap" id="stenoPadWrap">
             <canvas id="stenoPad" aria-label="Поле рисования: проведи знак пальцем"></canvas>
             <span class="steno-mark ok" aria-hidden="true">&#10003;</span>
             <span class="steno-mark bad" aria-hidden="true">&#10007;</span>
           </div>
-          <div class="steno-note" id="stenoTraceNote" hidden>Верный знак показан серым — обведи его</div>
         </div>
         <div class="steno-read" id="stenoReadPane" hidden>
           <div class="morse-imgwrap steno-sign" id="stenoSign">
             <div class="steno-sign-inner" id="stenoSignInner" role="img" aria-label="Знак стенограммы"></div>
-            <div class="steno-read-note" id="stenoReadNote" hidden></div>
           </div>
         </div>
         <div class="morse-keyboard" id="stenoKeyboard" hidden></div>
@@ -6993,7 +6989,7 @@ var STENO_PASS=0.74, STENO_PASS_TRACE=0.68;   // пороги: чистовой 
    paint — цвет (или 'default' = --violet-deep), width — толщина, fadeMs — через
    сколько секунд гаснет след; fadeMs=0 значит «не исчезает» (максимум ползунка). */
 var STENO_PREF_KEY='nem_steno_prefs_v1';
-var stenoPrefs={paint:'default', width:13, fadeMs:0};
+var stenoPrefs={paint:'default', width:13, fadeMs:2000};
 var STENO_SHEET=256, STENO_CY=80, STENO_BY=176;
 var STENO_RES=6, STENO_GRID=64, STENO_CELL=4, STENO_CNORM=20;   // 26→20: пакет ГЕСС плотнее по формам
 var STENO_ANGS=[-7,-3.5,0,3.5,7];
@@ -7009,7 +7005,8 @@ var stenoBusy=false;            // окно фидбека — ввод замо
 var stenoCheckTimer=null, stenoNextTimer=null, stenoClrTimer=null, stenoReadTimer=null;
 var stenoStartTries=0;           // ожидание старта приложения (retry в openSteno)
 var stenoLastTimer=null;
-var stenoBorn=[];               // параллельно stenoDraw: время последней точки штриха (для затухания)
+var stenoPointAt=[];            // время каждой точки: хвост тает по сегментам во время движения
+var stenoReadMiss=false, stenoReadSolved=false, stenoReadAnswer=''; // клавиатурный фидбек чтения
 var stenoBusySince=0;           // окно фидбека: след «замерзает», чтобы результат было видно
 var stenoPendingFresh=false;    // после промаха: первые штрихи следующей попытки затрут экран
 var stenoFadeOn=false;          // один rAF-цикл затухания за раз
@@ -7029,6 +7026,24 @@ function stenoLoadPrefs(){
 function stenoSavePrefs(){ try{ localStorage.setItem(STENO_PREF_KEY, JSON.stringify(stenoPrefs)); }catch(e){} }
 function stenoInk(){ return stenoPrefs.paint==='default' ? stenoVar('--violet-deep','#7a5ae0') : stenoPrefs.paint; }
 function stenoRafCall(fn){ try{ if(typeof requestAnimationFrame==='function') return requestAnimationFrame(fn); }catch(e){} return setTimeout(fn, 16); }
+function stenoShiftTrailTimes(ms){
+  if(!(ms>0)) return;
+  for(var i=0;i<stenoPointAt.length;i++){
+    var row=stenoPointAt[i]||[];
+    for(var j=0;j<row.length;j++) row[j]+=ms;
+  }
+}
+function stenoTrailVisible(now){
+  var fade=stenoPrefs.fadeMs;
+  if(!(fade>0)) return false;
+  var tNow=stenoBusySince || now || Date.now();
+  for(var i=0;i<stenoDraw.length;i++){
+    var stroke=stenoDraw[i]||[], times=stenoPointAt[i]||[];
+    if(stroke.length===1 && times[0]!=null && tNow-times[0]<fade) return true;
+    for(var j=1;j<stroke.length;j++) if(times[j]!=null && tNow-times[j]<fade) return true;
+  }
+  return false;
+}
 function stenoScheduleFade(){
   if(stenoFadeOn) return;
   if(!(stenoPrefs.fadeMs>0 && stenoDraw.length && !stenoBusy && stenoMode==='draw')) return;
@@ -7038,14 +7053,14 @@ function stenoScheduleFade(){
              && (typeof state==='undefined' || !state || state.view==='steno');
     if(!on){ stenoFadeOn=false; return; }
     stenoPaint();
-    if(stenoDraw.length) stenoRafCall(tick); else stenoFadeOn=false;
+    if(stenoTrailVisible(Date.now())) stenoRafCall(tick); else stenoFadeOn=false;
   };
   stenoRafCall(tick);
 }
 function stenoUnfreeze(){
   if(!stenoBusySince) return;
   var d=Date.now()-stenoBusySince; stenoBusySince=0;
-  if(stenoPrefs.fadeMs>0){ for(var i=0;i<stenoBorn.length;i++) stenoBorn[i]+=d; }   // время фидбека не «съедает» след
+  stenoShiftTrailTimes(d);   // время фидбека не «съедает» след
   stenoScheduleFade();
 }
 function stenoCancelTimers(){
@@ -7053,7 +7068,7 @@ function stenoCancelTimers(){
   if(stenoNextTimer){ clearTimeout(stenoNextTimer); stenoNextTimer=null; }
   if(stenoClrTimer){ clearTimeout(stenoClrTimer); stenoClrTimer=null; }
   if(stenoReadTimer){ clearTimeout(stenoReadTimer); stenoReadTimer=null; }
-  if(stenoBusySince){ var dd=Date.now()-stenoBusySince; stenoBusySince=0; for(var fb=0;fb<stenoBorn.length;fb++) stenoBorn[fb]+=dd; }
+  if(stenoBusySince){ var dd=Date.now()-stenoBusySince; stenoBusySince=0; stenoShiftTrailTimes(dd); }
   stenoBusy=false;
   var w=$('stenoPadWrap'); if(w){ w.classList.remove('is-ok'); w.classList.remove('is-bad'); }
 }
@@ -7470,21 +7485,50 @@ function stenoGrade(userRaw, card){
 function stenoCanvasCssW(){
   var cv=$('stenoPad'); if(!cv) return 288;
   var w=cv.clientWidth || (cv.parentElement && cv.parentElement.clientWidth) || 0;
-  if(w<40) w=288;            // jsdom/неизвестный layout: фиксированный логический лист
-  return Math.max(240, Math.min(400, w));
+  if(w<1) w=288;            // jsdom/неизвестный layout: фиксированный логический лист
+  return Math.max(1, Math.min(480, w));
 }
 function stenoSizePad(){
   var cv=$('stenoPad'); if(!cv) return null;
   var css=stenoCanvasCssW();
   var dpr=Math.max(1, Math.min(3, window.devicePixelRatio||1));
   var px=Math.round(css*dpr);
-  /* буфер обязан быть КВАДРАТНЫМ по обеим осям: раньше height оставался
-     дефолтным 150, браузер растягивал 1080x150 в CSS-боксе — штрихи улетали
-     по вертикали, обрезались, кисть становилась эллипсом, эталон не дорисовывался */
+  /* буфер квадратный и в точном размере CSS-бокса: нижний край знака
+     не обрезается на компактных экранах и координаты пальца совпадают. */
   if(cv.width!==px || cv.height!==px){ cv.width=px; cv.height=px; }
   if(cv.style.height!==css+'px'){ cv.style.height=css+'px'; }
   var ctx=null; try{ ctx=cv.getContext('2d'); }catch(e){ ctx=null; }
   return {cv:cv, ctx:ctx, dpr:dpr, css:css};
+}
+function stenoFitPad(){
+  if(stenoMode!=='draw') return 0;
+  var pane=$('stenoDrawPane'), wrap=$('stenoPadWrap');
+  if(!pane || !wrap) return 0;
+  var pr=null; try{ pr=pane.getBoundingClientRect(); }catch(e){}
+  var pw=pane.clientWidth || (pr&&pr.width) || 0;
+  var ph=pane.clientHeight || (pr&&pr.height) || 0;
+  if(pw<1 || ph<1) return 0;   // скрытая вкладка или ещё не рассчитана раскладка
+  var gap=6;
+  try{
+    var ps=getComputedStyle(pane), pg=parseFloat(ps.rowGap||ps.gap);
+    if(isFinite(pg) && pg>=0) gap=pg;
+  }catch(e){}
+  var fixed=0, count=0;
+  var parts=[$('stenoBigLetter'), pane.querySelector('.morse-codewrap'), $('stenoTraceNote')];
+  for(var i=0;i<parts.length;i++){
+    var el=parts[i]; if(!el || el.hidden) continue;
+    var er=null; try{ er=el.getBoundingClientRect(); }catch(e){}
+    fixed+=(er&&er.height) || el.offsetHeight || 0;
+    count++;
+  }
+  /* поле получает всё свободное место после буквы, подсказки и заметки;
+     квадрат ограничен также шириной контейнера и высотой экрана. */
+  var available=Math.floor(ph-fixed-gap*count);
+  var vh=window.innerHeight || ph;
+  var size=Math.floor(Math.min(pw, available, vh*.58));
+  if(size<1) return 0;
+  wrap.style.width=size+'px'; wrap.style.height=size+'px';
+  return size;
 }
 function stenoVar(name, fb){
   try{
@@ -7506,7 +7550,7 @@ function stenoPaint(){
   ctx.setLineDash([]); ctx.lineWidth=2.2; ctx.beginPath(); ctx.moveTo(14,STENO_BY); ctx.lineTo(242,STENO_BY); ctx.stroke();
   ctx.restore();
   var card=STENO_MAP[stenoState&&stenoState.currentId];
-  if(stenoTrace && card && card.templates[0]){   // серый эталон ПОД штрихом
+  if(stenoTrace && card && card.templates && card.templates.length){
     ctx.save();
     ctx.strokeStyle=stenoVar('--muted','#999'); ctx.globalAlpha=.85;   // эталон виден на любой теме
     ctx.lineWidth=13; ctx.lineCap='round'; ctx.lineJoin='round';
@@ -7519,30 +7563,35 @@ function stenoPaint(){
     }
     ctx.restore();
   }
-  /* Чернила — из настроек. След гаснет по прозрачности (fadeMs), но время окна
-     фидбека не считается: «правильно/неправильно» показывается ВМЕСТЕ с тем,
-     что пользователь нарисовал. Умершие штрихи удаляются из массивов. */
-  var ink=stenoInk(), lw=stenoPrefs.width, nowMs=Date.now(), dead=[];
+  /* У каждого сегмента своё время: голова росчерка яркая, старый хвост
+     постепенно растворяется уже пока палец движется. Геометрия stenoDraw
+     сохраняется целиком для проверки — визуальное затухание её не обрезает. */
+  var ink=stenoInk(), lw=stenoPrefs.width, fade=stenoPrefs.fadeMs;
+  var nowMs=stenoBusySince || Date.now();
   ctx.save();
   ctx.strokeStyle=ink; ctx.fillStyle=ink;
   ctx.lineWidth=lw; ctx.lineCap='round'; ctx.lineJoin='round';
   for(var si=0;si<stenoDraw.length;si++){
-    var s2=stenoDraw[si]; if(!s2.length) continue;
-    var al=1;
-    if(stenoPrefs.fadeMs>0 && !stenoBusy && stenoBorn[si]!=null){
-      var age=stenoBusySince?(stenoBusySince-stenoBorn[si]):(nowMs-stenoBorn[si]);
-      al=1-age/stenoPrefs.fadeMs; if(al<0) al=0;
+    var s2=stenoDraw[si]; if(!s2 || !s2.length) continue;
+    var times=stenoPointAt[si]||[];
+    if(s2.length===1){
+      var dotAt=(times[0]!=null)?times[0]:nowMs;
+      var dotAlpha=fade>0?Math.max(0,Math.min(1,1-(nowMs-dotAt)/fade)):1;
+      if(dotAlpha<=0) continue;
+      ctx.globalAlpha=dotAlpha;
+      ctx.beginPath(); ctx.arc(s2[0][0], s2[0][1], lw/2, 0, Math.PI*2); ctx.fill();
+      continue;
     }
-    if(al<=0){ dead.push(si); continue; }
-    ctx.globalAlpha=al;
-    if(s2.length===1){ ctx.beginPath(); ctx.arc(s2[0][0], s2[0][1], lw/2, 0, Math.PI*2); ctx.fill(); continue; }
-    ctx.beginPath(); ctx.moveTo(s2[0][0], s2[0][1]);
-    for(var j=1;j<s2.length;j++) ctx.lineTo(s2[j][0], s2[j][1]);
-    ctx.stroke();
+    for(var j=1;j<s2.length;j++){
+      var stamp=(times[j]!=null)?times[j]:nowMs;
+      var alpha=fade>0?Math.max(0,Math.min(1,1-(nowMs-stamp)/fade)):1;
+      if(alpha<=0) continue;
+      ctx.globalAlpha=alpha;
+      ctx.beginPath(); ctx.moveTo(s2[j-1][0], s2[j-1][1]);
+      ctx.lineTo(s2[j][0], s2[j][1]); ctx.stroke();
+    }
   }
   ctx.restore();
-  for(var dz=dead.length-1;dz>=0;dz--){ stenoDraw.splice(dead[dz],1); stenoBorn.splice(dead[dz],1); }
-  if(!stenoDraw.length) stenoPendingFresh=false;
 }
 function stenoPt(e){
   var cv=$('stenoPad'); if(!cv) return [0,0];
@@ -7559,10 +7608,10 @@ function stenoDown(e){
   if(stenoCheckTimer){ clearTimeout(stenoCheckTimer); stenoCheckTimer=null; } // продлили росчерк — проверка сдвигается
   stenoPid=(e.pointerId!=null)?e.pointerId:1;
   try{ e.currentTarget.setPointerCapture && e.currentTarget.setPointerCapture(e.pointerId); }catch(err){}
-  if(stenoPendingFresh){ stenoDraw=[]; stenoBorn=[]; stenoPendingFresh=false; }   // после промаха пишем начисто
-  var p=stenoPt(e);
-  stenoDraw.push([p]); stenoBorn.push(Date.now());
-  stenoPaint();
+  if(stenoPendingFresh){ stenoDraw=[]; stenoPointAt=[]; stenoPendingFresh=false; }   // после промаха пишем начисто
+  var p=stenoPt(e), now=Date.now();
+  stenoDraw.push([p]); stenoPointAt.push([now]);
+  stenoPaint(); stenoScheduleFade();
   if(e.preventDefault) e.preventDefault();
 }
 function stenoMove(e){
@@ -7573,14 +7622,15 @@ function stenoMove(e){
   var dx=(p[0]-last[0])/k, dy=(p[1]-last[1])/k;
   if(dx*dx+dy*dy < 4) return;            // микродвижения <2px — шум, не пишем
   st.push(p);
-  if(stenoBorn.length===stenoDraw.length) stenoBorn[stenoDraw.length-1]=Date.now();   // след гаснет от ПОСЛЕДНЕЙ точки
-  stenoPaint();
+  var ti=stenoPointAt.length-1, now=Date.now();
+  if(ti>=0){ if(!stenoPointAt[ti]) stenoPointAt[ti]=[]; stenoPointAt[ti].push(now); }
+  stenoPaint(); stenoScheduleFade();
 }
 function stenoUp(e){
   if(stenoPid===null || (e.pointerId!=null && e.pointerId!==stenoPid)) return;
   stenoPid=null;
   var st=stenoDraw[stenoDraw.length-1];
-  if(st && st.length===0){ stenoDraw.pop(); if(stenoBorn.length>stenoDraw.length) stenoBorn.pop(); }
+  if(st && st.length===0){ stenoDraw.pop(); if(stenoPointAt.length>stenoDraw.length) stenoPointAt.pop(); }
   if(!stenoDraw.length){ stenoPaint(); return; }
   if(stenoPrefs.fadeMs>0) stenoScheduleFade();   // точка (один палец без движения) — валидный штрих, не выбрасываем
   if(stenoCheckTimer) clearTimeout(stenoCheckTimer);
@@ -7623,6 +7673,7 @@ function stenoCheck(){
     haptic('error');
     var w=$('stenoPadWrap'); if(w){ w.classList.remove('is-ok'); w.classList.add('is-bad'); }
     var tn0=$('stenoTraceNote'); if(tn0) tn0.hidden=false;   // заметка об обводке — сразу, не после клиринга
+    stenoFitPad();
     stenoPaint();   // серый эталон — сразу под штрихом
     stenoRenderStatus();
     saveSteno();
@@ -7640,7 +7691,7 @@ function stenoCheck(){
 }
 function stenoNextCard(){
   if(!stenoState) return;
-  stenoDraw=[]; stenoBorn=[]; stenoPendingFresh=false; stenoTrace=false;
+  stenoDraw=[]; stenoPointAt=[]; stenoPendingFresh=false; stenoTrace=false;
   stenoState.currentId=stenoPick(stenoState);
   saveSteno();
   renderSteno();
@@ -7705,15 +7756,24 @@ function stenoSignTmplDraw(box, tmpl){
   }catch(e){}
 }
 function stenoReadRender(){
-  var box=$('stenoSignInner'), kb=$('stenoKeyboard'), note=$('stenoReadNote');
+  var box=$('stenoSignInner'), kb=$('stenoKeyboard');
   var st=stenoReadState;
   var card=st && STENO_MAP[st.currentId];
   if(kb){
     if(!kb.childNodes.length && typeof buildMorseKeyboard==='function') buildMorseKeyboard(kb);   // своя раскладка, как в «Дактиле»
     var keys=kb.querySelectorAll ? kb.querySelectorAll('button[data-key]') : [];
-    for(var qk=0;qk<keys.length;qk++){ keys[qk].classList.remove('mk-good'); keys[qk].classList.remove('mk-bad'); keys[qk].disabled=!card; }
+    for(var qk=0;qk<keys.length;qk++){
+      keys[qk].classList.remove('mk-good'); keys[qk].classList.remove('mk-bad'); keys[qk].classList.remove('mk-hint');
+      keys[qk].disabled=!card;
+    }
+    if(card && stenoReadSolved && stenoReadAnswer){
+      for(var gk=0;gk<keys.length;gk++) if(keys[gk].getAttribute('data-key')===stenoReadAnswer) keys[gk].classList.add('mk-good');
+    } else if(card && stenoReadMiss){
+      var accepted=card.reverseAcceptedLetters||[];
+      for(var ak=0;ak<accepted.length;ak++) for(var hk=0;hk<keys.length;hk++)
+        if(keys[hk].getAttribute('data-key')===accepted[ak]) keys[hk].classList.add('mk-hint');
+    }
   }
-  if(note){ note.hidden=true; note.textContent=''; note.className='steno-read-note'; }
   if(card) stenoLoadSign(card, box);
   else if(box) box.innerHTML='';
 }
@@ -7722,47 +7782,48 @@ function stenoReadKey(chRaw, btn){
   if(!st || stenoBusy) return;
   var card=STENO_MAP[st.currentId]; if(!card) return;
   var ch=stenoNormChar(chRaw); if(!ch) return;
-  function flash(ok){
-    if(!btn || !btn.classList) return;
-    btn.classList.remove(ok?'mk-bad':'mk-good'); btn.classList.add(ok?'mk-good':'mk-bad');
-    setTimeout(function(){ try{ btn.classList.remove('mk-good'); btn.classList.remove('mk-bad'); }catch(e){} }, 560);
-  }
-  var acc=card.reverseAcceptedLetters;
-  st.dailyAttempts++;
-  var note=$('stenoReadNote');
+  var acc=card.reverseAcceptedLetters||[];
   if(acc.indexOf(ch)>=0){
-    st.dailyCorrect++;
-    st.streak=(st.streak|0)+1;
-    if(st.streakBest<st.streak) st.streakBest=st.streak;
-    if(st.weights[card.id]!=null){ var nw=st.weights[card.id]-1; if(nw>0) st.weights[card.id]=nw; else delete st.weights[card.id]; }
-    stenoBusy=true;
-    flash(true);
-    haptic('success');
-    if(note){
-      if(acc.length>1 && card.ambiguityNote){ note.textContent=card.ambiguityNote; }   // неоднозначный знак: короткая заметка, не ошибка
-      else if(acc.length>1 && ch!==card.letter){ note.textContent='Верно: этот знак читается как «'+acc.join('» или «')+'»'; }
-      else note.textContent='Верно: '+card.letter;
-      note.classList.remove('bad'); note.classList.add('ok'); note.hidden=false;
+    var firstTry=!stenoReadMiss;
+    st.dailyAttempts++;
+    if(firstTry){
+      st.dailyCorrect++;
+      st.streak=(st.streak|0)+1;
+      if(st.streakBest<st.streak) st.streakBest=st.streak;
+      if(st.weights[card.id]!=null){ var nw=st.weights[card.id]-1; if(nw>0) st.weights[card.id]=nw; else delete st.weights[card.id]; }
+    } else {
+      st.dailyErrors++;
+      st.streak=0;
     }
+    stenoBusy=true;
+    stenoReadSolved=true; stenoReadAnswer=ch;
+    var readKb=$('stenoKeyboard'), readKeys=readKb&&readKb.querySelectorAll?readKb.querySelectorAll('button[data-key]'):[];
+    for(var rk=0;rk<readKeys.length;rk++) readKeys[rk].classList.remove('mk-hint');
+    if(btn && btn.classList){ btn.classList.remove('mk-hint'); btn.classList.remove('mk-bad'); btn.classList.add('mk-good'); }
+    haptic('success');
     saveStenoRead(); stenoRenderStatus(); renderStenoHome();
     stenoReadTimer=setTimeout(function(){
       stenoBusy=false;
+      stenoReadMiss=false; stenoReadSolved=false; stenoReadAnswer='';
       st.currentId=stenoPick(st);
       saveStenoRead();
       stenoReadRender();
       stenoRenderStatus();
     }, STENO_READ_NEXT_MS);
   } else {
-    st.dailyErrors++;
-    st.streak=0;
-    st.weights[card.id]=Math.min(16, stenoWeight(st, card.id)+1);
-    flash(false);
-    haptic('error');
-    if(note){ note.textContent='Не «'+ch+'». Допустимы: '+acc.join(', '); note.classList.remove('ok'); note.classList.add('bad'); note.hidden=false; }
-    saveStenoRead(); stenoRenderStatus(); renderStenoHome();
+    if(btn && btn.classList) btn.classList.add('mk-bad');   // промах остаётся красным до следующего знака
+    if(!stenoReadMiss){
+      stenoReadMiss=true; stenoReadSolved=false; stenoReadAnswer='';
+      st.streak=0;
+      st.weights[card.id]=Math.min(16, stenoWeight(st, card.id)+1);
+      haptic('error');
+      saveStenoRead(); stenoRenderStatus(); renderStenoHome();
+    }
+    var kb=$('stenoKeyboard'), keys=kb&&kb.querySelectorAll?kb.querySelectorAll('button[data-key]'):[];
+    for(var ai=0;ai<acc.length;ai++) for(var ki=0;ki<keys.length;ki++)
+      if(keys[ki].getAttribute('data-key')===acc[ai]) keys[ki].classList.add('mk-hint');
   }
 }
-
 /* ---------- рендеры ---------- */
 function stenoAccuracyText(st){
   if(!st || !st.dailyAttempts) return 'Точность —';
@@ -7883,7 +7944,9 @@ function renderSteno(){
     }
   }
   stenoRenderStatus();
+  stenoFitPad();
   stenoPaint();
+  stenoScheduleFade();
 }
 function openSteno(mode){
   /* «Бесконечная загрузка знаков» (исправление R44): строка живая мгновенно —
@@ -7906,6 +7969,7 @@ function openSteno(mode){
     return;
   }
   stenoMode=mode;
+  if(mode==='read'){ stenoReadMiss=false; stenoReadSolved=false; stenoReadAnswer=''; }
   if(mode==='read' && stenoReadState && !stenoReadState.currentId){ stenoReadState.currentId=stenoPick(stenoReadState); saveStenoRead(); }
   showView('steno');
 }
@@ -7975,7 +8039,15 @@ if(elStenoKb){
   });
 })();
 window.addEventListener('pagehide', function(){ try{ saveSteno(); saveStenoRead(); }catch(e){} });
-window.addEventListener('resize', function(){ if(stenoMode==='draw' && state.view==='steno'){ try{ stenoPaint(); }catch(e){} } });
+window.addEventListener('resize', function(){ if(stenoMode==='draw' && typeof state!=='undefined' && state && state.view==='steno'){ try{ stenoFitPad(); stenoPaint(); stenoScheduleFade(); }catch(e){} } });
+try{
+  if(typeof ResizeObserver==='function'){
+    var stenoPaneObserver=new ResizeObserver(function(){
+      if(stenoMode==='draw' && typeof state!=='undefined' && state && state.view==='steno'){ try{ stenoFitPad(); stenoPaint(); }catch(e){} }
+    });
+    var stenoObservedPane=$('stenoDrawPane'); if(stenoObservedPane) stenoPaneObserver.observe(stenoObservedPane);
+  }
+}catch(e){}
 
 /* Бут раздела: контент из кэша/сети, затем состояния. Сбои стено изолированы —
    слова, языки и морзе не знают о них ничего. */
@@ -8779,5 +8851,5 @@ try{ applyTheme(); }catch(e){}   // тема не должна блокиров�
 loadContentThenStart();
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a49eeaaacd340c03',t:'MTc5MTkwMDUwOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a49f65d91fa3ca98',t:'MTc5MTkwNTU1NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

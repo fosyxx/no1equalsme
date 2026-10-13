@@ -654,6 +654,7 @@ html.rm .card-drag.flipped .card-front{opacity:0}
 .steno-read{display:flex;flex-direction:column;gap:12px}
 .steno-sign{border-radius:18px;background:var(--card);border:1px solid var(--line);padding:8px;display:grid;place-items:center;min-height:190px}
 .steno-sign img,.steno-sign svg,.steno-sign canvas{width:100%;max-width:270px;height:auto;display:block;color:var(--text)}
+.steno-sign img{background:#1b2130;border-radius:14px;padding:6px}  /* PNG-фолбэк (белый на прозрачном) — всегда на тёмной плашке */
 .steno-read-q{font-size:13px;color:var(--muted)}
 .steno-input{width:100%;min-height:52px;border-radius:14px;border:1px solid var(--line);background:var(--bg2);color:var(--text);font-size:26px;font-weight:800;text-align:center;letter-spacing:.06em;text-transform:uppercase;outline:none}
 .steno-input:focus{border-color:var(--violet-line)}
@@ -6933,7 +6934,7 @@ var STENO_READ_NEXT_MS=850; // чтение: 700–1000
 var STENO_FAIL_CLR_MS=650;  // через это время после ошибки штрихи уступают место обводке
 var STENO_PASS=0.74, STENO_PASS_TRACE=0.68;   // пороги: чистовой / в режиме обводки
 var STENO_SHEET=256, STENO_CY=80, STENO_BY=176;
-var STENO_RES=6, STENO_GRID=64, STENO_CELL=4, STENO_CNORM=26;
+var STENO_RES=6, STENO_GRID=64, STENO_CELL=4, STENO_CNORM=20;   // 26→20: пакет ГЕСС плотнее по формам
 var STENO_ANGS=[-7,-3.5,0,3.5,7];
 
 var stenoContent={ready:false,error:false,count:0};
@@ -6983,7 +6984,7 @@ function stenoValidatePkg(root){
   if(root.language!=='ru') return {error:'language'};
   if(!(typeof root.contentVersion==='number' && root.contentVersion>0)) return {error:'version'};
   var sp=root.space;
-  if(!sp || sp.size!==256 || sp.controlY!==80 || sp.baselineY!==176) return {error:'space'};
+  if(!sp || sp.size!==256 || sp.controlY!==80 || (sp.baselineY!==176 && sp.baselineY!==180)) return {error:'space'};
   if(!Array.isArray(root.cards) || root.cards.length<8 || root.cards.length>64) return {error:'cards'};
   var seen={}, out=[];
   for(var i=0;i<root.cards.length;i++){
@@ -7009,11 +7010,16 @@ function stenoValidatePkg(root){
               templates:c.templates});
   }
   return {cards:out, contentVersion:root.contentVersion,
+          space:{size:256, controlY:sp.controlY, baselineY:sp.baselineY},
           updatedAt:(typeof root.updatedAt==='string'?root.updatedAt.slice(0,40):null)};
 }
-function stenoSetCards(cards){
+function stenoSetCards(cards, space){
   STENO_CARDS=cards; STENO_MAP={};
   for(var i=0;i<cards.length;i++) STENO_MAP[cards[i].id]=cards[i];
+  if(space && space.size===256 && space.controlY===80 && (space.baselineY===176||space.baselineY===180)){
+    STENO_CY=space.controlY; STENO_BY=space.baselineY;   // направляющие рисуются по пакету
+    stenoContent.space=space;
+  }
   stenoContent.ready=true; stenoContent.error=false; stenoContent.count=cards.length;
 }
 function stenoReadCache(){
@@ -7028,13 +7034,13 @@ function stenoWriteCache(pkg){
   try{
     localStorage.setItem(STENO_CACHE_KEY, JSON.stringify({
       schemaVersion:1, contentVersion:pkg.contentVersion, language:'ru',
-      space:{size:256, controlY:80, baselineY:176}, cards:pkg.cards
+      space:(stenoContent.space||{size:256, controlY:80, baselineY:176}), cards:pkg.cards
     }));
   }catch(e){}
 }
 function loadStenoContent(){
   var cached=stenoReadCache();
-  if(cached){ stenoSetCards(cached.cards); renderStenoHome(); if(state.view==='steno') renderSteno(); }
+  if(cached){ stenoSetCards(cached.cards, cached.space); renderStenoHome(); if(state.view==='steno') renderSteno(); }
   if(typeof fetch!=='function'){ if(!stenoContent.ready){ stenoContent.error=true; } renderStenoHome(); return; }
   var ctrl=null, timer=null;
   try{ if(typeof AbortController==='function') ctrl=new AbortController(); }catch(e){ ctrl=null; }
@@ -7047,7 +7053,7 @@ function loadStenoContent(){
     if(timer) clearTimeout(timer);
     var pkg=stenoValidatePkg(JSON.parse(cleanJsonText(text)));
     if(pkg.error) throw new Error(pkg.error);
-    stenoSetCards(pkg.cards);
+    stenoSetCards(pkg.cards, pkg.space);
     stenoWriteCache(pkg);
     renderStenoHome();
     if(typeof state!=='undefined' && state && state.view==='steno') renderSteno();
@@ -7274,8 +7280,15 @@ function stenoScoreTmpl(userRaw, tmpl){
   var u=stenoResample(userRaw, STENO_RES);
   var ref=stenoResample(tmpl, STENO_RES);
   var ug=stenoGeom(u), rg=stenoGeom(ref);
+  if(rg[2]<10){                                                // «точка» Ъ/Ь в ГЕСС — короткое касание валидно как штрих
+    var dtl=0, dpts=0;
+    for(var q=0;q<u.length;q++){ dpts+=u[q].length; for(var w2=1;w2<u[q].length;w2++) dtl+=Math.hypot(u[q][w2][0]-u[q][w2-1][0], u[q][w2][1]-u[q][w2-1][1]); }
+    if(u.length===1 && dpts>=1 && dpts<=80 && dtl<24 && Math.hypot(ug[0]-rg[0], ug[1]-rg[1])<26) return 0.85;
+    return 0;
+  }
   var grid=stenoGrid(ref);
-  var s=Math.min(1.15, Math.max(0.85, rg[2]/(ug[2]||1)));
+  var sRaw=rg[2]/(ug[2]||1);                                  // «меры» Соколова — смыслоразличительны
+  var s=Math.min(1.15, Math.max(0.85, sRaw));
   var tx=Math.min(14, Math.max(-14, rg[0]-ug[0])), ty=Math.min(14, Math.max(-14, rg[1]-ug[1]));
   var moved=[],i,j;
   for(i=0;i<u.length;i++){
@@ -7301,9 +7314,15 @@ function stenoScoreTmpl(userRaw, tmpl){
   if(best<0) return 0;
   var sim2=best - stenoStrokePen(bestCand, ref);
   if(rg[2] && stenoLoops(ref)>0 && stenoLoops(bestCand)===0) sim2-=0.10;   // пропущенная петля
-  if(Math.abs(Math.log(s))>0.10) sim2-=0.08;                                 // размер
+  /* длина штриха («мера») в ГЕСС различает буквы (И 134 vs Е 102 и т.п.) —
+     наказываем непрерывно, а не скидкой 0.08 за клампом. */
+  var szl=Math.abs(Math.log(Math.max(0.2, Math.min(5, sRaw))));
+  if(szl>0.12) sim2-=Math.min(0.45, (szl-0.12)*1.35);
+  /* позиция относительно направляющих: мягкий, но реальный штраф (пакет различает
+     знаки и высотой: Т-свод над основной, хвост Ц под линией…) */
   var pdx=ug[0]-rg[0], pdy=ug[1]-rg[1];
-  if(Math.sqrt(pdx*pdx+pdy*pdy)>34) sim2-=0.05;                               // позиция на листе
+  var pd=Math.sqrt(pdx*pdx+pdy*pdy);
+  if(pd>12) sim2-=Math.min(0.22, (pd-12)/26*0.3);
   var bonus=0;                                                                 // направление: бонус, не вето
   for(i=0;i<moved.length && i<ref.length;i++){
     var a=moved[i], b=ref[i];
@@ -7497,6 +7516,8 @@ function stenoLoadSign(card, box){
     return res.text();
   }).then(function(text){
     var s=String(text||'').trim();
+    // пакет пользователя может быть нарисован жёстким белым — переводим в текущий цвет темы
+    s=s.replace(/stroke=["']#(ffffff|fff)["']/gi, 'stroke="currentColor"');
     // допускаем только цельный безопасный <svg> без скриптов/обработчиков
     if(/^<svg[\s>][\s\S]*<\/svg>$/i.test(s) && !/<script/i.test(s) && !/\son[a-z]+\s*=/i.test(s) && !/javascript:/i.test(s)){
       stenoSignMem[card.id]={kind:'svg', data:s};

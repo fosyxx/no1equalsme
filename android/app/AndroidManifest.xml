@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  No1EqualsMe · офлайн-обёртка сайта в APK.
+  Ключевые решения:
+  * android:configChanges у активности — поворот экрана не пересоздаёт WebView:
+    тренировка, таймеры морзе-ключа и текущая сессия продолжают жить.
+  * VIBRATE — navigator.vibrate() в WebView работает только с этим разрешением.
+  * INTERNET формально есть (WebView иначе капризничает на части прошивок),
+    но приложение его реально НЕ использует: весь контент перехватывается
+    из assets, поэтому всё работает без сети и без ВПН.
+  * allowBackup="true" — системный бэкап захватит и localStorage (прогресс).
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="local.trainer.morse"
+    android:versionCode="16"
+    android:versionName="1.15">
+
+    <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="33" />
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="true"
+        android:fullBackupContent="true"
+        android:hardwareAccelerated="true"
+        android:usesCleartextTraffic="false"
+        android:supportsRtl="true">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|keyboard|navigation|uiMode|density|fontScale|locale|layoutDirection"
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

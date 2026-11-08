@@ -558,8 +558,10 @@ function stenoScoreTmpl(userRaw, tmpl){
 }
 function stenoScoreCloud(userRaw, tmpl){
   if(!userRaw || !userRaw.length || !tmpl || !tmpl.length) return 0;
-  var ref=[];
-  for(var ri=0;ri<tmpl.length;ri++) for(var rp=0;rp<tmpl[ri].length;rp++) ref.push(tmpl[ri][rp]);
+  /* Сетка и центроид должны использовать одинаковую плотность точек с обеих
+     сторон: иначе прямая из двух концов отвергает собственную обводку. */
+  var sampledRef=stenoResample(tmpl, STENO_RES), ref=[];
+  for(var ri=0;ri<sampledRef.length;ri++) for(var rp=0;rp<sampledRef[ri].length;rp++) ref.push(sampledRef[ri][rp]);
   var u=stenoResample(userRaw, STENO_RES), user=[];
   for(var ui=0;ui<u.length;ui++) for(var up=0;up<u[ui].length;up++) user.push(u[ui][up]);
   if(!ref.length || !user.length) return 0;
@@ -682,7 +684,7 @@ function stenoPaint(){
   var lineCol=stenoVar('--line','rgba(120,120,140,.5)');
   ctx.save();
   ctx.strokeStyle=lineCol; ctx.lineWidth=1.6;
-  var guideTop=STENO_SHEET*.10, guideBottom=STENO_SHEET*.90; // строка от 10% до 90% высоты поля
+  var guideTop=STENO_CY, guideBottom=STENO_BY; // та же строка, что у эталона и грейдера
   ctx.setLineDash([7,7]); ctx.beginPath(); ctx.moveTo(14,guideTop); ctx.lineTo(242,guideTop); ctx.stroke();
   ctx.setLineDash([]); ctx.lineWidth=2.2; ctx.beginPath(); ctx.moveTo(14,guideBottom); ctx.lineTo(242,guideBottom); ctx.stroke();
   ctx.restore();
@@ -741,6 +743,7 @@ function stenoPt(e){
 }
 function stenoDown(e){
   if(stenoBusy || stenoMode!=='draw' || !stenoContent.ready) return;
+  if(e.button!=null && e.button!==0) return;
   if(stenoPid!==null && e.pointerId!=null && e.pointerId!==stenoPid) return;  // мультитач: второй палец не ловим
   if(stenoCheckTimer){ clearTimeout(stenoCheckTimer); stenoCheckTimer=null; } // продлили росчерк — проверка сдвигается
   stenoPid=(e.pointerId!=null)?e.pointerId:1;
@@ -765,6 +768,9 @@ function stenoMove(e){
 }
 function stenoUp(e){
   if(stenoPid===null || (e.pointerId!=null && e.pointerId!==stenoPid)) return;
+  /* Быстрый росчерк может закончиться без последнего pointermove. Сохраняем
+     координату отпускания до сброса pointerId, чтобы хвост не пропадал. */
+  if(e.clientX!=null && e.clientY!=null) stenoMove(e);
   stenoPid=null;
   var st=stenoDraw[stenoDraw.length-1];
   if(st && st.length===0){ stenoDraw.pop(); if(stenoPointAt.length>stenoDraw.length) stenoPointAt.pop(); }
@@ -772,6 +778,14 @@ function stenoUp(e){
   if(stenoPrefs.fadeMs>0) stenoScheduleFade();   // точка (один палец без движения) — валидный штрих, не выбрасываем
   if(stenoCheckTimer) clearTimeout(stenoCheckTimer);
   stenoCheckTimer=setTimeout(stenoCheck, STENO_CHECK_MS);   // автопроверка только ПОСЛЕ покоя
+}
+function stenoCancelStroke(e){
+  if(stenoPid===null || (e.pointerId!=null && e.pointerId!==stenoPid)) return;
+  stenoPid=null;
+  if(stenoCheckTimer){ clearTimeout(stenoCheckTimer); stenoCheckTimer=null; }
+  /* ОС/браузер прервал жест: незавершённый штрих не является ответом. */
+  stenoDraw.pop(); stenoPointAt.pop();
+  stenoPaint();
 }
 function stenoFeedback(ok){
   var w=$('stenoPadWrap'); if(!w) return;
@@ -1133,8 +1147,8 @@ if(elStenoPad){
   elStenoPad.addEventListener('pointerdown', stenoDown);
   elStenoPad.addEventListener('pointermove', stenoMove);
   elStenoPad.addEventListener('pointerup', stenoUp);
-  elStenoPad.addEventListener('pointercancel', stenoUp);
-  elStenoPad.addEventListener('lostpointercapture', stenoUp);
+  elStenoPad.addEventListener('pointercancel', stenoCancelStroke);
+  elStenoPad.addEventListener('lostpointercapture', stenoCancelStroke);
 }
 /* ── настройки кисти (ряды в «Настройках») ── */
 function stenoFadeSubText(v){ return v>=8?'Не исчезает — как сейчас':('След гаснет за '+v+' '+plural(v,'секунду','секунды','секунд')); }

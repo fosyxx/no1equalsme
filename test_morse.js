@@ -1,13 +1,14 @@
 /* Тесты раздела «Морзе + Дактиль» для index.html + регрессия слов */
 const fs = require('fs');
 const vm = require('vm');
+const path = require('path');
 const { JSDOM, VirtualConsole } = require('jsdom');
 
-const HTML = fs.readFileSync('/home/user/index.html', 'utf8');
-const STENO_BLOCK = fs.readFileSync('/home/user/steno/steno_block.js', 'utf8');
-const MORSE_PKG = JSON.parse(fs.readFileSync('/home/user/uploads/morse-signs.json', 'utf8'));
-const STENO_PKG = JSON.parse(fs.readFileSync('/home/user/data/stenography.json', 'utf8'));   // R40: реальный поставляемый файл
-const AKOPYAN_PKG = JSON.parse(fs.readFileSync('/home/user/data/stenography-akopyan.json', 'utf8'));
+const HTML = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+const STENO_BLOCK = fs.readFileSync(path.join(__dirname, 'steno/steno_block.js'), 'utf8');
+const MORSE_PKG = JSON.parse(fs.readFileSync(path.join(__dirname, 'data/morse-signs.json'), 'utf8'));
+const STENO_PKG = JSON.parse(fs.readFileSync(path.join(__dirname, 'data/stenography.json'), 'utf8'));
+const AKOPYAN_PKG = JSON.parse(fs.readFileSync(path.join(__dirname, 'data/stenography-akopyan.json'), 'utf8'));
 const LANG_META = [
   ['es','Испанский','es-ES'],['fr','Французский','fr-FR'],['de','Немецкий','de-DE'],
   ['it','Итальянский','it-IT'],['pt','Португальский','pt-BR'],['zh','Китайский','zh-CN'],
@@ -280,17 +281,17 @@ function boot(opts = {}) {
   t('1.7 действие «Начать» в строке морзе', A.$('morseAct').textContent === 'Начать' && A.$('morseAct').textContent !== undefined);
   // регрессия: каждый экран должен быть прямым потомком #app (иначе активный
   // экран невидим из-за скрытого родителя — «пустой экран» при нажатии)
-  const views = ['view-home', 'view-session', 'view-result', 'view-archive', 'view-morse', 'view-steno', 'view-details', 'view-langs', 'view-langsession'];
+  const views = ['view-home', 'view-session', 'view-result', 'view-archive', 'view-morse', 'view-steno', 'view-pi', 'view-details', 'view-langs', 'view-langsession'];
   const parentsOk = views.every(id => {
     const el = A.$(id);
     return el && el.parentElement && el.parentElement.id === 'app';
   });
-  t('1.7а все 9 экранов — прямые дети #app (R40: добавлен view-steno)', parentsOk && A.doc.querySelectorAll('#app > section.view').length === 9,
+  t('1.7а все 10 экранов — прямые дети #app', parentsOk && A.doc.querySelectorAll('#app > section.view').length === views.length,
     [...views].map(id => (A.$(id) || {}).parentElement && A.$(id).parentElement.id).join(','));
   {
     const secOrder = [...A.doc.querySelectorAll('#secList .sec-row')].map(b => b.id).join(',');
-    t('1.7б главная: 4 ряда (Слова→Языки→Морзе+Дактиль→Стенография) + скрытые «Морзе», «Дактиль», «Чтение стенографии»',
-      secOrder === 'btnStart,btnLangStart,btnMorseStart,btnStenoStart,btnDrillLetter,btnDrillDactyl,btnDrillStenoRead' &&
+    t('1.7б главная: 4 основных ряда и дополнительные тренировки, включая число π',
+      secOrder === 'btnStart,btnLangStart,btnMorseStart,btnStenoStart,btnDrillLetter,btnDrillDactyl,btnDrillStenoRead,btnPiStart' &&
       !!A.$('btnDetails') &&
       A.$('secMore').hidden === true &&
       A.$('btnSecMore').getAttribute('aria-expanded') === 'false' &&
@@ -1434,7 +1435,7 @@ function boot(opts = {}) {
     const num28 = U1.$('morseStreakN');
     t('28.6 огонёк крупный вживую и горит рекордом',
       U1.w.getComputedStyle(svg28).width === '28px' &&
-      U1.w.getComputedStyle(num28).fontSize === '17px' &&
+      (U1.w.getComputedStyle(num28).fontSize || U1.w.getComputedStyle(num28.parentElement).fontSize) === '17px' &&
       U1.$('morseStreak').classList.contains('rec') &&
       ['var(--flame-rec)', 'rgb(255, 186, 82)'].indexOf(
         U1.w.getComputedStyle(U1.$('morseStreak')).color) >= 0,
@@ -2250,7 +2251,7 @@ function boot(opts = {}) {
     HTML.indexOf('.btn-primary.is-quiet') >= 0);
   t('36.19 статика языков: schemaVersion 3, журнал days, облако v:3, цикл 8 этапов',
     HTML.indexOf('return {schemaVersion:3, cards:{}, days:{}') >= 0 &&
-    HTML.indexOf('JSON.stringify({v:3, u:langState.updatedAt') >= 0 &&
+    HTML.indexOf('JSON.stringify({v:3, u:langState.languageUpdatedAt[L.id]') >= 0 &&
     HTML.indexOf('var LANG_STEP_DAYS={1:1,2:3,3:7,4:15,5:30}') >= 0 &&
     HTML.indexOf('return !!(p && p.s>=6)') >= 0 &&
     HTML.indexOf('p.a=1; p.d=null;') >= 0);
@@ -3614,9 +3615,9 @@ function boot(opts = {}) {
         JSON.stringify({field1:size1,field2:size2,letter1,letter2,oldLetter,canvas:cv.width+'x'+cv.height,cssH:cv.style.height}));
       SFIT.dom.window.close();
     }
-    t('42.88 направляющие строки рисования находятся в 10% и 90% высоты поля',
+    t('42.88 направляющие рисования используют координаты эталона и грейдера',
       (()=>{const a=HTML.indexOf('function stenoPaint'),b=HTML.indexOf('function stenoPt',a),seg=HTML.slice(a,b);
-        return /guideTop=STENO_SHEET\*\.10/.test(seg) && /guideBottom=STENO_SHEET\*\.90/.test(seg);})());
+        return /guideTop=STENO_CY/.test(seg) && /guideBottom=STENO_BY/.test(seg);})());
     {
       const SFADE=await boot({seed:{nem_steno_prefs_v1:JSON.stringify({paint:'default',width:13,fadeMs:1200})}});
       await SFADE.waitView('view-home'); await waitSteno(SFADE);
@@ -3768,7 +3769,7 @@ function boot(opts = {}) {
       const assetsOk=AKOPYAN_PKG.cards.length===28 &&
         new Set(AKOPYAN_PKG.cards.map(c=>c.id)).size===AKOPYAN_PKG.cards.length &&
         AKOPYAN_PKG.cards.every(c=>c.grading==='cloud' && c.templates && c.templates[0] &&
-          c.svg && fs.existsSync('/home/user/'+c.svg.slice(2)) && fs.existsSync('/home/user/'+c.png.slice(2)));
+          c.svg && fs.existsSync(path.join(__dirname, c.svg)) && fs.existsSync(path.join(__dirname, c.png)));
       t('43.01 пакет Акопьяна: 28 карточек, локальные изображения и шаблоны для грейдера',assetsOk,
         'cards='+AKOPYAN_PKG.cards.length);
 

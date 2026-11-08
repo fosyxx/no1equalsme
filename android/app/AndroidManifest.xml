@@ -5,15 +5,14 @@
   * android:configChanges у активности — поворот экрана не пересоздаёт WebView:
     тренировка, таймеры морзе-ключа и текущая сессия продолжают жить.
   * VIBRATE — navigator.vibrate() в WebView работает только с этим разрешением.
-  * INTERNET формально есть (WebView иначе капризничает на части прошивок),
-    но приложение его реально НЕ использует: весь контент перехватывается
-    из assets, поэтому всё работает без сети и без ВПН.
+  * INTERNET нужен для фонового обновления данных. Отрисовка всегда читает
+    проверенный локальный кэш или assets и не зависит от доступности сети.
   * allowBackup="true" — системный бэкап захватит и localStorage (прогресс).
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="local.trainer.morse"
-    android:versionCode="16"
-    android:versionName="1.15">
+    android:versionCode="17"
+    android:versionName="1.16">
 
     <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="33" />
 

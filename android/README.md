@@ -44,7 +44,8 @@ npm run test:apk
 The signed file is `android/build/No1EqualsMe.apk`. An unsigned developer file is
 also written with the version in its filename. The verifier rejects stale screens,
 wrong versions, missing launch activities, unsigned files and unexpected keys.
-Publish the verified signed file as the release asset `No1EqualsMe.apk`.
+Tag the verified signed root file and link its raw tag URL in the release notes.
+This provides a direct APK download without requiring GitHub Actions login.
 
 ## Native tests
 

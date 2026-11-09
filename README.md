@@ -1,6 +1,6 @@
 # No1EqualsMe
 
-[**Скачать готовое приложение Android 1.17**](https://github.com/fosyxx/no1equalsme/releases/download/v1.17/No1EqualsMe.apk)
+[**Скачать готовое приложение Android 1.17**](https://raw.githubusercontent.com/fosyxx/no1equalsme/v1.17/No1EqualsMe.apk)
 
 APK уже подписан и содержит все данные офлайн. Раздел **«Число π» находится на главном экране**. После установки откройте **No1EqualsMe 1.17**.
 
@@ -24,7 +24,7 @@ npm test
 
 ## Android
 
-Исходники оболочки, сборка и подпись описаны в [android/README.md](android/README.md). `No1EqualsMe.apk` в корне — актуальный **подписанный установочный APK 1.17**, тот же файл, что опубликован в Releases. Сборка не зависит от прежнего APK: все данные и ресурсы находятся в исходниках.
+Исходники оболочки, сборка и подпись описаны в [android/README.md](android/README.md). `No1EqualsMe.apk` в корне — актуальный **подписанный установочный APK 1.17**, тот же файл, на который ведёт кнопка скачивания в Releases. Сборка не зависит от прежнего APK: все данные и ресурсы находятся в исходниках.
 
 ```sh
 npm run test:apk

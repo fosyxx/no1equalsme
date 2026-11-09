@@ -43,12 +43,16 @@ jobs:
           curl -fsSLo "$RUNNER_TEMP/json.jar" https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.jar
       - name: Test native cache and response handler
         run: npm run test:native -- --sdk "$ANDROID_HOME" --json-jar "$RUNNER_TEMP/json.jar"
+      - name: Verify the installable download APK
+        run: |
+          python3 android/verify_release.py --sdk "$ANDROID_HOME"
+          npm run test:apk
       - name: Build and verify offline APK
         run: |
           python3 android/build.py --sdk "$ANDROID_HOME" --ecj-jar "$RUNNER_TEMP/ecj.jar"
-          npm run test:apk
+          npm run test:apk -- android/build/No1EqualsMe-1.17-unsigned.apk
       - uses: actions/upload-artifact@v4
         with:
-          name: No1EqualsMe-1.16-unsigned
-          path: android/build/No1EqualsMe-1.16-unsigned.apk
+          name: No1EqualsMe-developer-build-unsigned
+          path: android/build/*-unsigned.apk
           if-no-files-found: error

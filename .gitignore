@@ -6,3 +6,5 @@ android/local.properties
 android/**/build/
 *.keystore
 *.jks
+.release/
+*.p12

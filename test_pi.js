@@ -46,6 +46,7 @@ async function boot(seed = {}) {
 }
 (async () => {
   const app = await boot();
+  assert.equal(app.$('btnPiStart').closest('#secMore'), null, 'Pi is visible on the main screen');
   app.$('btnPiStart').click();
   assert.ok(app.$('view-pi').classList.contains('active'));
   app.digit('1');

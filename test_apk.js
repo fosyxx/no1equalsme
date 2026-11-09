@@ -7,7 +7,7 @@ const assert = require('assert/strict');
 const { execFileSync } = require('child_process');
 const { JSDOM, VirtualConsole } = require('jsdom');
 
-const apk = path.resolve(process.argv[2] || path.join(__dirname, 'android/build/No1EqualsMe-1.16-unsigned.apk'));
+const apk = path.resolve(process.argv[2] || path.join(__dirname, 'No1EqualsMe.apk'));
 assert.ok(fs.existsSync(apk), 'Build the current APK first: python3 android/build.py --sdk <Android SDK>');
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'no1-apk-'));
 execFileSync('unzip', ['-q', apk, '-d', tmp]);
@@ -132,6 +132,7 @@ function boot({ seed = {}, wordsFail = false, legacyWebView = false } = {}) {
     JSON.stringify(restored.state().cards) === JSON.stringify(stateAfter.cards) &&
     JSON.stringify(restored.state().sessionResults) === JSON.stringify(stateAfter.sessionResults));
   check('Restart produces no JavaScript errors', restored.errors.length === 0);
+  check('Pi is visible on the main screen without expanding extra sections', !restored.$('btnPiStart').closest('#secMore'));
   restored.$('btnPiStart').click();
   for (const digit of '14159') restored.w.document.querySelector('[data-pi-digit="' + digit + '"]').click();
   const pi = JSON.parse(restored.w.localStorage.getItem('nem_pi_practice_v1'));

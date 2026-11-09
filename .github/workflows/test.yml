@@ -1,0 +1,54 @@
+name: Regression checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - run: npm ci
+      - name: Install build and test dependencies
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-33" "build-tools;34.0.0"
+          curl -fsSLo "$RUNNER_TEMP/ecj.jar" https://repo.maven.apache.org/maven2/org/eclipse/jdt/ecj/3.38.0/ecj-3.38.0.jar
+          curl -fsSLo "$RUNNER_TEMP/json.jar" https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.jar
+      - name: Test native cache and response handler
+        run: npm run test:native -- --sdk "$ANDROID_HOME" --json-jar "$RUNNER_TEMP/json.jar"
+      - name: Build and verify offline APK
+        run: |
+          python3 android/build.py --sdk "$ANDROID_HOME" --ecj-jar "$RUNNER_TEMP/ecj.jar"
+          npm run test:apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: No1EqualsMe-1.16-unsigned
+          path: android/build/No1EqualsMe-1.16-unsigned.apk
+          if-no-files-found: error

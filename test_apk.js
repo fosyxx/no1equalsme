@@ -134,12 +134,28 @@ function boot({ seed = {}, wordsFail = false, legacyWebView = false } = {}) {
   check('Restart produces no JavaScript errors', restored.errors.length === 0);
   check('Pi is visible on the main screen without expanding extra sections', !restored.$('btnPiStart').closest('#secMore'));
   restored.$('btnPiStart').click();
+  restored.$('piStartBtn').click();
+  restored.$('piStudyBtn').click();
+  for (const digit of '14159') restored.w.document.querySelector('[data-pi-digit="' + digit + '"]').click();
+  const lesson = JSON.parse(restored.w.localStorage.getItem('nem_pi_practice_v1'));
+  check('Packaged Pi lesson saves its first block without inflating the challenge record',
+    Object.keys(lesson.records || {}).length === 5 && lesson.best === 0 &&
+    lesson.screen === 'lesson' && lesson.lesson.phase === 'done');
+  restored.$('piOverviewBtn').click();
+  restored.$('piChallengeBtn').click();
   for (const digit of '14159') restored.w.document.querySelector('[data-pi-digit="' + digit + '"]').click();
   const pi = JSON.parse(restored.w.localStorage.getItem('nem_pi_practice_v1'));
-  check('Packaged Pi mode works fully offline and saves progress',
+  check('Packaged Pi challenge works offline and saves its separate record',
     restored.$('view-pi').classList.contains('active') && pi.position === 5 && pi.best === 5);
   check('Pi practice preserves the existing word progress',
     JSON.stringify(restored.state().cards) === JSON.stringify(stateAfter.cards));
+  const piSeed = {};
+  Object.keys(restored.w.localStorage).forEach(k => { piSeed[k] = restored.w.localStorage.getItem(k); });
+  const piRestarted = boot({seed:piSeed});
+  await waitFor(() => piRestarted.$('bootScreen').classList.contains('hide'), 'Pi restart');
+  const savedPi = JSON.parse(piRestarted.w.localStorage.getItem('nem_pi_practice_v1'));
+  check('APK restart preserves learned Pi digits and the independent challenge record',
+    Object.keys(savedPi.records || {}).length === 5 && savedPi.position === 5 && savedPi.best === 5 && piRestarted.errors.length === 0);
 
   const legacy = boot({ legacyWebView: true });
   await waitFor(() => legacy.$('bootScreen').classList.contains('hide'), 'legacy WebView boot');

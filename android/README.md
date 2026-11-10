@@ -1,17 +1,19 @@
 # Android
 
 The user download is the signed `No1EqualsMe.apk` at the repository root and in
-[Release v1.17](https://github.com/fosyxx/no1equalsme/releases/tag/v1.17).
+[Release v1.18](https://github.com/fosyxx/no1equalsme/releases/tag/v1.18).
 It includes all data offline and Pi practice directly on the home screen.
 
 ## Installation identity
 
-Version 1.17 uses package `local.trainer.no1equalsme`, launcher label
-`No1EqualsMe 1.17` and a permanent new signing certificate. The old 1.15 package
-`local.trainer.morse` cannot receive an in-place update without its original key.
-Both installations coexist, preserving the old application's data. Progress is
-separate and is not automatically migrated. Future releases of the new package
-must reuse the new key; its public fingerprint is in `release-signing.sha256`.
+Version 1.18 keeps the package `local.trainer.no1equalsme` and the permanent
+signing certificate introduced in 1.17. It installs as an in-place update to
+1.17 and preserves its data. The launcher label is `No1EqualsMe 1.18`.
+
+The old 1.15 package `local.trainer.morse` still coexists separately because its
+original signing key is unavailable. Its data is not automatically migrated.
+Future releases must reuse the current key; the public fingerprint remains in
+`release-signing.sha256`.
 
 The private key and password are excluded from Git in `.release/`; a private
 backup is saved separately in the task workspace. Never publish the key or its

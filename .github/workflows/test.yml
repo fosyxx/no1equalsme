@@ -50,7 +50,7 @@ jobs:
       - name: Build and verify offline APK
         run: |
           python3 android/build.py --sdk "$ANDROID_HOME" --ecj-jar "$RUNNER_TEMP/ecj.jar"
-          npm run test:apk -- android/build/No1EqualsMe-1.17-unsigned.apk
+          npm run test:apk -- android/build/No1EqualsMe-1.18-unsigned.apk
       - uses: actions/upload-artifact@v4
         with:
           name: No1EqualsMe-developer-build-unsigned

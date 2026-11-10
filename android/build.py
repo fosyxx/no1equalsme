@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Build the offline Android shell with official SDK tools; never replace the signed release."""
+"""Build the complete offline Android app, optionally signing an installable release."""
 import argparse
 import os
 from pathlib import Path
 import shutil
 import subprocess
 import zipfile
+import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -17,13 +18,18 @@ def run(*args):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--sdk', default=os.environ.get('ANDROID_HOME') or os.environ.get('ANDROID_SDK_ROOT'))
-    parser.add_argument('--base-apk', type=Path, default=ROOT / 'No1EqualsMe.apk',
-                        help='Original signed APK supplies launcher artwork and offline audio missing from source')
     parser.add_argument('--ecj-jar', type=Path, help='Optional Eclipse Java compiler; useful with JDK 21 and build-tools 34 D8')
+    parser.add_argument('--keystore', type=Path)
+    parser.add_argument('--keystore-password-file', type=Path)
+    parser.add_argument('--key-alias', default='release')
     args = parser.parse_args()
     if not args.sdk:
         parser.error('set ANDROID_HOME or pass --sdk (platforms;android-33 and build-tools;34.0.0)')
     sdk = Path(args.sdk)
+    if bool(args.keystore) != bool(args.keystore_password_file):
+        parser.error('--keystore and --keystore-password-file must be supplied together')
+    manifest = ROOT / 'android/app/AndroidManifest.xml'
+    version = ET.parse(manifest).getroot().get('{http://schemas.android.com/apk/res/android}versionName')
     tools = sdk / 'build-tools/34.0.0'
     platform = sdk / 'platforms/android-33/android.jar'
     for required in [tools / 'aapt', tools / 'd8', tools / 'zipalign', platform]:
@@ -36,24 +42,12 @@ def main():
         shutil.rmtree(work)
     work.mkdir()
     resources = work / 'res'
-    resources.mkdir()
+    shutil.copytree(ROOT / 'android/app/res', resources)
     assets = work / 'assets'
     assets.mkdir()
-    # The repository retains its original signed APK for backward compatibility.
-    # Recover only its artwork/audio/assets, never its executable code or signatures.
-    with zipfile.ZipFile(args.base_apk) as original:
-        for info in original.infolist():
-            name = info.filename
-            if name.startswith('assets/') or (name.startswith('res/mipmap-') and name.endswith('.png')):
-                parts = Path(name).parts
-                if '..' in parts:
-                    raise ValueError(f'unsafe APK member: {name}')
-                target = work / name
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_bytes(original.read(info))
     values = resources / 'values'
     values.mkdir()
-    (values / 'strings.xml').write_text('<resources><string name="app_name">No1EqualsMe</string></resources>', encoding='utf-8')
+    (values / 'strings.xml').write_text('<resources><string name="app_name">No1EqualsMe ' + version + '</string></resources>', encoding='utf-8')
     www = assets / 'www'
     www.mkdir(exist_ok=True)
     shutil.copy2(ROOT / 'index.html', www / 'index.html')
@@ -78,11 +72,19 @@ def main():
     with zipfile.ZipFile(unaligned, 'a', compression=zipfile.ZIP_DEFLATED) as apk:
         for file in sorted(dex.glob('*.dex')):
             apk.write(file, file.name)
-    output = build / 'No1EqualsMe-1.16-unsigned.apk'
+    output = build / ('No1EqualsMe-' + version + '-unsigned.apk')
     run(tools / 'zipalign', '-f', '4', unaligned, output)
     run(tools / 'zipalign', '-c', '4', output)
     print(f'Unsigned APK: {output}')
-    print('Sign with the ORIGINAL release keystore using apksigner before installation. No signing key is stored here.')
+    if args.keystore:
+        signed = build / 'No1EqualsMe.apk'
+        run(tools / 'apksigner', 'sign', '--ks', args.keystore, '--ks-key-alias', args.key_alias,
+            '--ks-pass', 'file:' + str(args.keystore_password_file),
+            '--out', signed, output)
+        run(tools / 'apksigner', 'verify', '--verbose', signed)
+        print(f'Installable signed APK: {signed}')
+    else:
+        print('Developer build: provide --keystore and --keystore-password-file for an installable signed release.')
 
 
 if __name__ == '__main__':

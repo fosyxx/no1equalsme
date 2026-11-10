@@ -10,9 +10,9 @@
   * allowBackup="true" — системный бэкап захватит и localStorage (прогресс).
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="local.trainer.morse"
-    android:versionCode="17"
-    android:versionName="1.16">
+    package="local.trainer.no1equalsme"
+    android:versionCode="19"
+    android:versionName="1.18">
 
     <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="33" />
 
@@ -29,7 +29,7 @@
         android:supportsRtl="true">
 
         <activity
-            android:name=".MainActivity"
+            android:name="local.trainer.morse.MainActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize"

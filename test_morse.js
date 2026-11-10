@@ -290,8 +290,8 @@ function boot(opts = {}) {
     [...views].map(id => (A.$(id) || {}).parentElement && A.$(id).parentElement.id).join(','));
   {
     const secOrder = [...A.doc.querySelectorAll('#secList .sec-row')].map(b => b.id).join(',');
-    t('1.7б главная: 4 основных ряда и дополнительные тренировки, включая число π',
-      secOrder === 'btnStart,btnLangStart,btnMorseStart,btnStenoStart,btnDrillLetter,btnDrillDactyl,btnDrillStenoRead,btnPiStart' &&
+    t('1.7б главная: 5 основных рядов, включая число π, и дополнительные тренировки',
+      secOrder === 'btnStart,btnLangStart,btnMorseStart,btnStenoStart,btnPiStart,btnDrillLetter,btnDrillDactyl,btnDrillStenoRead' &&
       !!A.$('btnDetails') &&
       A.$('secMore').hidden === true &&
       A.$('btnSecMore').getAttribute('aria-expanded') === 'false' &&
